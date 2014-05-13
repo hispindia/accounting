@@ -69,7 +69,7 @@
 			</td>
 			<td><form:select path="account.accountType">
 					<form:options items="${accountTypes}" itemLabel="name" />
-				</form:select> <form:errors path="account.accountType" /></td>
+				</form:select> <form:errors path="account.accountType"  cssClass="error" /></td>
 		</tr>
 		
 		<tr>
@@ -79,18 +79,13 @@
 				<form:option value="" label="--Please Select--"/>
 				<form:options items="${listParents}" itemValue="id" itemLabel="name"/>
 			</form:select>
-			<span class="error"> <form:errors path="account.parentAccountId" /></span></td>
+			 <form:errors path="account.parentAccountId" cssClass="error" /></td>
 		</tr>
 		<tr>
 			<td><spring:message code="general.retired" /></td>
-			<td><spring:bind path="account.retired">
-					<openmrs:fieldGen type="java.lang.Boolean"
-						formFieldName="${status.expression}" val="${status.editor.value}"
-						parameters="isNullable=false" />
-					<c:if test="${status.errorMessage != ''}">
-						<span class="error">${status.errorMessage}</span>
-					</c:if>
-				</spring:bind></td>
+			<td><form:radiobutton path="account.retired" value="false" />NO <form:radiobutton
+					path="account.retired" value="true" />YES</td>
+				 <form:errors path="account.parentAccountId" cssClass="error" /></td>
 		</tr>
 	</table>
 	<br /> <input type="submit"

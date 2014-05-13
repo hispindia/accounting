@@ -73,7 +73,7 @@ public class AccountFormController {
 		List<Account> listParents = new ArrayList<Account>(Context.getService(AccountingService.class).getListParrentAccount());
     	Collections.sort(listParents, new Comparator<Account>() {
             public int compare(Account o1, Account o2) {
-	            return o1.getName().compareTo(o2.getName());
+	            return o1.getName().compareToIgnoreCase(o2.getName());
             }});
 		
 		model.addAttribute("listParents", listParents);
