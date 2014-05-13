@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<!-- See http://www.liquibase.org/manual/home#available_database_refactorings 
+		for a list of supported elements and attributes -->
+
+
+	<changeSet author="viet" id="201405120219">
+
+		<createTable tableName="accounting_account">
+			<column autoIncrement="true" name="id" type="int">
+				<constraints nullable="false" primaryKey="true" />
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="description" type="varchar(500)" />
+			<column name="retired_date" type="DATETIME" />
+			<column name="retired_by" type="int" />
+			<column name="retired" defaultValueBoolean="false" type="BOOLEAN">
+				<constraints nullable="false" />
+			</column>
+			<column name="updated_date" type="DATETIME" />
+			<column name="created_date" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="created_by" defaultValueNumeric="0" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="updated_by" type="int" />
+			<column name="parrent_account_id" type="int"/>
+			<column name="account_type" type="varchar(50)">
+				<constraints nullable="false" />
+			</column>
+
+
+		</createTable>
+
+
+		<createTable tableName="accounting_account_fiscal_period">
+			<column autoIncrement="true" name="id" type="int">
+				<constraints nullable="false" primaryKey="true" />
+			</column>
+			<column name="account_id" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="fiscal_period_id" type="int">
+				<constraints nullable="false" />
+			</column>
+
+			<column name="start_date" type="DATETIME"></column>
+			<column name="end_date" type="DATETIME"></column>
+			<column name="updated_date" type="DATETIME" />
+			<column name="created_date" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="created_by" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="updated_by" type="int" />
+
+			<column name="opening_balance" type="currency" />
+			<column name="closing_balance" type="currency" />
+			<column name="ledger_balance" type="currency" />
+			<column name="available_balance" type="currency" />
+			<column name="status" type="varchar(10)" />
+		</createTable>
+
+		<createTable tableName="accounting_fiscal_period">
+			<column autoIncrement="true" name="id" type="int">
+				<constraints nullable="false" primaryKey="true" />
+			</column>
+			<column name="fiscal_year_id" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="start_date" type="DATETIME"></column>
+			<column name="end_date" type="DATETIME"></column>
+			<column name="updated_date" type="DATETIME" />
+			<column name="created_date" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="created_by" defaultValueNumeric="0" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="updated_by" type="int" />
+			<column name="status" type="varchar(10)" />
+		</createTable>
+
+		<createTable tableName="accounting_fiscal_year">
+			<column autoIncrement="true" name="id" type="int">
+				<constraints nullable="false" primaryKey="true" />
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="start_date" type="DATETIME" />
+			<column name="end_date" type="DATETIME" />
+			<column name="updated_date" type="DATETIME" />
+			<column name="created_date" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="created_by" defaultValueNumeric="0" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="updated_by" type="int" />
+			<column name="status" type="varchar(10)" />
+			<column name="opening_balance" type="currency" />
+			<column name="closing_balance" type="currency" />
+		</createTable>
+	</changeSet>
+
+	<changeSet author="viet" id="201405120341">
+		<addForeignKeyConstraint constraintName="accounting_account_period_account_fk"
+			baseTableName="accounting_account_fiscal_period" baseColumnNames="account_id"
+			referencedTableName="accounting_account" referencedColumnNames="id" />
+		<addForeignKeyConstraint constraintName="accounting_account_period_fiscal_period_fk"
+			baseTableName="accounting_account_fiscal_period" baseColumnNames="fiscal_period_id"
+			referencedTableName="accounting_fiscal_period" referencedColumnNames="id" />
+		<addForeignKeyConstraint constraintName="accounting_fiscal_period_fiscal_year_fk"
+			baseTableName="accounting_fiscal_period" baseColumnNames="fiscal_year_id"
+			referencedTableName="accounting_fiscal_year" referencedColumnNames="id" />
+	</changeSet>
+</databaseChangeLog>
