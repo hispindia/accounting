@@ -56,7 +56,7 @@ public class AccountListController {
     	AccountingService accountingService = Context.getService(AccountingService.class);
     	HttpSession httpSession = request.getSession();
 		Integer id  = null;
-		try{
+		try{  
 			if( ids != null && ids.length > 0 ){
 				for(String sId : ids )
 				{

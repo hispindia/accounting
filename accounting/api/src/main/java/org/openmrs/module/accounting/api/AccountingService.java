@@ -38,6 +38,10 @@ public interface AccountingService extends OpenmrsService {
 	@Authorized({ AccountingConstants.PRIV_VIEW_ACCOUNT })
 	public Account getAccount(int id);
 	
+	@Transactional(readOnly = true)
+	@Authorized({ AccountingConstants.PRIV_VIEW_ACCOUNT })
+	public Account getAccountByName(String name);
+	
 	public FiscalYear saveFiscalYear(FiscalYear fy) ;
 	
 	@Transactional(readOnly = true)
@@ -57,5 +61,6 @@ public interface AccountingService extends OpenmrsService {
 	
 	@Transactional(readOnly = true)
 	public Collection<Account> getListParrentAccount();
+	
 	
 }

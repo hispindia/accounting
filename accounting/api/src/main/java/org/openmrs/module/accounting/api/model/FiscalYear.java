@@ -1,4 +1,5 @@
 package org.openmrs.module.accounting.api.model;
+
 /**
  * @author viet
  */
@@ -18,7 +19,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-
 @Entity
 @Table(name = "accounting_fiscal_year")
 public class FiscalYear {
@@ -28,18 +28,7 @@ public class FiscalYear {
 	@Column(name = "id")
 	private int id;
 	
-	public FiscalYear(){
-		
-	}
-
-	public FiscalYear(String name, Date createdDate, int createdBy) {
-	    super();
-	    this.name = name;
-	    this.createdDate = createdDate;
-	    this.createdBy = createdBy;
-    }
-
-	@OneToMany( cascade = CascadeType.ALL, mappedBy = "fiscalYear", targetEntity = FiscalPeriod.class)
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "fiscalYear", targetEntity = FiscalPeriod.class)
 	private Set<FiscalPeriod> periods;
 	
 	@Column(name = "start_date")
@@ -76,8 +65,16 @@ public class FiscalYear {
 	@Enumerated(EnumType.STRING)
 	private GeneralStatus status;
 	
+	public FiscalYear() {
+		
+	}
 	
-	
+	public FiscalYear(String name, Date createdDate, int createdBy) {
+		super();
+		this.name = name;
+		this.createdDate = createdDate;
+		this.createdBy = createdBy;
+	}
 	
 	public Date getEndDate() {
 		return endDate;

@@ -77,9 +77,6 @@ public class Account  {
 		super();
 		this.name = name;
 		this.retired = false;
-		this.createdDate = Calendar.getInstance().getTime();
-		this.createdBy = 1;
-		this.accountType = AccountType.B;
 	}
 	
 	public void addAccountPeriod(AccountPeriod ap) {

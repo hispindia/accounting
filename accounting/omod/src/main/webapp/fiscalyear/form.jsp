@@ -22,15 +22,16 @@
 	redirect="/module/accounting/main.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 <h2>
-	<spring:message code="accounting.account.manage" />
+	<spring:message code="accounting.fiscalyear.manage" />
 </h2>
 
 <c:forEach items="${errors.allErrors}" var="error">
 	<span class="error"><spring:message
 			code="${error.defaultMessage}" text="${error.defaultMessage}" /> </span>
 </c:forEach>
-<spring:bind path="account">
+<spring:bind path="fiscalyear">
 	<c:if test="${not empty  status.errorMessages}">
 		<div class="error">
 			<ul>
@@ -45,7 +46,7 @@
 	<table>
 		<tr>
 			<td><spring:message code="general.name" /></td>
-			<td><spring:bind path="account.name">
+			<td><spring:bind path="fiscalYear.name">
 					<input type="text" name="${status.expression}"
 						value="${status.value}" size="35" />
 					<c:if test="${status.errorMessage != ''}">
@@ -54,44 +55,44 @@
 				</spring:bind></td>
 		</tr>
 		<tr>
-			<td valign="top"><spring:message code="general.description" />
+			<td valign="top"><spring:message code="accounting.startDate" />
 			</td>
-			<td><spring:bind path="account.description">
-					<input type="text" name="${status.expression}"
-						value="${status.value}" size="35" />
+			<td><spring:bind path="fiscalYear.startDate">
+				<input type="text" name="${status.expression}"
+						value="${status.value}" size="35" onclick="showCalendar(this)" />
 					<c:if test="${status.errorMessage != ''}">
 						<span class="error">${status.errorMessage}</span>
 					</c:if>
 				</spring:bind></td>
+				
+				
 		</tr>
 		<tr>
-			<td valign="top"><spring:message code="accounting.accountType" />
+			<td valign="top"><spring:message code="accounting.endDate" />
 			</td>
-			<td><form:select path="account.accountType">
+			<td><spring:bind path="fiscalYear.endDate">
+				<input type="text" name="${status.expression}"
+						value="${status.value}" size="35" onclick="showCalendar(this)" />
+					<c:if test="${status.errorMessage != ''}">
+						<span class="error">${status.errorMessage}</span>
+					</c:if>
+				</spring:bind></td>
+				
+				
+		</tr>
+		<tr>
+			<td valign="top"><spring:message code="accounting.status" />
+			</td>
+			<td><form:select path="fiscalYear.status">
 					<form:option value="" label="--Please Select--"/>
-					<form:options items="${accountTypes}" itemLabel="name" />
-				</form:select> <form:errors path="account.accountType"  cssClass="error" /></td>
+					<form:options items="${statuses}" itemLabel="name" />
+				</form:select> <form:errors path="fiscalYear.status"  cssClass="error" /></td>
 		</tr>
 		
-		<tr>
-			<td valign="top"><spring:message code="accounting.parentAccount" />
-			</td>
-			<td><form:select path="account.parentAccountId">
-				<form:option value="" label="--Please Select--"/>
-				<form:options items="${listParents}" itemValue="id" itemLabel="name"/>
-			</form:select>
-			 <form:errors path="account.parentAccountId" cssClass="error" /></td>
-		</tr>
-		<tr>
-			<td><spring:message code="general.retired" /></td>
-			<td><form:radiobutton path="account.retired" value="false" />NO <form:radiobutton
-					path="account.retired" value="true" />YES</td>
-				 <form:errors path="account.parentAccountId" cssClass="error" /></td>
-		</tr>
 	</table>
 	<br /> <input type="submit"
 		value="<spring:message code="general.save"/>"> <input
 		type="button" value="<spring:message code="general.cancel"/>"
-		onclick="javascript:window.location.href='account.list'">
+		onclick="javascript:window.location.href='fiscalyear.list'">
 </form>
 <%@ include file="/WEB-INF/template/footer.jsp"%>

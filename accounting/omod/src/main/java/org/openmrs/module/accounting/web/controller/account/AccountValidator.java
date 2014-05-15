@@ -27,30 +27,40 @@ import org.openmrs.module.accounting.api.model.Account;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-
 /**
  *
  */
 public class AccountValidator implements Validator {
-
+	
 	/**
-     * @see org.springframework.validation.Validator#supports(java.lang.Class)
-     */
-    public boolean supports(Class clazz) {
-    	return Account.class.equals(clazz);
-    }
-
+	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
+	 */
+	public boolean supports(Class clazz) {
+		return Account.class.equals(clazz);
+	}
+	
 	/**
-     * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
-     */
-    public void validate(Object command, Errors error) {
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
+	 */
+	public void validate(Object command, Errors error) {
     	Account account= (Account) command;
     	
-    	if( StringUtils.isBlank(account.getName())){
-    		error.reject("billing.name.required");
+    	if (StringUtils.isBlank(account.getName())) {
+    		error.reject("accounting.name.required");
+    	}else{
+    		AccountingService accountingService = (AccountingService)Context.getService(AccountingService.class);
+    		Account acc = accountingService.getAccountByName(account.getName());
+    		if (acc != null){
+    			error.reject("accounting.name.existed");
+    		}
     	}
     	
-    	AccountingService billingService = (AccountingService)Context.getService(AccountingService.class);
+    	if (account.getAccountType() == null){
+    		error.reject("accounting.type.required");
+    	}
+    	
+    	
 //		Integer companyId = account.getAccountId();
 //		if (companyId == null) {
 //			if (billingService.getAccountByName(account.getName())!= null) {
@@ -65,5 +75,4 @@ public class AccountValidator implements Validator {
 //			}
 //		}
     }
-
 }

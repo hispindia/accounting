@@ -14,6 +14,7 @@
 package org.openmrs.module.accounting.api.db;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -91,6 +92,12 @@ public class AccountingDAO {
 		criteria.add(Restrictions.isNull("parentAccountId"));
 		return criteria.list() ;
 		
+	}
+	
+	public Account getAccountByName(String name){
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Account.class);
+		criteria.add(Restrictions.eq("name", name));
+		return  (Account) criteria.uniqueResult(); 
 	}
 	
 }

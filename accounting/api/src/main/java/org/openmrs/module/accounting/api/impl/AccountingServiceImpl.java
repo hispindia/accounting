@@ -92,4 +92,8 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	public Collection<Account> getListParrentAccount() {
 		return dao.getListParrentAccount();
 	}
+
+    public Account getAccountByName(String name) {
+	    return dao.getAccountByName(name);
+    }
 }
