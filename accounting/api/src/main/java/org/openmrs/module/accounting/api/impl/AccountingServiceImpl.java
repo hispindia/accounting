@@ -13,6 +13,8 @@ import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.AccountPeriod;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.openmrs.module.accounting.api.model.FiscalYear;
+import org.openmrs.module.accounting.api.model.GeneralStatus;
+import org.openmrs.module.accounting.api.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -57,7 +59,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		dao.deleteAccount(acc);
 	}
 	
-	public Collection<Account> getAccounts(boolean includeDisabled) {
+	public Collection<Account> getAccounts(Boolean includeDisabled) {
 		return dao.getAccounts(includeDisabled);
 	}
 	
@@ -66,6 +68,9 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	}
 	
 	public FiscalYear saveFiscalYear(FiscalYear fy) {
+		fy.setCreatedDate(Calendar.getInstance().getTime());
+		fy.setCreatedBy(Context.getAuthenticatedUser().getId());
+		fy.setEndDate(DateUtils.getEnd(fy.getEndDate()));
 		return dao.saveFiscalYear(fy);
 	}
 	
@@ -74,6 +79,8 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	}
 	
 	public FiscalPeriod saveFiscalPeriod(FiscalPeriod fp) {
+		
+		fp.setEndDate(DateUtils.getEnd(fp.getEndDate()));
 		return dao.saveFiscalPeriod(fp);
 	}
 	
@@ -92,8 +99,25 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	public Collection<Account> getListParrentAccount() {
 		return dao.getListParrentAccount();
 	}
-
-    public Account getAccountByName(String name) {
-	    return dao.getAccountByName(name);
-    }
+	
+	public Account getAccountByName(String name) {
+		return dao.getAccountByName(name);
+	}
+	
+	public FiscalYear getFiscalYearByName(String name) {
+		return dao.getFiscalYearByName(name);
+	}
+	
+	public Collection<FiscalYear> getListFiscalYear(GeneralStatus status) {
+		return dao.getListFiscalYear(status);
+	}
+	
+	public void deleteFiscalYear(FiscalYear fiscalYear) {
+		dao.deleteFiscalYear(fiscalYear);
+		;
+	}
+	
+	public void deletePeriod(FiscalPeriod period) {
+		dao.deleteFiscalPeriod(period);
+	}
 }

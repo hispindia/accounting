@@ -51,7 +51,7 @@
 <br />
 <br />
 <c:choose>
-	<c:when test="${not empty accounts}">
+	<c:when test="${not empty fiscalYears}">
 		<form method="post" onsubmit="return false" id="form">
 			<input type="button" onclick="checkValue()"
 				value="<spring:message code='accounting.account.deleteselected'/>" />
@@ -70,7 +70,7 @@
 						</th>
 						<th></th>
 					</tr>
-					<c:forEach items="${fiscalyears}" var="fiscalyear"
+					<c:forEach items="${fiscalYears}" var="fiscalyear"
 						varStatus="varStatus">
 						<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" } '>
 							<td><c:out

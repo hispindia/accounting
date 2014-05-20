@@ -43,8 +43,6 @@ public class FiscalPeriod {
 	@Enumerated(EnumType.STRING)
 	private GeneralStatus status; // INACTIVE, ACTIVE, CLOSED
 	
-	
-	
 	@Temporal(TemporalType.DATE)
 	@Column(name = "created_date")
 	private Date createdDate;
@@ -154,5 +152,14 @@ public class FiscalPeriod {
 	public void setUpdatedBy(int updatedBy) {
 		this.updatedBy = updatedBy;
 	}
+
+
+
+	@Override
+    public String toString() {
+	    return "FiscalPeriod [id=" + id + ", fiscalYear=" + fiscalYear + ", name=" + name + ", startDate=" + startDate
+	            + ", endDate=" + endDate + ", status=" + status + ", createdDate=" + createdDate + ", updatedDate="
+	            + updatedDate + ", createdBy=" + createdBy + ", updatedBy=" + updatedBy + "]";
+    }
 	
 }

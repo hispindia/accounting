@@ -32,10 +32,10 @@
 
 <p>
 	<b><a href="account.list">Account</a></b>&nbsp; | &nbsp; 
-	<b><a href="#">Fiscal Year</a></b>&nbsp; | &nbsp; 
-	<b><a href="#">Period</a></b>&nbsp; | &nbsp; 
-	<b><a href="#">Income</a></b>&nbsp; | &nbsp;
-	<b><a href="#">Budget</a></b>
+	<b><a href="fiscalyear.list">Fiscal Year</a></b>&nbsp; | &nbsp; 
+	<b><a href="period.list">Period</a></b>&nbsp; | &nbsp; 
+	<b><a href="income.list">Income</a></b>&nbsp; | &nbsp;
+	<b><a href="budget.list#">Budget</a></b>
 </p>
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

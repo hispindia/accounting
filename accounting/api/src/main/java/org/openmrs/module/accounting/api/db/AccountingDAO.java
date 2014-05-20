@@ -14,7 +14,6 @@
 package org.openmrs.module.accounting.api.db;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,6 +24,7 @@ import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.AccountPeriod;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.openmrs.module.accounting.api.model.FiscalYear;
+import org.openmrs.module.accounting.api.model.GeneralStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -39,13 +39,25 @@ public class AccountingDAO {
 	@Autowired
 	SessionFactory sessionFactory;
 	
+	
+	public void deleteFiscalYear(FiscalYear fiscalYear) {
+		 sessionFactory.getCurrentSession().delete(fiscalYear);;
+	}
+	
 	public void deleteAccount(Account account) {
 		 sessionFactory.getCurrentSession().delete(account);;
 	}
 	
-	public Collection<Account> getAccounts(boolean includeRetired) {
+	public void deleteFiscalPeriod(FiscalPeriod fiscalPeriod){
+		 sessionFactory.getCurrentSession().delete(fiscalPeriod);;
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+    public Collection<Account> getAccounts(Boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Account.class);
-		criteria.add(Restrictions.eq("retired", includeRetired));
+		if (includeRetired != null)
+			criteria.add(Restrictions.eq("retired", includeRetired));
 		return criteria.list();
 		
 	}
@@ -87,7 +99,8 @@ public class AccountingDAO {
 		return (AccountPeriod) sessionFactory.getCurrentSession().load(AccountPeriod.class, id);
 	}
 	
-	public Collection<Account> getListParrentAccount(){
+	@SuppressWarnings("unchecked")
+    public Collection<Account> getListParrentAccount(){
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Account.class);
 		criteria.add(Restrictions.isNull("parentAccountId"));
 		return criteria.list() ;
@@ -99,5 +112,18 @@ public class AccountingDAO {
 		criteria.add(Restrictions.eq("name", name));
 		return  (Account) criteria.uniqueResult(); 
 	}
-	
+
+	public FiscalYear getFiscalYearByName(String name) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(FiscalYear.class);
+		criteria.add(Restrictions.eq("name", name));
+		return  (FiscalYear) criteria.uniqueResult(); 
+    }
+
+    @SuppressWarnings("unchecked")
+    public Collection<FiscalYear> getListFiscalYear(GeneralStatus status) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(FiscalYear.class);
+		if (status != null)
+			criteria.add(Restrictions.eq("status", status));
+		return criteria.list();
+    }
 }

@@ -70,7 +70,7 @@ public class AccountListController {
 			}
 		}catch (Exception e) {
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
-			"Can not delete account because it has link to bill ");
+			"Can not delete account because it has link to other records ");
 			log.error(e);
 			return "redirect:/module/accounting/account.list";
 		}
@@ -86,7 +86,7 @@ public class AccountListController {
 	                         Map<String, Object> model, HttpServletRequest request){
 		
 //		AccountingService accountingService = Context.getService(AccountingService.class);
-    	List<Account> accounts = new ArrayList<Account>(Context.getService(AccountingService.class).getAccounts(false));
+    	List<Account> accounts = new ArrayList<Account>(Context.getService(AccountingService.class).getAccounts(null));
     	Collections.sort(accounts, new Comparator<Account>() {
             public int compare(Account o1, Account o2) {
 	            return o1.getName().compareToIgnoreCase(o2.getName());

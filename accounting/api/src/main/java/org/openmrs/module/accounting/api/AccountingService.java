@@ -8,6 +8,7 @@ import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.AccountPeriod;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.openmrs.module.accounting.api.model.FiscalYear;
+import org.openmrs.module.accounting.api.model.GeneralStatus;
 import org.openmrs.module.accounting.api.utils.AccountingConstants;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface AccountingService extends OpenmrsService {
 	
+	
+	/**
+	 * 	Account
+	 */
 	@Authorized({ AccountingConstants.PRIV_ADD_EDIT_ACCOUNT })
 	public Account saveAccount(Account acc);
 	
@@ -33,7 +38,7 @@ public interface AccountingService extends OpenmrsService {
 	
 	@Transactional(readOnly = true)
 	@Authorized({ AccountingConstants.PRIV_VIEW_ACCOUNT })
-	public Collection<Account> getAccounts(boolean includeDisabled);
+	public Collection<Account> getAccounts(Boolean includeDisabled);
 	
 	@Authorized({ AccountingConstants.PRIV_VIEW_ACCOUNT })
 	public Account getAccount(int id);
@@ -42,25 +47,40 @@ public interface AccountingService extends OpenmrsService {
 	@Authorized({ AccountingConstants.PRIV_VIEW_ACCOUNT })
 	public Account getAccountByName(String name);
 	
+	@Transactional(readOnly = true)
+	public Collection<Account> getListParrentAccount();
+	
+	/**
+	 * Fiscal Year 
+	 */
 	public FiscalYear saveFiscalYear(FiscalYear fy) ;
 	
 	@Transactional(readOnly = true)
 	public FiscalYear getFiscalYear(int id) ;
 	
+	@Transactional(readOnly = true)
+	public FiscalYear getFiscalYearByName(String name);
 	
 	public FiscalPeriod saveFiscalPeriod(FiscalPeriod fp) ;
 	
 	@Transactional(readOnly = true)
 	public FiscalPeriod getFiscalPeriod(int id) ;
 	
+	@Transactional(readOnly = true)
+	public Collection<FiscalYear> getListFiscalYear(GeneralStatus status);
 	
+	public void deleteFiscalYear(FiscalYear fiscalYear);
+
+	/**
+	 * 	Period
+	 */
 	public AccountPeriod saveAccountPeriod(AccountPeriod ap);
 	
 	@Transactional(readOnly = true)
 	public AccountPeriod getAccountPeriod(int id);
 	
-	@Transactional(readOnly = true)
-	public Collection<Account> getListParrentAccount();
+	public void deletePeriod(FiscalPeriod period);
+	
 	
 	
 }
