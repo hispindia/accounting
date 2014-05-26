@@ -1,48 +1,57 @@
-/**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
- *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
- */
 package org.openmrs.module.accounting.api.model;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
+
 @Entity
-@Table(name = "accounting_income_receipt")
-public class IncomeReceipt {
+@Table(name="accounting_income_receipt_item")
+public class IncomeReceiptItem {
 	
 	@Id
 	@GeneratedValue
 	@Column(name = "id")
 	private Integer id;
 	
-	@Column(name = "receipt_no")
-	private String receiptNo;
-	
 	@Column(name = "description")
 	private String description;
 	
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="account_id")
+	private Account account;
+	
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="income_receipt_id")
+	private IncomeReceipt receipt;
+	
+	@Column(name="amount", precision = 19, scale = 2)
+	private BigDecimal amount;
+	
+	@Column(name = "cheque_number")
+	private String chequeNumber;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "type")
+	private String type; 
+	
 	@Temporal(TemporalType.DATE)
-	@Column(name = "receipt_date")
-	private Date receiptDate;
+	@Column(name = "transaction_date")
+	private Date transactionDate;
 	
 	@Column(name = "created_date")
 	@Type(type = "timestamp")
@@ -60,7 +69,7 @@ public class IncomeReceipt {
 	
 	@Column(name = "voided_by")
 	private int voidedBy;
-	
+
 	@Column(name ="updated_by")
 	private int updatedBy;
 	
@@ -68,43 +77,53 @@ public class IncomeReceipt {
 	@Type(type="timestamp")
 	private Date updatedDate;
 	
-	
-	public IncomeReceipt(String receiptNo, String description){
-		this.voided = false;
-		this.receiptNo = receiptNo;
-		this.description = description;
-	}
-	
-	public IncomeReceipt(){
-		this.voided = false;
-	}
-	
-	public Integer getId() {
-		return id;
-	}
-	
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	
-    public String getReceiptNo() {
-    	return receiptNo;
+    public Integer getId() {
+    	return id;
     }
 
 	
-    public void setReceiptNo(String receiptNo) {
-    	this.receiptNo = receiptNo;
+    public void setId(Integer id) {
+    	this.id = id;
     }
 
 	
-    public Date getReceiptDate() {
-    	return receiptDate;
+    public Account getAccount() {
+    	return account;
     }
 
 	
-    public void setReceiptDate(Date receiptDate) {
-    	this.receiptDate = receiptDate;
+    public void setAccount(Account account) {
+    	this.account = account;
+    }
+
+	
+    public IncomeReceipt getReceipt() {
+    	return receipt;
+    }
+
+	
+    public void setReceipt(IncomeReceipt receipt) {
+    	this.receipt = receipt;
+    }
+
+	
+    public BigDecimal getAmount() {
+    	return amount;
+    }
+
+	
+    public void setAmount(BigDecimal amount) {
+    	this.amount = amount;
+    }
+
+	
+    public String getType() {
+    	return type;
+    }
+
+	
+    public void setType(String type) {
+    	this.type = type;
     }
 
 	
@@ -157,42 +176,74 @@ public class IncomeReceipt {
     	this.voidedBy = voidedBy;
     }
 
+
+	
+    public Date getTransactionDate() {
+    	return transactionDate;
+    }
+
+
+	
+    public void setTransactionDate(Date transactionDate) {
+    	this.transactionDate = transactionDate;
+    }
+
+
 	
     public String getDescription() {
     	return description;
     }
+
 
 	
     public void setDescription(String description) {
     	this.description = description;
     }
 
+
+	
+    public String getChequeNumber() {
+    	return chequeNumber;
+    }
+
+
+	
+    public void setChequeNumber(String chequeNumber) {
+    	this.chequeNumber = chequeNumber;
+    }
+
+
 	
     public int getUpdatedBy() {
     	return updatedBy;
     }
+
 
 	
     public void setUpdatedBy(int updatedBy) {
     	this.updatedBy = updatedBy;
     }
 
+
 	
     public Date getUpdatedDate() {
     	return updatedDate;
     }
+
 
 	
     public void setUpdatedDate(Date updatedDate) {
     	this.updatedDate = updatedDate;
     }
 
+
 	@Override
     public String toString() {
-	    return "IncomeReceipt [id=" + id + ", receiptNo=" + receiptNo + ", description=" + description + ", receiptDate="
-	            + receiptDate + ", createdDate=" + createdDate + ", createdBy=" + createdBy + ", voided=" + voided
-	            + ", voideddDate=" + voideddDate + ", voidedBy=" + voidedBy + ", updatedBy=" + updatedBy + ", updatedDate="
-	            + updatedDate + "]";
+	    return "IncomeReceiptItem [id=" + id + ", description=" + description + ", account=" + account + ", receipt="
+	            + receipt + ", amount=" + amount + ", chequeNumber=" + chequeNumber + ", type=" + type
+	            + ", transactionDate=" + transactionDate + ", createdDate=" + createdDate + ", createdBy=" + createdBy
+	            + ", voided=" + voided + ", voideddDate=" + voideddDate + ", voidedBy=" + voidedBy + ", updatedBy="
+	            + updatedBy + ", updatedDate=" + updatedDate + "]";
     }
 	
 }

@@ -1,6 +1,7 @@
 package org.openmrs.module.accounting.api;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.OpenmrsService;
@@ -9,6 +10,8 @@ import org.openmrs.module.accounting.api.model.AccountPeriod;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.openmrs.module.accounting.api.model.FiscalYear;
 import org.openmrs.module.accounting.api.model.GeneralStatus;
+import org.openmrs.module.accounting.api.model.IncomeReceipt;
+import org.openmrs.module.accounting.api.model.IncomeReceiptItem;
 import org.openmrs.module.accounting.api.utils.AccountingConstants;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +53,7 @@ public interface AccountingService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	public Collection<Account> getListParrentAccount();
 	
+	
 	/**
 	 * Fiscal Year 
 	 */
@@ -81,6 +85,40 @@ public interface AccountingService extends OpenmrsService {
 	
 	public void deletePeriod(FiscalPeriod period);
 	
+	/**
+	 * Module initialize
+	 */
+	public void initModule();
 	
+	/**
+	 * INCOME RECEIPT
+	 */
+	
+	public IncomeReceipt saveIncomeReceipt(IncomeReceipt incomeReceipt);
+	
+	public IncomeReceipt getIncomeReceipt(Integer id);
+	
+	public List<IncomeReceipt> getListIncomeReceipt(boolean includeVoided);
+	
+	public List<IncomeReceipt> getListIncomeReceiptByDate(String startDate, String endDate, boolean includeVoided);
+	
+	public void delete(IncomeReceipt incomeReceipt);
+	
+	
+	/**
+	 * INCOME RECEIPT ITEM
+	 */
+	
+	public IncomeReceiptItem saveIncomeReceiptItem(IncomeReceiptItem incomeReceiptItem);
+	
+	public IncomeReceiptItem getIncomeReceiptItem(Integer id);
+	
+	public List<IncomeReceiptItem> getListIncomeReceiptItem(boolean includeVoided);
+	
+	public List<IncomeReceiptItem> getListIncomeReceiptItemByDate(String startDate, String endDate);
+	
+	public void delete(IncomeReceiptItem incomeReceiptItem);
+	
+	public List<IncomeReceiptItem> getListIncomeReceiptItemByAccount(Account acc);
 	
 }

@@ -48,7 +48,7 @@ public class AccountValidator implements Validator {
     	
     	if (StringUtils.isBlank(account.getName())) {
     		error.reject("accounting.name.required");
-    	}else{
+    	} else if (account.getId() == null) {
     		AccountingService accountingService = (AccountingService)Context.getService(AccountingService.class);
     		Account acc = accountingService.getAccountByName(account.getName());
     		if (acc != null){

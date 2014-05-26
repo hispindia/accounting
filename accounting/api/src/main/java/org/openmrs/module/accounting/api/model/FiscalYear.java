@@ -19,6 +19,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Type;
+
 @Entity
 @Table(name = "accounting_fiscal_year")
 public class FiscalYear {
@@ -26,17 +28,18 @@ public class FiscalYear {
 	@Id
 	@GeneratedValue
 	@Column(name = "id")
-	private int id;
+	private Integer id;
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "fiscalYear", targetEntity = FiscalPeriod.class)
+	@javax.persistence.OrderBy("startDate, endDate")
 	private Set<FiscalPeriod> periods;
 	
 	@Column(name = "start_date")
-	@Temporal(TemporalType.DATE)
+	@Type(type="timestamp")
 	private Date startDate;
 	
 	@Column(name = "end_date")
-	@Temporal(TemporalType.DATE)
+	@Type(type="timestamp")
 	private Date endDate;
 	
 	@Column(name = "opening_balance", precision = 19, scale = 2)
@@ -50,6 +53,7 @@ public class FiscalYear {
 	
 	@Temporal(TemporalType.DATE)
 	@Column(name = "created_date")
+	@Type(type="timestamp")
 	private Date createdDate;
 	
 	@Column(name = "created_by")
@@ -57,6 +61,7 @@ public class FiscalYear {
 	
 	@Temporal(TemporalType.DATE)
 	@Column(name = "updated_date")
+	@Type(type="timestamp")
 	private Date updatedDate;
 	
 	@Column(name = "updated_by")
@@ -161,11 +166,11 @@ public class FiscalYear {
 		return true;
 	}
 	
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 	
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 	
@@ -200,13 +205,16 @@ public class FiscalYear {
 	public int getUpdatedBy() {
 		return updatedBy;
 	}
+
 	
-	public Set<FiscalPeriod> getPeriods() {
-		return periods;
-	}
+    public Set<FiscalPeriod> getPeriods() {
+    	return periods;
+    }
+
 	
-	public void setPeriods(Set<FiscalPeriod> periods) {
-		this.periods = periods;
-	}
+    public void setPeriods(Set<FiscalPeriod> periods) {
+    	this.periods = periods;
+    }
+	
 	
 }

@@ -6,14 +6,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "accounting_fiscal_period")
@@ -22,7 +21,7 @@ public class FiscalPeriod {
 	@Id
 	@GeneratedValue
 	@Column(name = "id")
-	private int id;
+	private Integer id;
 	
 	
 	@ManyToOne
@@ -33,21 +32,21 @@ public class FiscalPeriod {
 	private String name;
 	
 	@Column(name = "start_date")
-	@Temporal(TemporalType.DATE)
+	@Type(type="timestamp")
 	private Date startDate;
 	
 	@Column(name = "end_date")
-	@Temporal(TemporalType.DATE)
+	@Type(type="timestamp")
 	private Date endDate;
 	
 	@Enumerated(EnumType.STRING)
 	private GeneralStatus status; // INACTIVE, ACTIVE, CLOSED
 	
-	@Temporal(TemporalType.DATE)
+	@Type(type="timestamp")
 	@Column(name = "created_date")
 	private Date createdDate;
 	
-	@Temporal(TemporalType.DATE)
+	@Type(type="timestamp")
 	@Column(name = "updated_date")
 	private Date updatedDate;
 	
@@ -73,11 +72,11 @@ public class FiscalPeriod {
 
 
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 	
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 	

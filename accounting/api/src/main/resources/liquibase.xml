@@ -31,7 +31,7 @@
 				<constraints nullable="false" />
 			</column>
 			<column name="updated_by" type="int" />
-			<column name="parrent_account_id" type="int"/>
+			<column name="parrent_account_id" type="int" />
 			<column name="account_type" type="varchar(50)">
 				<constraints nullable="false" />
 			</column>
@@ -115,7 +115,80 @@
 		</createTable>
 	</changeSet>
 
+	<changeSet author="viet" id="201405230534">
+		<createTable tableName="accounting_income_receipt">
+			<column autoIncrement="true" name="id" type="int">
+				<constraints nullable="false" primaryKey="true" />
+			</column>
+			<column name="receipt_no" type="varchar(255)" />
+			<column name="description" type="varchar(1000)" />
+
+			<column name="voided" defaultValueBoolean="false" type="BOOLEAN">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided_date" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided_by" defaultValueNumeric="0" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="receipt_date" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="created_date" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="created_by" defaultValueNumeric="0" type="int">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<createTable tableName="accounting_income_receipt_item">
+			<column autoIncrement="true" name="id" type="int">
+				<constraints nullable="false" primaryKey="true" />
+			</column>
+			<column name="description" type="varchar(1000)" />
+			<column name="account_id" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="income_receipt_id" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="amount" type="currency" />
+			<column name="cheque_number" type="varchar(255)" />
+			<column name="type" type="varchar(20)" />
+			<column name="transaction_date" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="created_date" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="created_by" defaultValueNumeric="0" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided" defaultValueBoolean="false" type="BOOLEAN">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided_date" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided_by" defaultValueNumeric="0" type="int">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="accounting_income_receipt_item_receipt_fk"
+			baseTableName="accounting_income_receipt_item" baseColumnNames="income_receipt_id"
+			referencedTableName="accounting_income_receipt"
+			referencedColumnNames="id" />
+		<addForeignKeyConstraint constraintName="accounting_income_receipt_item_account_fk"
+			baseTableName="accounting_income_receipt_item" baseColumnNames="account_id"
+			referencedTableName="accounting_account" referencedColumnNames="id" />
+
+	</changeSet>
+
 	<changeSet author="viet" id="201405120341">
+
 		<addForeignKeyConstraint constraintName="accounting_account_period_account_fk"
 			baseTableName="accounting_account_fiscal_period" baseColumnNames="account_id"
 			referencedTableName="accounting_account" referencedColumnNames="id" />
@@ -125,5 +198,40 @@
 		<addForeignKeyConstraint constraintName="accounting_fiscal_period_fiscal_year_fk"
 			baseTableName="accounting_fiscal_period" baseColumnNames="fiscal_year_id"
 			referencedTableName="accounting_fiscal_year" referencedColumnNames="id" />
+	</changeSet>
+
+	<changeSet author="viet" id="201405250234">
+		<addColumn tableName="accounting_income_receipt">
+			<column name="updated_date" type="DATETIME" />
+		</addColumn>
+		<addColumn tableName="accounting_income_receipt">
+			<column name="updated_by" type="int" />
+		</addColumn>
+		<addColumn tableName="accounting_income_receipt_item">
+			<column name="updated_date" type="DATETIME" />
+		</addColumn>
+		<addColumn tableName="accounting_income_receipt_item">
+			<column name="updated_by" type="int" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet author="viet" id="2014050304">
+		<dropNotNullConstraint columnDataType="DATETIME"
+			columnName="voided_date" tableName="accounting_income_receipt" />
+
+		<dropNotNullConstraint columnDataType="DATETIME"
+			columnName="voided_date" tableName="accounting_income_receipt_item" />
+
+		<dropNotNullConstraint columnDataType="int"
+			columnName="voided_by" tableName="accounting_income_receipt_item" />
+
+		<dropNotNullConstraint columnDataType="int"
+			columnName="voided_by" tableName="accounting_income_receipt" />
+	</changeSet>
+	
+	
+	<changeSet author="viet" id="2014050305">
+		<dropNotNullConstraint columnDataType="DATETIME"
+			columnName="created_date" tableName="accounting_account" />
 	</changeSet>
 </databaseChangeLog>

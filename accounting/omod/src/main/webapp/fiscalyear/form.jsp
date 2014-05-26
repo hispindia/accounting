@@ -22,56 +22,111 @@
 	redirect="/module/accounting/main.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
+<%@ include file="../includes/nav.jsp" %>
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
+
 <h2>
 	<spring:message code="accounting.fiscalyear.manage" />
 </h2>
 
 <script>
 
+	jQuery(document).ready(function(){
+		jQuery("#mainForm").validate({
+			rules:{
+				name: "required",
+				startDate : "required",
+				endDate : "required",
+				status: "required"
+			}
+		});
+		
+		// disable edit if fiscal year status is ACTIVE
+		if (jQuery("#status").val() == "A") {
+
+			jQuery("#fiscalYearName").attr("readonly", "true");
+			jQuery("#fiscalYearStartDate").attr("onfocus", "");
+			jQuery("#fiscalYearStartDate").attr("onfocus", "");
+			jQuery("#fiscalYearEndDate").attr("readonly", "true");
+			jQuery("#btnCreateQuarter").attr("disabled", "true");
+			jQuery("#btnCreateMonthly").attr("disabled", "true");
+		}
+		
+	});
+
 	function createPeriods (type){
+		if (!jQuery("#mainForm").valid()) {
+			return;
+		}
+		
+			var name, period;
+			var pStartDate, pEndDate, nextStartDate;
+
+			var yearStartDate = convertStringtToDate(jQuery("#fiscalYearStartDate").val());
+
+			var yearEndDate =  convertStringtToDate(jQuery("#fiscalYearEndDate").val());
+		
+		if (yearStartDate == "" || yearEndDate == "" ) {
+			alert("please enter Start Date and End Date");
+			return;
+		}
 		
 		jQuery("#tablePeriods tbody tr" ).remove();
 		
-		var name, period;
-		var pStartDate, pEndDate;
-		var sStartDate =  jQuery("#fiscalYearStartDate").val();
-		var sEndDate = jQuery("#fiscalYearEndDate").val();
-		
-		var dStartDate = convertStringtToDate(sStartDate);
-		
-		var dEndDate =  convertStringtToDate(sEndDate);
+	
 		
 		var arrPeriods = new Array();
 		
+		nextStartDate = new Date(yearStartDate.getTime());
+		
+
 		if ("quarterly" == type) {
 			
 			for (var i=0; i<4; i++) {
-			
-				name = "Quarter " + (i+1) + " - " + dStartDate.getFullYear();
-				pStartDate = new Date(dStartDate.getTime());
-				dStartDate.setMonth(dStartDate.getMonth() + 3); // next start date 
-				dEndDate = new Date(dStartDate.getTime());
-				dEndDate.setDate(dEndDate.getDate() - 1)//	current end date
 				
-//				alert(pStartDate + " ---" + dEndDate) ;// create period with startDate and endDate
+				pStartDate = new Date(nextStartDate.getTime());
 				
-				period = createPeriod(name, pStartDate, dEndDate);
-				createPeriodRow(period);
-				arrPeriods.push(period);
+				nextStartDate = new Date(nextStartDate.getFullYear(),nextStartDate.getMonth() + 3, 1, 0,0,0,0);  
+		
+				pEndDate = new Date(nextStartDate.getFullYear(),nextStartDate.getMonth(), nextStartDate.getDate() - 1, 23,59,59,999);
+				
+				name = "Quarter " + (Math.floor((pStartDate.getMonth() + 3) / 3)) + " - " + nextStartDate.getFullYear();
+				
+				if (pEndDate >= yearEndDate){
+					pEndDate = new Date(yearEndDate.getTime());
+					period = createPeriod(name, pStartDate, pEndDate);
+					createPeriodRow(period);
+					arrPeriods.push(period);
+					break;
+				} else {
+					period = createPeriod(name, pStartDate, pEndDate);
+					createPeriodRow(period);
+					arrPeriods.push(period);
+				}
 			}
 		} else if ("monthly" == type) {
+
 			for (var i=0; i<12; i++) {
-				name = "Month "  + (i+1) + " - " + dStartDate.getFullYear();
-				pStartDate = new Date(dStartDate.getTime());
-				dStartDate.setMonth(dStartDate.getMonth() + 1); // next start date 
-				dEndDate = new Date(dStartDate.getTime());
-				dEndDate.setDate(dEndDate.getDate() - 1)//	current end date
 				
-//				alert(pStartDate + " ---" + dEndDate) ;// create period with startDate and endDate		
-				period = createPeriod(name, pStartDate, dEndDate);
-				createPeriodRow(period);
-				arrPeriods.push(period);
+				pStartDate = new Date(nextStartDate.getTime());
+				
+				nextStartDate = new Date(nextStartDate.getFullYear(),nextStartDate.getMonth() + 1, 1, 0,0,0,0); 
+		
+				pEndDate = new Date(nextStartDate.getFullYear(),nextStartDate.getMonth(), nextStartDate.getDate() - 1, 23,59,59,999);
+				
+				name = "Month "  + ( pStartDate.getMonth()  + 1 ) + " - " + nextStartDate.getFullYear();
+				
+				if (pEndDate >= yearEndDate){
+					pEndDate = new Date(yearEndDate.getTime());
+					period = createPeriod(name, pStartDate, pEndDate);
+					createPeriodRow(period);
+					arrPeriods.push(period);
+					break;
+				} else {
+					period = createPeriod(name, pStartDate, pEndDate);
+					createPeriodRow(period);
+					arrPeriods.push(period);
+				}
 			}
 		}
 		var jsonPeriods = JSON.stringify(arrPeriods);
@@ -79,6 +134,7 @@
 	}
 	
 	function createPeriod (name, startDate, endDate) {
+		
 		var oPeriod = new Object();
 		oPeriod.name = name;
 		oPeriod.startDate = startDate;
@@ -119,7 +175,7 @@
 		</div>
 	</c:if>
 </spring:bind>
-<form method="post" class="box">
+<form method="post" class="box" id="mainForm">
 <input type="hidden" id="jsonPeriods" name="jsonPeriods" />
 	<table>
 		<tr>
@@ -167,7 +223,7 @@
 				</form:select> <form:errors path="fiscalYear.status"  cssClass="error" /></td>
 		</tr>
 		<tr>
-			<td valing="top" colspan="2"><input type="button" value="Create Quaterly Periods" onclick="createPeriods('quarterly');"/> <input type="button" value="Create Monthly Periods" onclick="createPeriods('monthly');"/></td>
+			<td valing="top" colspan="2"><input type="button" id="btnCreateQuarter" value="Create Quaterly Periods" onclick="createPeriods('quarterly');"/> <input type="button" id="btnCreateMonthly" value="Create Monthly Periods" onclick="createPeriods('monthly');"/></td>
 	</table>
 	<br /> <input type="submit"
 		value="<spring:message code="general.save"/>"> <input

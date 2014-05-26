@@ -20,6 +20,7 @@
 <script type="text/javascript">
 	$ = jQuery.noConflict();
 </script>
+<!-- 
 <script type="text/javascript" src="${pageContext.request.contextPath}/scripts/calendar/calendar.js"></script>
 <link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/moduleResources/accounting/scripts/jquery/css/jquery.multiselect.css" />
 <link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/moduleResources/accounting/styles/paging.css" />
@@ -40,3 +41,5 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/moduleResources/hospitalcore/scripts/jquery/jquery.patientSearch.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/moduleResources/hospitalcore/scripts/jquery/jquery.loadmask.min.js"></script> 
 <script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/hospitalcore/scripts/string-utils.js" ></script>
+
+ -->

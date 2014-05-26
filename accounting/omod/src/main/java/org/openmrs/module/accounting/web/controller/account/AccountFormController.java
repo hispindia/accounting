@@ -21,12 +21,9 @@
 package org.openmrs.module.accounting.web.controller.account;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -44,13 +41,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 
 /**
  *
  */
 @Controller
 @RequestMapping("/module/accounting/account.form")
+@SessionAttributes("accountCommand")
 public class AccountFormController {
+	
 	
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
@@ -58,15 +59,16 @@ public class AccountFormController {
 	}
 	
 	@RequestMapping(method = RequestMethod.GET)
-	public String firstView(@ModelAttribute("account") Account account,
+	public String firstView(
 	                        @RequestParam(value = "id", required = false) Integer id, Model model) {
 		if (id != null) {
-			account = Context.getService(AccountingService.class).getAccount(id);
-			model.addAttribute(account);
+			Account account = Context.getService(AccountingService.class).getAccount(id);
+			model.addAttribute("accountCommand", account);
 		}else{
-			account = new Account();
-			model.addAttribute(account);
+			Account account = new Account();
+			model.addAttribute("accountCommand", account);
 		}
+
 		model.addAttribute("accountTypes", AccountType.values());
 	
 		
@@ -81,13 +83,15 @@ public class AccountFormController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
-	public String onSubmit(Account account, BindingResult bindingResult, HttpServletRequest request) {
+	public String onSubmit(@ModelAttribute("accountCommand") Account account, BindingResult bindingResult, HttpServletRequest request, SessionStatus status) {
 		
 		new AccountValidator().validate(account, bindingResult);
 		if (bindingResult.hasErrors()) {
 			return "/module/accounting/account/form";
 		}
 		Context.getService(AccountingService.class).saveAccount(account);
+		 // Clean the session attribute after successful submit
+        status.setComplete();
 		return "redirect:/module/accounting/account.list";
 	}
 	

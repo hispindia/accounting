@@ -28,14 +28,15 @@
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="../includes/nav.jsp" %>
+
 <link type="text/css" rel="stylesheet"
-	href="${pageContext.request.contextPath}/moduleResources/account/styles/paging.css" />
+	href="${pageContext.request.contextPath}/moduleResources/accounting/styles/paging.css" />
 <script type="text/javascript"
-	src="${pageContext.request.contextPath}/moduleResources/account/scripts/paging.js"></script>
+	src="${pageContext.request.contextPath}/moduleResources/accounting/scripts/paging.js"></script>
 <script type="text/javascript"
-	src="${pageContext.request.contextPath}/moduleResources/account/scripts/jquery/jquery-1.4.2.min.js"></script>
+	src="${pageContext.request.contextPath}/moduleResources/accounting/scripts/jquery/jquery-1.4.2.min.js"></script>
 <h2>
-	<spring:message code="accounting.account.manage" />
+	<spring:message code="accounting.fiscalyear.manage" />
 </h2>
 
 <br />
@@ -45,46 +46,37 @@
 	</span><
 </c:forEach>
 <input type="button"
-	value="<spring:message code='accounting.account.add'/>"
-	onclick="javascript:window.location.href='account.form'" />
+	value="<spring:message code='accounting.incomereceipt.add'/>"
+	onclick="javascript:window.location.href='incomereceipt.form'" />
 
 <br />
 <br />
 <c:choose>
-	<c:when test="${not empty accounts}">
+	<c:when test="${not empty incomeReceipts}">
 		<form method="post" onsubmit="return false" id="form">
 			<input type="button" onclick="checkValue()"
 				value="<spring:message code='accounting.account.deleteselected'/>" />
 			<span class="boxHeader"><spring:message
-					code="account.account.list" />
+					code="account.incomeReceipt.list" />
 			</span>
 			<div class="box">
 				<table cellpadding="5" cellspacing="0">
 					<tr>
 						<th>#</th>
-						<th><spring:message code="general.name" />
-						</th>
-						<th><spring:message code="general.description" />
-						</th>
-						<th><spring:message code="general.createdDate" />
-						</th>
+						<th><spring:message code="accounting.receipt.receiptDate" /></th>
 						<th></th>
 					</tr>
-					<c:forEach items="${accounts}" var="account"
+					<c:forEach items="${incomeReceipts}" var="incomeReceipt"
 						varStatus="varStatus">
 						<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" } '>
 							<td><c:out
 									value="${(( pagingUtil.currentPage - 1  ) * pagingUtil.pageSize ) + varStatus.count }" />
 							</td>
 							<td><a
-								href="javascript:window.location.href='account.form?id=${account.id}'">${account.name}</a>
-							</td>
-							<td>${account.description}</td>
-							<td><openmrs:formatDate date="${account.createdDate}"
-									type="textbox" />
+								href="javascript:window.location.href='incomereceipt.form?id=${incomeReceipt.id}'"><openmrs:formatDate date="${incomeReceipt.receiptDate}" type="textbox" /></a>
 							</td>
 							<td><input type="checkbox" name="ids"
-								value="${account.id}" />
+								value="${incomeReceipt.id}" />
 							</td>
 						</tr>
 					</c:forEach>

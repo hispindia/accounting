@@ -16,7 +16,9 @@ package org.openmrs.module.accounting;
 
 import org.apache.commons.logging.Log; 
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleActivator;
+import org.openmrs.module.accounting.api.AccountingService;
 
 /**
  * This class contains the logic that is run every time this module is either started or stopped.
@@ -51,6 +53,7 @@ public class AccountingActivator implements ModuleActivator {
 	 */
 	public void started() {
 		log.info("Accounting Module started");
+		Context.getService(AccountingService.class).initModule();
 	}
 	
 	/**

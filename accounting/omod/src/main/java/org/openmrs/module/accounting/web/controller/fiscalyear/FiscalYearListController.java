@@ -11,10 +11,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.spi.LoggerFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.AccountingService;
-import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.FiscalYear;
 import org.openmrs.web.WebConstants;
 import org.springframework.stereotype.Controller;

@@ -1,6 +1,6 @@
 package org.openmrs.module.accounting.api.model;
 
-import java.util.Calendar;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,10 +13,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
 
 /**
  * @author viet
@@ -24,12 +24,17 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "accounting_account")
-public class Account  {
+public class Account  implements Serializable{
 	
+	/**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue
 	@Column(name = "id")
-	private int id;
+	private Integer id;
 	
 	@Column(name = "name", length = 255)
 	private String name;
@@ -38,10 +43,8 @@ public class Account  {
 	private String description;
 	
 	@Column(name = "created_date")
+	@Type(type="timestamp")
 	private Date createdDate;
-	
-	@Column(name = "updated_date")
-	private Date updatedDate;
 	
 	@Column(name ="created_by")
 	private int createdBy;
@@ -49,10 +52,15 @@ public class Account  {
 	@Column(name ="updated_by")
 	private int updatedBy;
 	
+	@Column(name = "updated_date")
+	@Type(type="timestamp")
+	private Date updatedDate;
+	
 	@Column(name ="retired")
 	private boolean retired;
 	
 	@Column(name ="retired_date")
+	@Type(type="timestamp")
 	private Date retiredDate;
 	
 	@Column(name ="retired_by")
@@ -69,7 +77,6 @@ public class Account  {
 	private Set<AccountPeriod> accountPeriods;
 	
 	public Account() {
-		super();
 		this.retired = false;
 	}
 	
@@ -154,11 +161,11 @@ public class Account  {
 		return true;
 	}
 	
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 	
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 	

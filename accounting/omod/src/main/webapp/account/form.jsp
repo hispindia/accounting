@@ -22,6 +22,7 @@
 	redirect="/module/accounting/main.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
+<%@ include file="../includes/nav.jsp" %>
 <h2>
 	<spring:message code="accounting.account.manage" />
 </h2>
@@ -30,7 +31,7 @@
 	<span class="error"><spring:message
 			code="${error.defaultMessage}" text="${error.defaultMessage}" /> </span>
 </c:forEach>
-<spring:bind path="account">
+<spring:bind path="accountCommand">
 	<c:if test="${not empty  status.errorMessages}">
 		<div class="error">
 			<ul>
@@ -45,7 +46,7 @@
 	<table>
 		<tr>
 			<td><spring:message code="general.name" /></td>
-			<td><spring:bind path="account.name">
+			<td><spring:bind path="accountCommand.name">
 					<input type="text" name="${status.expression}"
 						value="${status.value}" size="35" />
 					<c:if test="${status.errorMessage != ''}">
@@ -56,7 +57,7 @@
 		<tr>
 			<td valign="top"><spring:message code="general.description" />
 			</td>
-			<td><spring:bind path="account.description">
+			<td><spring:bind path="accountCommand.description">
 					<input type="text" name="${status.expression}"
 						value="${status.value}" size="35" />
 					<c:if test="${status.errorMessage != ''}">
@@ -67,26 +68,26 @@
 		<tr>
 			<td valign="top"><spring:message code="accounting.accountType" />
 			</td>
-			<td><form:select path="account.accountType">
+			<td><form:select path="accountCommand.accountType">
 					<form:option value="" label="--Please Select--"/>
 					<form:options items="${accountTypes}" itemLabel="name" />
-				</form:select> <form:errors path="account.accountType"  cssClass="error" /></td>
+				</form:select> <form:errors path="accountCommand.accountType"  cssClass="error" /></td>
 		</tr>
 		
 		<tr>
 			<td valign="top"><spring:message code="accounting.parentAccount" />
 			</td>
-			<td><form:select path="account.parentAccountId">
+			<td><form:select path="accountCommand.parentAccountId">
 				<form:option value="" label="--Please Select--"/>
 				<form:options items="${listParents}" itemValue="id" itemLabel="name"/>
 			</form:select>
-			 <form:errors path="account.parentAccountId" cssClass="error" /></td>
+			 <form:errors path="accountCommand.parentAccountId" cssClass="error" /></td>
 		</tr>
 		<tr>
 			<td><spring:message code="general.retired" /></td>
-			<td><form:radiobutton path="account.retired" value="false" />NO <form:radiobutton
-					path="account.retired" value="true" />YES</td>
-				 <form:errors path="account.parentAccountId" cssClass="error" /></td>
+			<td><form:radiobutton path="accountCommand.retired" value="false" />NO <form:radiobutton
+					path="accountCommand.retired" value="true" />YES</td>
+				 <form:errors path="accountCommand.retired" cssClass="error" /></td>
 		</tr>
 	</table>
 	<br /> <input type="submit"

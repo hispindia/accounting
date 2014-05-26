@@ -27,6 +27,7 @@
 	scope="page" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
+<%@ include file="../includes/nav.jsp" %>
 
 <link type="text/css" rel="stylesheet"
 	href="${pageContext.request.contextPath}/moduleResources/accounting/styles/paging.css" />

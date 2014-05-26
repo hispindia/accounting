@@ -28,9 +28,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 
 @Controller
 @RequestMapping("/module/accounting/fiscalyear.form")
+@SessionAttributes("fiscalYear")
 public class FiscalYearFormController {
 	
 	Log log = LogFactory.getLog(getClass());
@@ -41,22 +44,22 @@ public class FiscalYearFormController {
 	}
 	
 	@RequestMapping(method = RequestMethod.GET)
-	public String firstView(@ModelAttribute("fiscalYear") FiscalYear fiscalYear,
-	                        @RequestParam(value = "id", required = false) Integer id, Model model) {
+	public String firstView(@RequestParam(value = "id", required = false) Integer id, Model model) {
+		FiscalYear fiscalYear;
 		if (id != null) {
 			fiscalYear = Context.getService(AccountingService.class).getFiscalYear(id);
-			model.addAttribute(fiscalYear);
+			
 		} else {
 			fiscalYear = new FiscalYear();
-			model.addAttribute(fiscalYear);
 		}
+		model.addAttribute("fiscalYear", fiscalYear);
 		model.addAttribute("status", GeneralStatus.values());
 		return "/module/accounting/fiscalyear/form";
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
 	public String onSubmit(@ModelAttribute("fiscalYear") FiscalYear fiscalYear, BindingResult bindingResult,
-	                       @RequestParam("jsonPeriods") String jsonPeriods, HttpServletRequest request) {
+	                       @RequestParam("jsonPeriods") String jsonPeriods, HttpServletRequest request, SessionStatus status) {
 		
 		new FiscalYearValidator().validate(fiscalYear, bindingResult);
 		if (bindingResult.hasErrors()) {
@@ -89,7 +92,7 @@ public class FiscalYearFormController {
 			e.printStackTrace();
 		}
 		
-		
+		status.setComplete();
 		return "redirect:/module/accounting/fiscalyear.list";
 	}
 }

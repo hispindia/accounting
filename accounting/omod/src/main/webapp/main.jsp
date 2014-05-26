@@ -34,7 +34,7 @@
 	<b><a href="account.list">Account</a></b>&nbsp; | &nbsp; 
 	<b><a href="fiscalyear.list">Fiscal Year</a></b>&nbsp; | &nbsp; 
 	<b><a href="period.list">Period</a></b>&nbsp; | &nbsp; 
-	<b><a href="income.list">Income</a></b>&nbsp; | &nbsp;
+	<b><a href="incomereceipt.list">Income</a></b>&nbsp; | &nbsp;
 	<b><a href="budget.list#">Budget</a></b>
 </p>
 

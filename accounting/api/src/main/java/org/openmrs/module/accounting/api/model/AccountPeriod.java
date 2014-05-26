@@ -13,8 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.Type;
 
 /**
  * @author viet
@@ -38,11 +38,11 @@ public class AccountPeriod {
 	private FiscalPeriod period;
 	
 	@Column(name = "start_date")
-	@Temporal(TemporalType.DATE)
+	@Type(type="timestamp")
 	private Date startDate;
 	
 	@Column(name = "end_date")
-	@Temporal(TemporalType.DATE)
+	@Type(type="timestamp")
 	private Date endDate;
 	
 	@Column(name = "opening_balance", precision = 19, scale = 2)
@@ -57,14 +57,14 @@ public class AccountPeriod {
 	@Column(name = "available_balance", precision = 19, scale = 2)
 	private BigDecimal availableBalance;
 	
-	@Temporal(TemporalType.DATE)
+	@Type(type="timestamp")
 	@Column(name = "created_date")
 	private Date createdDate;
 	
 	@Column(name = "created_by")
 	private int createdBy;
 	
-	@Temporal(TemporalType.DATE)
+	@Type(type="timestamp")
 	@Column(name = "updated_date")
 	private Date updatedDate;
 	
