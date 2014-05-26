@@ -14,11 +14,14 @@
 package org.openmrs.module.accounting.api.model;
 
 import java.util.Date;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -67,6 +70,9 @@ public class IncomeReceipt {
 	@Column(name = "updated_date")
 	@Type(type="timestamp")
 	private Date updatedDate;
+	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "receipt", targetEntity = IncomeReceiptItem.class)
+	private Set<IncomeReceiptItem> receiptItems;
 	
 	
 	public IncomeReceipt(String receiptNo, String description){
@@ -193,6 +199,16 @@ public class IncomeReceipt {
 	            + receiptDate + ", createdDate=" + createdDate + ", createdBy=" + createdBy + ", voided=" + voided
 	            + ", voideddDate=" + voideddDate + ", voidedBy=" + voidedBy + ", updatedBy=" + updatedBy + ", updatedDate="
 	            + updatedDate + "]";
+    }
+
+	
+    public Set<IncomeReceiptItem> getReceiptItems() {
+    	return receiptItems;
+    }
+
+	
+    public void setReceiptItems(Set<IncomeReceiptItem> receiptItems) {
+    	this.receiptItems = receiptItems;
     }
 	
 }

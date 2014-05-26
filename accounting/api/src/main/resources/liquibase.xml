@@ -234,4 +234,8 @@
 		<dropNotNullConstraint columnDataType="DATETIME"
 			columnName="created_date" tableName="accounting_account" />
 	</changeSet>
+	<changeSet author="viet" id="2014050306">
+		<dropNotNullConstraint columnDataType="DATETIME"
+			columnName="transaction_date" tableName="accounting_income_receipt_item" />
+	</changeSet>
 </databaseChangeLog>

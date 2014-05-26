@@ -48,6 +48,7 @@
 </spring:bind>
 <form method="post" class="box" id="mainForm">
 <input type="hidden" id="jsonReceiptItems" name="jsonReceiptItems" />
+<input type="hidden" id="accounts"  value="${accounts}" />
 	<table>
 		<tr>
 			<td><spring:message code="accounting.receiptNumber"/></td>
@@ -93,12 +94,7 @@
 <script>
 var arrReceiptItems = new Array();
 jQuery(document).ready(function(){
-	  var availableTags = [
-	     "Account 1",
-	     "Account 2",
-	     "Account 3",
-	     "Account 4"
-	   ];
+	  var availableTags = jQuery("#accounts").val().split(",");
 	   
 	jQuery( "#itemSelectAccount" ).autocomplete({
 	     source: availableTags
@@ -113,16 +109,16 @@ function addItem() {
 function generateItem() {
 	
 	var acc = new Object();
-	acc.account = jQuery("#itemSelectAccount").val();
+	acc.accountName = jQuery("#itemSelectAccount").val();
 	acc.description = jQuery("#itemDescription").val()
 	acc.type = jQuery("#itemType").val()
-	acc.chequeNo = jQuery("#itemChequeNo").val()
+	acc.chequeNumber = jQuery("#itemChequeNo").val()
 	acc.amount = jQuery("#itemAmount").val()
 	
 	// add item to global array
 	arrReceiptItems.push(acc);
 	
-	var txtAccount 		= 	"<td>"	+	acc.account		+	"</td>";
+	var txtAccount 		= 	"<td>"	+	acc.accountName	+	"</td>";
 	var txtDescription 	= 	"<td>"	+	acc.description	+	"</td>"
 	var txtType 		= 	"<td>"	+	acc.type		+	"</td>"
 	var txtAmount 		= 	"<td>"	+	acc.amount		+	"</td>";
@@ -175,7 +171,21 @@ function submitForm() {
 		<th></th>
 	</thead>
 	<tbody>
-		
+		<c:if test="${not empty incomeReceipt.receiptItems }">
+			<c:forEach items="${incomeReceipt.receiptItems }" var="item">
+				<tr>
+					<td>${item.account.name}</td>
+					<td>${item.description}</td>
+					<td>${item.type}</td>
+					<td>${item.chequeNumber}</td>
+					<td>${item.amount}</td>
+					<td>
+						<input type='button' value='Delete' onclick='deleteItem(this)'/>&nbsp;
+						<input type='button' value='Edit' onclick='editItem()'/>
+					</td>
+				</tr>
+			</c:forEach>
+		</c:if>
 	</tbody>
 </table>
 </div>

@@ -191,6 +191,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 
 	@Override
     public IncomeReceiptItem saveIncomeReceiptItem(IncomeReceiptItem incomeReceiptItem) {
+		log.error("Save item: "+incomeReceiptItem);
 		if (incomeReceiptItem.getId() == null){
 			incomeReceiptItem.setCreatedBy(Context.getAuthenticatedUser().getId());
 			incomeReceiptItem.setCreatedDate(Calendar.getInstance().getTime());

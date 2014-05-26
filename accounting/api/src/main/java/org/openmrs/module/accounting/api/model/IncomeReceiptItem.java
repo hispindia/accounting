@@ -15,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
@@ -76,6 +77,12 @@ public class IncomeReceiptItem {
 	@Column(name = "updated_date")
 	@Type(type="timestamp")
 	private Date updatedDate;
+	
+	/**
+	 * This is for building the json object from view
+	 */
+	@Transient
+	private String accountName;
 	
     public Integer getId() {
     	return id;
@@ -244,6 +251,18 @@ public class IncomeReceiptItem {
 	            + ", transactionDate=" + transactionDate + ", createdDate=" + createdDate + ", createdBy=" + createdBy
 	            + ", voided=" + voided + ", voideddDate=" + voideddDate + ", voidedBy=" + voidedBy + ", updatedBy="
 	            + updatedBy + ", updatedDate=" + updatedDate + "]";
+    }
+
+
+	
+    public String getAccountName() {
+    	return accountName;
+    }
+
+
+	
+    public void setAccountName(String accountName) {
+    	this.accountName = accountName;
     }
 	
 }
