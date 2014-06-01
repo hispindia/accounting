@@ -24,7 +24,7 @@
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="../includes/nav.jsp" %>
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
-
+<script type="text/javascript" src="${pageContext.request.contextPath}/moduleResources/accounting/scripts/jquery/jquery.validate.min.js"></script>
 <h2>
 	<spring:message code="accounting.fiscalyear.manage" />
 </h2>

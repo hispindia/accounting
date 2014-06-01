@@ -36,7 +36,7 @@ public class IncomeReceiptItem {
 	@JoinColumn(name="account_id")
 	private Account account;
 	
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="income_receipt_id")
 	private IncomeReceipt receipt;
 	
@@ -79,7 +79,7 @@ public class IncomeReceiptItem {
 	private Date updatedDate;
 	
 	/**
-	 * This is for building the json object from view
+	 * This attribute is only for building the json object from view
 	 */
 	@Transient
 	private String accountName;

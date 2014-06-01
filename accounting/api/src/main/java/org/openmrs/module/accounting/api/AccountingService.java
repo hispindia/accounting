@@ -41,7 +41,7 @@ public interface AccountingService extends OpenmrsService {
 	
 	@Transactional(readOnly = true)
 	@Authorized({ AccountingConstants.PRIV_VIEW_ACCOUNT })
-	public Collection<Account> getAccounts(Boolean includeDisabled);
+	public Collection<Account> getAccounts(boolean includeDisabled);
 	
 	@Authorized({ AccountingConstants.PRIV_VIEW_ACCOUNT })
 	public Account getAccount(int id);

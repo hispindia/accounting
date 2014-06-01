@@ -86,7 +86,7 @@ public class AccountListController {
 	                         Map<String, Object> model, HttpServletRequest request){
 		
 //		AccountingService accountingService = Context.getService(AccountingService.class);
-    	List<Account> accounts = new ArrayList<Account>(Context.getService(AccountingService.class).getAccounts(null));
+    	List<Account> accounts = new ArrayList<Account>(Context.getService(AccountingService.class).getAccounts(true));
     	Collections.sort(accounts, new Comparator<Account>() {
             public int compare(Account o1, Account o2) {
 	            return o1.getName().compareToIgnoreCase(o2.getName());

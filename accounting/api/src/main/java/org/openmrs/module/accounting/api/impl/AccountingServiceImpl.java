@@ -70,7 +70,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		dao.deleteAccount(acc);
 	}
 	
-	public Collection<Account> getAccounts(Boolean includeDisabled) {
+	public Collection<Account> getAccounts(boolean includeDisabled) {
 		return dao.getAccounts(includeDisabled);
 	}
 	
@@ -139,18 +139,18 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 
 	@Override
     public void initModule() {
-		log.error("****************************************");
-		log.error("INIT ACCOUNTING MODULE");
-		log.error("****************************************");
+		log.debug("****************************************");
+		log.debug("INIT ACCOUNTING MODULE");
+		log.debug("****************************************");
 		Integer rootServiceConceptId = Integer.valueOf(Context.getAdministrationService().getGlobalProperty(
 		    BillingConstants.GLOBAL_PROPRETY_SERVICE_CONCEPT));
 		Concept rootServiceconcept = Context.getConceptService().getConcept(
 			rootServiceConceptId);
 		Collection<ConceptAnswer> answers = rootServiceconcept.getAnswers();
-		log.error(answers);
+		log.debug(answers);
 		
 		for (ConceptAnswer ca: answers) {
-			log.error(ca.getAnswerConcept().getName().getName());
+			log.debug(ca.getAnswerConcept().getName().getName());
 			
 		}
 		
@@ -191,7 +191,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 
 	@Override
     public IncomeReceiptItem saveIncomeReceiptItem(IncomeReceiptItem incomeReceiptItem) {
-		log.error("Save item: "+incomeReceiptItem);
+		log.debug("Save income reeceipt item: "+incomeReceiptItem);
 		if (incomeReceiptItem.getId() == null){
 			incomeReceiptItem.setCreatedBy(Context.getAuthenticatedUser().getId());
 			incomeReceiptItem.setCreatedDate(Calendar.getInstance().getTime());

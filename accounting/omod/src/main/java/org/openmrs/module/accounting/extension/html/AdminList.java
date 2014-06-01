@@ -44,7 +44,7 @@ public class AdminList extends AdministrationSectionExt {
 	 */
 	public Map<String, String> getLinks() {
 		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
-		map.put("/module/accounting/main", "accounting.main");
+		map.put("/module/accounting/main.htm", "accounting.main");
 		return map;
 	}
 	

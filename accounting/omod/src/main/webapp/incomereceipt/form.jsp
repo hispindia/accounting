@@ -145,6 +145,10 @@ function saveItem() {
 	self.parent.tb_remove();
 }
 
+function editItem(id) {
+
+	tb_show("Edit Receipt Item","incomeReceiptItem.form?id="+id+"&keepThis=true&TB_iframe=true&height=250&width=400",null);
+}
 
 function closePopup() {
 	 self.parent.tb_remove();
@@ -174,14 +178,13 @@ function submitForm() {
 		<c:if test="${not empty incomeReceipt.receiptItems }">
 			<c:forEach items="${incomeReceipt.receiptItems }" var="item">
 				<tr>
-					<td>${item.account.name}</td>
+					<td><a href="#" onclick='editItem(${item.id})'>${item.account.name}</a></td>
 					<td>${item.description}</td>
 					<td>${item.type}</td>
 					<td>${item.chequeNumber}</td>
 					<td>${item.amount}</td>
 					<td>
 						<input type='button' value='Delete' onclick='deleteItem(this)'/>&nbsp;
-						<input type='button' value='Edit' onclick='editItem()'/>
 					</td>
 				</tr>
 			</c:forEach>

@@ -19,7 +19,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.model.Account;
-import org.openmrs.module.accounting.api.model.GeneralStatus;
 import org.openmrs.module.accounting.api.model.IncomeReceipt;
 import org.openmrs.module.accounting.api.model.IncomeReceiptItem;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
