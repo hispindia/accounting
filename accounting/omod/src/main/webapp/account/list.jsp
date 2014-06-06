@@ -56,7 +56,7 @@
 			<input type="button" onclick="checkValue()"
 				value="<spring:message code='accounting.account.deleteselected'/>" />
 			<span class="boxHeader"><spring:message
-					code="account.account.list" />
+					code="accounting.account.list" />
 			</span>
 			<div class="box">
 				<table cellpadding="5" cellspacing="0">
@@ -66,7 +66,7 @@
 						</th>
 						<th><spring:message code="general.description" />
 						</th>
-						<th><spring:message code="general.createdDate" />
+						<th><spring:message code="accounting.createdDate" />
 						</th>
 						<th></th>
 					</tr>

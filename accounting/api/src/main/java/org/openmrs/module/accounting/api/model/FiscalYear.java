@@ -182,14 +182,6 @@ public class FiscalYear {
 		this.startDate = startDate;
 	}
 	
-	public GeneralStatus getStatus() {
-		return status;
-	}
-	
-	public void setStatus(GeneralStatus status) {
-		this.status = status;
-	}
-	
 	public void setCreatedBy(int createdBy) {
 		this.createdBy = createdBy;
 	}
@@ -215,6 +207,16 @@ public class FiscalYear {
     public void setPeriods(Set<FiscalPeriod> periods) {
     	this.periods = periods;
     }
+
 	
+    public GeneralStatus getStatus() {
+    	return status;
+    }
+
+	
+    public void setStatus(GeneralStatus status) {
+    	this.status = status;
+    }
+
 	
 }

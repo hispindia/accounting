@@ -39,7 +39,7 @@ public class Account  implements Serializable{
 	@Column(name = "name", length = 255)
 	private String name;
 	
-	@Column(name = "description", length = 255)
+	@Column(name = "description", length = 1000)
 	private String description;
 	
 	@Column(name = "created_date")
@@ -74,7 +74,7 @@ public class Account  implements Serializable{
 	private AccountType accountType;
 	
 	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL, mappedBy="account")
-	private Set<AccountPeriod> accountPeriods;
+	private Set<AccountBalance> accountPeriods;
 	
 	public Account() {
 		this.retired = false;
@@ -86,7 +86,7 @@ public class Account  implements Serializable{
 		this.retired = false;
 	}
 	
-	public void addAccountPeriod(AccountPeriod ap) {
+	public void addAccountPeriod(AccountBalance ap) {
 		if (ap != null) {
 			if (!getAccountPeriods().contains(ap)) {
 				ap.setAccount(this);
@@ -119,14 +119,14 @@ public class Account  implements Serializable{
 		this.updatedDate = updatedDate;
 	}
 	
-	public Set<AccountPeriod> getAccountPeriods() {
+	public Set<AccountBalance> getAccountPeriods() {
 		if (accountPeriods == null) {
-			accountPeriods = new HashSet<AccountPeriod>();
+			accountPeriods = new HashSet<AccountBalance>();
 		}
 		return accountPeriods;
 	}
 	
-	public void setAccountPeriods(Set<AccountPeriod> periods) {
+	public void setAccountPeriods(Set<AccountBalance> periods) {
 		this.accountPeriods = periods;
 	}
 	
@@ -185,14 +185,6 @@ public class Account  implements Serializable{
 		this.retired = retired;
 	}
 	
-	public AccountType getAccountType() {
-		return accountType;
-	}
-	
-	public void setAccountType(AccountType accountType) {
-		this.accountType = accountType;
-	}
-	
 	
 	public Date getRetiredDate() {
 		return retiredDate;
@@ -235,5 +227,17 @@ public class Account  implements Serializable{
     public void setParentAccountId(Integer parentAccountId) {
     	this.parentAccountId = parentAccountId;
     }
+
+	
+    public AccountType getAccountType() {
+    	return accountType;
+    }
+
+	
+    public void setAccountType(AccountType accountType) {
+    	this.accountType = accountType;
+    }
+
+	
 	
 }

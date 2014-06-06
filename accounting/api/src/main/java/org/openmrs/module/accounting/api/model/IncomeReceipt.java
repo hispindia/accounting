@@ -19,6 +19,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -70,6 +72,10 @@ public class IncomeReceipt {
 	@Column(name = "updated_date")
 	@Type(type="timestamp")
 	private Date updatedDate;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "status")
+	private GeneralStatus status;
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "receipt", targetEntity = IncomeReceiptItem.class)
 	private Set<IncomeReceiptItem> receiptItems;
@@ -210,5 +216,16 @@ public class IncomeReceipt {
     public void setReceiptItems(Set<IncomeReceiptItem> receiptItems) {
     	this.receiptItems = receiptItems;
     }
+
+	
+    public GeneralStatus getStatus() {
+    	return status;
+    }
+
+	
+    public void setStatus(GeneralStatus status) {
+    	this.status = status;
+    }
+
 	
 }

@@ -9,7 +9,8 @@ import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.db.AccountingDAO;
 import org.openmrs.module.accounting.api.model.Account;
-import org.openmrs.module.accounting.api.model.AccountPeriod;
+import org.openmrs.module.accounting.api.model.AccountBalance;
+import org.openmrs.module.accounting.api.model.BalanceStatus;
 import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.openmrs.module.accounting.api.model.FiscalYear;
@@ -30,7 +31,7 @@ public class AccountingDaoTest extends BaseModuleContextSensitiveTest {
 	@Test
 	public void shouldSaveAccount() throws Exception {
 		Account acc = new Account("Account 1");
-		acc.setAccountType(AccountType.B);
+		acc.setAccountType(AccountType.B); 
 		acc.setCreatedDate(Calendar.getInstance().getTime());
 		acc = dao.saveAccount(acc);
 		Context.flushSession();
@@ -113,19 +114,19 @@ public class AccountingDaoTest extends BaseModuleContextSensitiveTest {
 		/**
 		 * Create Account Period
 		 */
-		AccountPeriod ap = new AccountPeriod();
+		AccountBalance ap = new AccountBalance();
 		ap.setAccount(acc);
 		ap.setCreatedBy(1);
 		ap.setCreatedDate(Calendar.getInstance().getTime());
 		ap.setPeriod(fp);
-		ap.setStatus(GeneralStatus.A);
-		ap = dao.saveAccountPeriod(ap);
+		ap.setStatus(BalanceStatus.ACTIVE);
+		ap = dao.saveAccountBalance(ap);
 		
 		Context.flushSession();
 		Context.clearSession();
 		
 		Assert.assertNotNull(ap);
-		AccountPeriod persitedAP = dao.getAccountPeriod(ap.getId());
+		AccountBalance persitedAP = dao.getAccountPeriod(ap.getId());
 		Assert.assertNotNull(persitedAP);
 		
 	}

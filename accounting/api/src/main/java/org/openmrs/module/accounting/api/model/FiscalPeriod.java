@@ -112,14 +112,6 @@ public class FiscalPeriod {
 		this.updatedDate = updatedDate;
 	}
 	
-	public GeneralStatus getStatus() {
-		return status;
-	}
-	
-	public void setStatus(GeneralStatus status) {
-		this.status = status;
-	}
-	
 	public Date getStartDate() {
 		return startDate;
 	}
@@ -159,6 +151,20 @@ public class FiscalPeriod {
 	    return "FiscalPeriod [id=" + id + ", fiscalYear=" + fiscalYear + ", name=" + name + ", startDate=" + startDate
 	            + ", endDate=" + endDate + ", status=" + status + ", createdDate=" + createdDate + ", updatedDate="
 	            + updatedDate + ", createdBy=" + createdBy + ", updatedBy=" + updatedBy + "]";
+    }
+
+
+
+	
+    public GeneralStatus getStatus() {
+    	return status;
+    }
+
+
+
+	
+    public void setStatus(GeneralStatus status) {
+    	this.status = status;
     }
 	
 }

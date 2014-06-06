@@ -13,27 +13,29 @@
  */
 package org.openmrs.module.accounting.api.db;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.accounting.api.model.Account;
-import org.openmrs.module.accounting.api.model.AccountPeriod;
+import org.openmrs.module.accounting.api.model.AccountBalance;
+import org.openmrs.module.accounting.api.model.BalanceStatus;
+import org.openmrs.module.accounting.api.model.AccountTransaction;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.openmrs.module.accounting.api.model.FiscalYear;
 import org.openmrs.module.accounting.api.model.GeneralStatus;
 import org.openmrs.module.accounting.api.model.IncomeReceipt;
 import org.openmrs.module.accounting.api.model.IncomeReceiptItem;
-import org.openmrs.module.hospitalcore.util.DateUtils;
+import org.openmrs.module.accounting.api.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -52,7 +54,7 @@ public class AccountingDAO {
 	 * ACCOUNT
 	 */
 	@SuppressWarnings("unchecked")
-    public Collection<Account> getAccounts(boolean includeRetired) {
+	public Collection<Account> getAccounts(boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Account.class);
 		if (!includeRetired)
 			criteria.add(Restrictions.eq("retired", false));
@@ -66,40 +68,91 @@ public class AccountingDAO {
 	}
 	
 	public Account saveAccount(Account account) throws DAOException {
-			return (Account) sessionFactory.getCurrentSession().merge(account);
-		}
+		return (Account) sessionFactory.getCurrentSession().merge(account);
+	}
 	
 	public void deleteAccount(Account account) {
-		 sessionFactory.getCurrentSession().delete(account);;
+		sessionFactory.getCurrentSession().delete(account);
+		;
 	}
 	
 	@SuppressWarnings("unchecked")
-    public Collection<Account> getListParrentAccount(){
+	public Collection<Account> getListParrentAccount() {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Account.class);
 		criteria.add(Restrictions.isNull("parentAccountId"));
-		return criteria.list() ;
+		return criteria.list();
 		
 	}
 	
-	public Account getAccountByName(String name){
+	public Account getAccountByName(String name) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Account.class);
 		criteria.add(Restrictions.eq("name", name));
-		return  (Account) criteria.uniqueResult(); 
+		return (Account) criteria.uniqueResult();
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<AccountBalance> findAccountPeriods(FiscalPeriod period) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(AccountBalance.class);
+		criteria.add(Restrictions.eq("fiscalPeriod", period));
+		return criteria.list();
+	}
+	
+	public AccountBalance findAccountPeriod(Account account, Date date) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(AccountBalance.class);
+		criteria.add(Restrictions.eq("account", account));
+		criteria.add(Restrictions.and(Restrictions.ge("startDate", date), Restrictions.le("endDate", date)));
+		return (AccountBalance) criteria.uniqueResult();
+	}
+	
+	public AccountTransaction saveAccountTransaction(AccountTransaction accTxn) {
+		return (AccountTransaction) sessionFactory.getCurrentSession().merge(accTxn);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<AccountTransaction> findAccountTransaction(Account acc, String fromDate, String toDate, String status) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(AccountTransaction.class);
+		criteria.add(Restrictions.eq("account", acc))
+		        .add(Restrictions.ge("transactionDate", DateUtils.getDateFromStr(fromDate)))
+		        .add(Restrictions.le("transactionDate", DateUtils.addDate(DateUtils.getDateFromStr(toDate), 1)));
+		return criteria.list();
+	}
+	
+	public AccountTransaction getLatestTransaction(Account acc) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(AccountTransaction.class);
+		criteria.add(Restrictions.eq("account", acc)).addOrder(Order.desc("transactionDate")).setMaxResults(1);
+		return (AccountTransaction) criteria.uniqueResult();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<AccountBalance> listAccountBalance(BalanceStatus status) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(AccountBalance.class);
+		if (status != null) {
+			criteria.add(Restrictions.eq("status", status));
+		}
+		return criteria.list();
+	}
+	
+	
+	public AccountTransaction getAccountTxn(String transactionNo) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(AccountTransaction.class);
+		criteria.add(Restrictions.eq("txnNumber", transactionNo));
+		return (AccountTransaction) criteria.uniqueResult();
+	}
 	/**
 	 * FISCAL YEAR
 	 */
 	
 	public void deleteFiscalYear(FiscalYear fiscalYear) {
-		 sessionFactory.getCurrentSession().delete(fiscalYear);;
+		sessionFactory.getCurrentSession().delete(fiscalYear);
+		;
 	}
 	
-	public void deleteFiscalPeriod(FiscalPeriod fiscalPeriod){
-		 sessionFactory.getCurrentSession().delete(fiscalPeriod);;
+	public void deleteFiscalPeriod(FiscalPeriod fiscalPeriod) {
+		sessionFactory.getCurrentSession().delete(fiscalPeriod);
+		;
 	}
 	
-	public FiscalYear saveFiscalYear(FiscalYear fy) throws DAOException{
+	public FiscalYear saveFiscalYear(FiscalYear fy) throws DAOException {
 		return (FiscalYear) sessionFactory.getCurrentSession().merge(fy);
 	}
 	
@@ -110,17 +163,17 @@ public class AccountingDAO {
 	public FiscalYear getFiscalYearByName(String name) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(FiscalYear.class);
 		criteria.add(Restrictions.eq("name", name));
-		return  (FiscalYear) criteria.uniqueResult(); 
-    }
-
-    @SuppressWarnings("unchecked")
-    public Collection<FiscalYear> getListFiscalYear(GeneralStatus status) {
+		return (FiscalYear) criteria.uniqueResult();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Collection<FiscalYear> getListFiscalYear(GeneralStatus status) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(FiscalYear.class);
 		if (status != null)
 			criteria.add(Restrictions.eq("status", status));
 		return criteria.list();
-    }
-
+	}
+	
 	/**
 	 * FISCAL PERIOD
 	 */
@@ -133,108 +186,106 @@ public class AccountingDAO {
 		return (FiscalPeriod) sessionFactory.getCurrentSession().get(FiscalPeriod.class, id);
 	}
 	
-	public AccountPeriod saveAccountPeriod(AccountPeriod ap){
+	public AccountBalance saveAccountBalance(AccountBalance ap) {
 		sessionFactory.getCurrentSession().saveOrUpdate(ap);
 		return ap;
 	}
 	
-	public AccountPeriod getAccountPeriod(int id){
-		return (AccountPeriod) sessionFactory.getCurrentSession().get(AccountPeriod.class, id);
+	public AccountBalance getAccountPeriod(int id) {
+		return (AccountBalance) sessionFactory.getCurrentSession().get(AccountBalance.class, id);
 	}
 	
+	public AccountBalance getAccountPeriod(Account account, FiscalPeriod period) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(AccountBalance.class);
+		criteria.add(Restrictions.eq("account", account));
+		criteria.add(Restrictions.eq("fiscalPeriod", period));
+		return (AccountBalance) criteria.uniqueResult();
+	}
 	
-    /**
-     * INCOME RECEIPT
-     */
+	public FiscalPeriod getPeriodByDate(Date date) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(FiscalPeriod.class);
+		criteria.add(Restrictions.and(Restrictions.ge("startDate", date), Restrictions.le("endDate", date)));
+		return (FiscalPeriod) criteria.uniqueResult();
+	}
 	
-    public IncomeReceipt saveIncomeReceipt(IncomeReceipt incomeReceipt)  throws DAOException{
+	/**
+	 * INCOME RECEIPT
+	 */
+	
+	public IncomeReceipt saveIncomeReceipt(IncomeReceipt incomeReceipt) throws DAOException {
 		return (IncomeReceipt) sessionFactory.getCurrentSession().merge(incomeReceipt);
-    }
-
+	}
 	
-    public IncomeReceipt getIncomeReceipt(Integer id) {
-    	return (IncomeReceipt) sessionFactory.getCurrentSession().get(IncomeReceipt.class, id);
-    }
-
+	public IncomeReceipt getIncomeReceipt(Integer id) {
+		return (IncomeReceipt) sessionFactory.getCurrentSession().get(IncomeReceipt.class, id);
+	}
 	
-    @SuppressWarnings("unchecked")
-    public List<IncomeReceipt> getListIncomeReceipt(boolean includeVoided) {
-    	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(IncomeReceipt.class);
-    	if (!includeVoided)
-    		criteria.add(Restrictions.eq("voided", false));
-    	return criteria.list();
-    }
-
+	@SuppressWarnings("unchecked")
+	public List<IncomeReceipt> getListIncomeReceipt(boolean includeVoided) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(IncomeReceipt.class);
+		if (!includeVoided)
+			criteria.add(Restrictions.eq("voided", false));
+		return criteria.list();
+	}
 	
-    @SuppressWarnings("unchecked")
-    public List<IncomeReceipt> getListIncomeReceiptByDate(String startDate, String endDate, boolean includeVoided) {
-    	Date dStartDate = DateUtils.getDateFromStr(startDate);
-    	Date dEndDate = DateUtils.getDateFromStr(endDate);
-    	Calendar cal = Calendar.getInstance();
-    	cal.setTime(dEndDate);
-    	cal.add(Calendar.DATE, 1);
-    	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(IncomeReceipt.class);
-    	System.out.println("startDate "+dStartDate);
-    	System.out.println("endDate "+cal.getTime());
-    	
-    	criteria.add(Restrictions.and(Restrictions.ge("receiptDate", dStartDate), Restrictions.lt("receiptDate", cal.getTime())));
-    	
-    	if (!includeVoided) criteria.add(Restrictions.eq("voided", false));
-    		
-    	
-    	return criteria.list();
-    	
-    }
-
+	@SuppressWarnings("unchecked")
+	public List<IncomeReceipt> getListIncomeReceiptByDate(String startDate, String endDate, boolean includeVoided) {
+		Date dStartDate = DateUtils.getDateFromStr(startDate);
+		Date dEndDate = DateUtils.getDateFromStr(endDate);
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(IncomeReceipt.class);
+		
+		criteria.add(Restrictions.and(Restrictions.ge("receiptDate", dStartDate),
+		    Restrictions.lt("receiptDate", DateUtils.addDate(dEndDate, 1))));
+		
+		if (!includeVoided)
+			criteria.add(Restrictions.eq("voided", false));
+		
+		return criteria.list();
+		
+	}
 	
-    public void delete(IncomeReceipt incomeReceipt) {
-    	sessionFactory.getCurrentSession().delete(incomeReceipt);
-    }
-
-    /**
-     * INCOME RECEIPT ITEM
-     */
-    
-    public IncomeReceiptItem saveIncomeReceiptItem(IncomeReceiptItem incomeReceiptItem)  throws DAOException{
+	public void delete(IncomeReceipt incomeReceipt) {
+		sessionFactory.getCurrentSession().delete(incomeReceipt);
+	}
+	
+	/**
+	 * INCOME RECEIPT ITEM
+	 */
+	
+	public IncomeReceiptItem saveIncomeReceiptItem(IncomeReceiptItem incomeReceiptItem) throws DAOException {
 		return (IncomeReceiptItem) sessionFactory.getCurrentSession().merge(incomeReceiptItem);
-    }
-
+	}
 	
-    public IncomeReceiptItem getIncomeReceiptItem(Integer id) {
-    	return (IncomeReceiptItem) sessionFactory.getCurrentSession().get(IncomeReceiptItem.class, id);
-    }
-
+	public IncomeReceiptItem getIncomeReceiptItem(Integer id) {
+		return (IncomeReceiptItem) sessionFactory.getCurrentSession().get(IncomeReceiptItem.class, id);
+	}
 	
-    @SuppressWarnings("unchecked")
-    public List<IncomeReceiptItem> getListIncomeReceiptItem(boolean includeVoided) {
-    	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(IncomeReceiptItem.class);
-    	criteria.add(Restrictions.eq("voided", includeVoided));
-    	return criteria.list();
-    }
-
+	@SuppressWarnings("unchecked")
+	public List<IncomeReceiptItem> getListIncomeReceiptItem(boolean includeVoided) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(IncomeReceiptItem.class);
+		criteria.add(Restrictions.eq("voided", includeVoided));
+		return criteria.list();
+	}
 	
-    @SuppressWarnings("unchecked")
-    public List<IncomeReceiptItem> getListIncomeReceiptItemByDate(String startDate, String endDate) {
-    	Date dStartDate = DateUtils.getDateFromStr(startDate);
-    	Date dEndDate = DateUtils.getDateFromStr(endDate);
-    	Calendar cal = Calendar.getInstance();
-    	cal.setTime(dEndDate);
-    	cal.add(Calendar.DATE, 1);
-    	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(IncomeReceiptItem.class);
-    	criteria.add(Restrictions.and(Restrictions.le("receiptDate", dStartDate), Restrictions.lt("receiptDate", cal.getTime())));
-    	return criteria.list();
-    }
-
+	@SuppressWarnings("unchecked")
+	public List<IncomeReceiptItem> getListIncomeReceiptItemByDate(String startDate, String endDate) {
+		Date dStartDate = DateUtils.getDateFromStr(startDate);
+		Date dEndDate = DateUtils.getDateFromStr(endDate);
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(IncomeReceiptItem.class);
+		criteria.add(Restrictions.and(Restrictions.le("receiptDate", dStartDate),
+		    						  Restrictions.lt("receiptDate", DateUtils.addDate(dEndDate, 1))));
+		return criteria.list();
+	}
 	
-    public void delete(IncomeReceiptItem incomeReceiptItem) {
-    	sessionFactory.getCurrentSession().delete(incomeReceiptItem);
-    }
-
+	public void delete(IncomeReceiptItem incomeReceiptItem) {
+		sessionFactory.getCurrentSession().delete(incomeReceiptItem);
+	}
 	
-    @SuppressWarnings("unchecked")
-    public List<IncomeReceiptItem> getListIncomeReceiptItemByAccount(Account acc) {
-    	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(IncomeReceiptItem.class);
-    	criteria.add(Restrictions.eq("account", acc));
-    	return criteria.list();
-    }
+	@SuppressWarnings("unchecked")
+	public List<IncomeReceiptItem> getListIncomeReceiptItemByAccount(Account acc) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(IncomeReceiptItem.class);
+		criteria.add(Restrictions.eq("account", acc));
+		return criteria.list();
+	}
 }

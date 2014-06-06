@@ -21,8 +21,8 @@ import org.hibernate.annotations.Type;
  */
 
 @Entity 	   
-@Table(name = "accounting_account_fiscal_period")
-public class AccountPeriod {
+@Table(name = "accounting_account_balance")
+public class AccountBalance {
 	
 	@Id
 	@GeneratedValue
@@ -72,7 +72,7 @@ public class AccountPeriod {
 	private int updatedBy;
 	
 	@Enumerated(EnumType.STRING)
-	private GeneralStatus status;
+	private BalanceStatus status;
 	
 	public Account getAccount() {
 		return account;
@@ -147,7 +147,7 @@ public class AccountPeriod {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		AccountPeriod other = (AccountPeriod) obj;
+		AccountBalance other = (AccountBalance) obj;
 		if (createdDate == null) {
 			if (other.createdDate != null)
 				return false;
@@ -175,14 +175,6 @@ public class AccountPeriod {
 	
 	public int getId() {
 		return id;
-	}
-	
-	public GeneralStatus getStatus() {
-		return status;
-	}
-	
-	public void setStatus(GeneralStatus status) {
-		this.status = status;
 	}
 	
 	public int getCreatedBy() {
@@ -216,5 +208,16 @@ public class AccountPeriod {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
+
+	
+    public BalanceStatus getStatus() {
+    	return status;
+    }
+
+	
+    public void setStatus(BalanceStatus status) {
+    	this.status = status;
+    }
+
 	
 }

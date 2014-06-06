@@ -238,4 +238,41 @@
 		<dropNotNullConstraint columnDataType="DATETIME"
 			columnName="transaction_date" tableName="accounting_income_receipt_item" />
 	</changeSet>
+	
+	<changeSet author="viet" id="201405250236">
+		<addColumn tableName="accounting_income_receipt">
+			<column name="status" type="varchar(50)" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet author="viet" id="201405250239">
+		<createTable tableName="accounting_account_txn">
+			<column autoIncrement="true" name="account_txn_id" type="int">
+				<constraints nullable="false" primaryKey="true" />
+			</column>
+			<column name="account_id" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="balance" type="currency" />
+			<column name="credit" type="currency" />
+			<column name="debit" type="currency" />
+			<column name="txn_type" type="varchar(20)" />
+			<column name="txn_date" type="DATETIME"/>
+			<column name="created_date" type="DATETIME"/>
+			<column name="created_by" defaultValueNumeric="0" type="int"/>
+			<column name="updated_date" type="DATETIME"/>
+			<column name="updated_by" defaultValueNumeric="0" type="int"/>
+			<column name="txn_number" type="varchar(50)"/>
+			<column name="base_txn_number" type="varchar(50)"/>
+			<column name="reference_txn" type="varchar(50)"/>
+			<column name="cancel_for_txn" type="varchar(50)"/>
+			<column name="txn_status" type="varchar(10)"/>
+		</createTable>
+	</changeSet>
+	
+	<changeSet author="viet" id="2014060601345">
+    <renameTable 
+            newTableName="accounting_account_balance"
+            oldTableName="accounting_account_fiscal_period"/>
+</changeSet>
 </databaseChangeLog>

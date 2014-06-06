@@ -48,7 +48,7 @@ public class IncomeReceiptItem {
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "type")
-	private String type; 
+	private IncomeReceiptType type; 
 	
 	@Temporal(TemporalType.DATE)
 	@Column(name = "transaction_date")
@@ -77,6 +77,9 @@ public class IncomeReceiptItem {
 	@Column(name = "updated_date")
 	@Type(type="timestamp")
 	private Date updatedDate;
+	
+	@Column(name = "txn_number")
+	private String txnNumber;
 	
 	/**
 	 * This attribute is only for building the json object from view
@@ -123,17 +126,6 @@ public class IncomeReceiptItem {
     	this.amount = amount;
     }
 
-	
-    public String getType() {
-    	return type;
-    }
-
-	
-    public void setType(String type) {
-    	this.type = type;
-    }
-
-	
     public Date getCreatedDate() {
     	return createdDate;
     }
@@ -263,6 +255,30 @@ public class IncomeReceiptItem {
 	
     public void setAccountName(String accountName) {
     	this.accountName = accountName;
+    }
+
+
+	
+    public IncomeReceiptType getType() {
+    	return type;
+    }
+
+
+	
+    public void setType(IncomeReceiptType type) {
+    	this.type = type;
+    }
+
+
+	
+    public String getTxnNumber() {
+    	return txnNumber;
+    }
+
+
+	
+    public void setTxnNumber(String txnNumber) {
+    	this.txnNumber = txnNumber;
     }
 	
 }

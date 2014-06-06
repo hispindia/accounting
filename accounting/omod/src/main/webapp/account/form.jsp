@@ -1,7 +1,7 @@
 <%--
  *  Copyright 2009 Society for Health Information Systems Programmes, India (HISP India)
  *
- *  This file is part of Billing module.
+ *  This file is part of Accounting module.
  *
  *  Billing module is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,12 +19,12 @@
 --%>
 <%@ include file="/WEB-INF/template/include.jsp"%>
 <openmrs:require privilege="Add/Edit Account" otherwise="/login.htm"
-	redirect="/module/accounting/main.form" />
+	redirect="/module/accounting/account.list" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="../includes/nav.jsp" %>
 <h2>
-	<spring:message code="accounting.account.manage" />
+	<spring:message code="accounting.account.addedit" />
 </h2>
 
 <c:forEach items="${errors.allErrors}" var="error">

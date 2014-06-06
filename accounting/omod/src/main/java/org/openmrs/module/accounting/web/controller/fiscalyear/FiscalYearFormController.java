@@ -81,7 +81,7 @@ public class FiscalYearFormController {
 				fp.setCreatedBy(userId);
 				fp.setCreatedDate(curDate);
 				fp.setFiscalYear(fy);
-				fp.setStatus(GeneralStatus.I);
+				fp.setStatus(GeneralStatus.INACTIVE);
 				Context.getService(AccountingService.class).saveFiscalPeriod(fp);
 			}
 		}

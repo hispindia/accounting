@@ -1,12 +1,14 @@
 package org.openmrs.module.accounting.api;
 
+import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.accounting.api.model.Account;
-import org.openmrs.module.accounting.api.model.AccountPeriod;
+import org.openmrs.module.accounting.api.model.AccountBalance;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.openmrs.module.accounting.api.model.FiscalYear;
 import org.openmrs.module.accounting.api.model.GeneralStatus;
@@ -53,7 +55,25 @@ public interface AccountingService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	public Collection<Account> getListParrentAccount();
 	
+	@Transactional(readOnly = true)
+	public List<AccountBalance> findAccountBalance(Integer fiscalPeriodId);
 	
+	@Transactional(readOnly = true)
+	public List<AccountBalance> listActiveAccountBalance();
+	
+	/**
+	 * 
+	 * @param account
+	 * @param date
+	 * @return should return only one account because there should be no overlap periods
+	 */
+	public AccountBalance findAccountPeriod(Account account, Date date) ;
+	
+	public void updateAccountLedgerBalance(Account account, Date receiptDate, BigDecimal amount) throws Exception ;
+	
+	public void updateAccountAvailableBalance(Account account, Date receiptDate, BigDecimal amount) throws Exception ;
+	
+	public void updateAccountBalance(Account account, Date receiptDate, BigDecimal amount) throws Exception ;
 	/**
 	 * Fiscal Year 
 	 */
@@ -78,10 +98,10 @@ public interface AccountingService extends OpenmrsService {
 	/**
 	 * 	Period
 	 */
-	public AccountPeriod saveAccountPeriod(AccountPeriod ap);
+	public AccountBalance saveAccountBalance(AccountBalance ap);
 	
 	@Transactional(readOnly = true)
-	public AccountPeriod getAccountPeriod(int id);
+	public AccountBalance getAccountPeriod(int id);
 	
 	public void deletePeriod(FiscalPeriod period);
 	
@@ -107,9 +127,10 @@ public interface AccountingService extends OpenmrsService {
 	
 	/**
 	 * INCOME RECEIPT ITEM
+	 * @throws Exception 
 	 */
 	
-	public IncomeReceiptItem saveIncomeReceiptItem(IncomeReceiptItem incomeReceiptItem);
+	public IncomeReceiptItem saveIncomeReceiptItem(IncomeReceiptItem incomeReceiptItem) throws Exception;
 	
 	public IncomeReceiptItem getIncomeReceiptItem(Integer id);
 	
