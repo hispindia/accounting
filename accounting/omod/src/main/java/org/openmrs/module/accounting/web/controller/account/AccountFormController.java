@@ -52,46 +52,47 @@ import org.springframework.web.bind.support.SessionStatus;
 @SessionAttributes("accountCommand")
 public class AccountFormController {
 	
-	
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
 		binder.registerCustomEditor(java.lang.Boolean.class, new CustomBooleanEditor("true", "false", true));
 	}
 	
 	@RequestMapping(method = RequestMethod.GET)
-	public String firstView(
-	                        @RequestParam(value = "id", required = false) Integer id, Model model) {
+	public String firstView( @RequestParam(value = "id", required = false) Integer id, Model model) {
 		if (id != null) {
 			Account account = Context.getService(AccountingService.class).getAccount(id);
 			model.addAttribute("accountCommand", account);
-		}else{
+		} else {
 			Account account = new Account();
 			model.addAttribute("accountCommand", account);
 		}
-
-		model.addAttribute("accountTypes", AccountType.values());
-	
 		
-		List<Account> listParents = new ArrayList<Account>(Context.getService(AccountingService.class).getListParrentAccount());
-    	Collections.sort(listParents, new Comparator<Account>() {
-            public int compare(Account o1, Account o2) {
-	            return o1.getName().compareToIgnoreCase(o2.getName());
-            }});
+		model.addAttribute("accountTypes", AccountType.values());
+		
+		List<Account> listParents = new ArrayList<Account>(Context.getService(AccountingService.class)
+		        .getListParrentAccount());
+		Collections.sort(listParents, new Comparator<Account>() {
+			
+			public int compare(Account o1, Account o2) {
+				return o1.getName().compareToIgnoreCase(o2.getName());
+			}
+		});
 		
 		model.addAttribute("listParents", listParents);
 		return "/module/accounting/account/form";
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
-	public String onSubmit(@ModelAttribute("accountCommand") Account account, BindingResult bindingResult, HttpServletRequest request, SessionStatus status) {
+	public String onSubmit(@ModelAttribute("accountCommand") Account account, BindingResult bindingResult,
+	                       HttpServletRequest request, SessionStatus status) {
 		
 		new AccountValidator().validate(account, bindingResult);
 		if (bindingResult.hasErrors()) {
 			return "/module/accounting/account/form";
 		}
 		Context.getService(AccountingService.class).saveAccount(account);
-		 // Clean the session attribute after successful submit
-        status.setComplete();
+		// Clean the session attribute after successful submit
+		status.setComplete();
 		return "redirect:/module/accounting/account.list";
 	}
 	

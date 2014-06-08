@@ -57,7 +57,7 @@
 			<input type="button" onclick="checkValue()"
 				value="<spring:message code='accounting.account.deleteselected'/>" />
 			<span class="boxHeader"><spring:message
-					code="account.fiscalyear.list" />
+					code="accounting.fiscalyear.list" />
 			</span>
 			<div class="box">
 				<table cellpadding="5" cellspacing="0">

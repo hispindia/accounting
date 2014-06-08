@@ -8,7 +8,7 @@
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
 
- *  Billing module is distributed in the hope that it will be useful,
+ *  Accounting module is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
@@ -49,6 +49,7 @@
 <form method="post" class="box" id="mainForm">
 <input type="hidden" id="jsonReceiptItems" name="jsonReceiptItems" />
 <input type="hidden" id="accounts"  value="${accounts}" />
+<input type="hidden" id="incomeReceiptId" value="${incomeReceipt.id}"/>
 	<table>
 		<tr>
 			<td><spring:message code="accounting.receiptNumber"/></td>
@@ -92,77 +93,49 @@
 <!---------------------------------->
 	
 <script>
-var arrReceiptItems = new Array();
 jQuery(document).ready(function(){
-	  var availableTags = jQuery("#accounts").val().split(",");
-	   
-	jQuery( "#itemSelectAccount" ).autocomplete({
-	     source: availableTags
-	   });
-})
+	var receiptId = jQuery("#incomeReceiptId").val();
+	if (!receiptId) {
+		// Disable add receipt item
+		jQuery("#receiptItemBox").hide();
+	}
+});
 
 function addItem() {
-	resetItemForm();
-	tb_show("Add Receipt Item","#TB_inline?height=150&width=300&inlineId=divItemForm&modal=true",null);
+	var receiptId = jQuery("#incomeReceiptId").val();
+	//resetItemForm();
+	//tb_show("Add Receipt Item","#TB_inline?height=150&width=300&inlineId=divItemForm&modal=true",null);
+	tb_show("Edit Receipt Item","incomeReceiptItem.form?receiptId="+receiptId+"&keepThis=true&TB_iframe=true&height=250&width=400",null);
 }
 
-function generateItem() {
+function deleteItem(_this,id) {
+	if (confirm("Are you sure to delete this Receipt Item ?")) {
+		
+		jQuery.post( "incomeReceiptItem.form",{receiptItemId : id, action : "delete"}, function( data ) {
+			if (data == "success") {
+				jQuery(_this).parents("tr").get(0).remove();
+			} else {
+				alert("Can not delete Receipt Item." + data);
+			}
+		});
+	}
 	
-	var acc = new Object();
-	acc.accountName = jQuery("#itemSelectAccount").val();
-	acc.description = jQuery("#itemDescription").val()
-	acc.type = jQuery("#itemType").val()
-	acc.chequeNumber = jQuery("#itemChequeNo").val()
-	acc.amount = jQuery("#itemAmount").val()
-	
-	// add item to global array
-	arrReceiptItems.push(acc);
-	
-	var txtAccount 		= 	"<td>"	+	acc.accountName	+	"</td>";
-	var txtDescription 	= 	"<td>"	+	acc.description	+	"</td>"
-	var txtType 		= 	"<td>"	+	acc.type		+	"</td>"
-	var txtAmount 		= 	"<td>"	+	acc.amount		+	"</td>";
-	var txtChequeNo 	= 	"<td>"	+	acc.chequeNo	+	"</td>";
-	var txtAction		= 	"<td><input type='button' value='Delete' onclick='deleteItem(this)'/>&nbsp;<input type='button' value='Edit' onclick='editItem()'/></td>";
-	return "<tr>" + txtAccount + txtDescription + txtType + txtChequeNo + txtAmount + txtAction +"</tr>";
-	
-}
-
-function resetItemForm() {
-	jQuery("#itemSelectAccount").val("");
-	jQuery("#itemDescription").val("");
-	jQuery("#itemType").val("");
-	jQuery("#itemAmount").val("");
-	jQuery("#itemChequeNo").val("");
-}
-
-function deleteItem(this_) {
-	jQuery(this_).parents("tr").get(0).remove();
-}
-function saveItem() {
-	
-	jQuery("#tableReceiptItem tbody").append(generateItem());
-	self.parent.tb_remove();
 }
 
 function editItem(id) {
-
-	tb_show("Edit Receipt Item","incomeReceiptItem.form?id="+id+"&keepThis=true&TB_iframe=true&height=250&width=400",null);
+	var receiptId = jQuery("#incomeReceiptId").val();
+	tb_show("Edit Receipt Item","incomeReceiptItem.form?id="+id+"&receiptId="+receiptId+"&keepThis=true&TB_iframe=true&height=250&width=400",null);
 }
 
-function closePopup() {
-	 self.parent.tb_remove();
-}
 
 function submitForm() {
-	jQuery("#jsonReceiptItems").val(JSON.stringify(arrReceiptItems))
 	jQuery("#mainForm").submit();
 }
 
 </script>
 	
 	
-	<div clcass="box">
+	<div clcass="box" id="receiptItemBox">
 	<br><p><b>Receipt Item</b></p>
 	<br><input type="button" value="Add New Item" onclick="addItem()"/><br>
 <table id="tableReceiptItem">
@@ -177,41 +150,20 @@ function submitForm() {
 	<tbody>
 		<c:if test="${not empty incomeReceipt.receiptItems }">
 			<c:forEach items="${incomeReceipt.receiptItems }" var="item">
-				<tr>
+				<tr <c:if test="${item.voided}"> style="text-decoration:line-through;"</c:if>>
 					<td><a href="#" onclick='editItem(${item.id})'>${item.account.name}</a></td>
 					<td>${item.description}</td>
 					<td>${item.type}</td>
 					<td>${item.chequeNumber}</td>
 					<td>${item.amount}</td>
 					<td>
-						<input type='button' value='Delete' onclick='deleteItem(this)'/>&nbsp;
+						<c:if test="${!item.voided}"><input type='button' value='Delete' onclick='deleteItem(this,${item.id})'/>&nbsp;</c:if>
 					</td>
 				</tr>
 			</c:forEach>
 		</c:if>
 	</tbody>
 </table>
-</div>
-
-<div id="divItemForm" style="display: none">
-	<span><strong>  Add Receipt Item </strong></span>
-	<table id="tableItemForm">
-		<tr><td>Account</td> <td><input id="itemSelectAccount"/></td></tr>
-		<tr><td>Description</td> <td><input type="text" id="itemDescription"/></td></tr>
-		<tr><td>Type</td> 
-			<td>
-				<select id="itemType">
-					<option value="cash">CASH</option>
-					<option value="visa">VISA</option>
-					<option value="master">MASTER</option>
-				</select>
-			</td>
-		</tr>
-		<tr><td>Cheuqe number</td> <td><input type="text" id="itemChequeNo"/></td></tr>
-		<tr><td>Amount</td> <td><input type="text" id="itemAmount"/></td></tr>
-	</table>
-<span>	<input type="button" value=" Save " onclick="saveItem()"/> &nbsp;
-	<input type="button" value=" Cancel " onclick="closePopup()"/></span>
 </div>
 
 <!---

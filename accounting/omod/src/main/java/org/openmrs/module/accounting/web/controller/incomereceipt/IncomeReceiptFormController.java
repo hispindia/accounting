@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
@@ -21,6 +22,9 @@ import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.IncomeReceipt;
 import org.openmrs.module.accounting.api.model.IncomeReceiptItem;
+import org.openmrs.module.accounting.api.model.IncomeReceiptType;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -59,49 +63,33 @@ public class IncomeReceiptFormController {
 		if (accounts != null )
 			model.addAttribute("accounts", buildJSONAccounts(new ArrayList<Account>(accounts)));
 		
+		model.addAttribute("itemTypes",IncomeReceiptType.values());
+		
 		return "/module/accounting/incomereceipt/form";
 	}
 
 	
 	@RequestMapping(method = RequestMethod.POST)
 	public String onSubmit(IncomeReceipt incomeReceipt, BindingResult bindingResult,
-	                       @RequestParam("jsonReceiptItems") String jsonReceiptItems, HttpServletRequest request) {
+	                       HttpServletRequest request) {
 		
 		new IncomeReceiptValidator().validate(incomeReceipt, bindingResult);
 		if (bindingResult.hasErrors()) {
 			return "/module/accounting/incomereceipt/form";
 		}
 		
-		log.error("id here : " + incomeReceipt.getId());
-		incomeReceipt = Context.getService(AccountingService.class).saveIncomeReceipt(incomeReceipt);
-		
-		ObjectMapper mapper = new ObjectMapper();
-		JsonFactory f = new JsonFactory();
-		JsonParser jp;
-		try {
-			jp = f.createJsonParser(jsonReceiptItems);
-			jp.nextToken();
-			Date curDate = Calendar.getInstance().getTime();
-			int userId = Context.getAuthenticatedUser().getId();
-			while (jp.nextToken() == JsonToken.START_OBJECT) {
-				IncomeReceiptItem item = mapper.readValue(jp, IncomeReceiptItem.class);
-				item.setCreatedBy(userId);
-				item.setCreatedDate(curDate);
-				item.setReceipt(incomeReceipt);
-				item.setVoided(false);
-				item.setAccount(Context.getService(AccountingService.class).getAccountByName(item.getAccountName()));
-				Context.getService(AccountingService.class).saveIncomeReceiptItem(item);
-			}
-		}
-		catch (JsonParseException e) {
-			e.printStackTrace();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
+		if ( incomeReceipt.getId() == null ) {
+			/** Return to form for adding receipt item **/
+			incomeReceipt = Context.getService(AccountingService.class).saveIncomeReceipt(incomeReceipt);
+			return "redirect:/module/accounting/incomereceipt.form?id="+incomeReceipt.getId();
+		} else {
+			return "redirect:/module/accounting/incomereceipt.list";
 		}
 		
 		
-		return "redirect:/module/accounting/incomereceipt.list";
+		
+		
+		
 	}
 	
 	

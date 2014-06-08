@@ -32,6 +32,7 @@
 </spring:bind>
 <form method="post" class="box" id="itemForm">
 <input type="hidden" id="accounts"  value="${accounts}" />
+<input type="hidden" id="incomeReceiptId" name="incomeReceiptId" value="${incomeReceiptId} }"/>
 	<span><strong> Add Receipt Item </strong></span>
 	<table id="tableItemForm">
 		<tr>
@@ -47,9 +48,9 @@
 		<tr>
 			<td>Type</td>
 			<td><form:select path="incomeReceiptItem.type">
-				<form:option value="cash" label="CASH"/>
-				<form:option value="visa" label="VISA"/>
-				<form:option value="master" label="MASTER"/>
+				<c:forEach items="${itemTypes}" var="type">
+						<form:option value="${type.name }" label="${type.name }"/>
+					</c:forEach>
 			</form:select>
 			<td><form:errors path="incomeReceiptItem.type"  cssClass="error" /></td>
 		</tr>

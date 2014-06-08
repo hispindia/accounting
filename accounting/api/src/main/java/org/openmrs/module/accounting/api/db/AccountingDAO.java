@@ -97,10 +97,19 @@ public class AccountingDAO {
 		return criteria.list();
 	}
 	
+	//TODO add fromData-toDate
 	public AccountBalance findAccountPeriod(Account account, Date date) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(AccountBalance.class);
 		criteria.add(Restrictions.eq("account", account));
 		criteria.add(Restrictions.and(Restrictions.ge("startDate", date), Restrictions.le("endDate", date)));
+		return (AccountBalance) criteria.uniqueResult();
+	}
+	
+	public AccountBalance getLatestAccountBalance(Account acc) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(AccountBalance.class);
+		criteria.add(Restrictions.eq("account", acc));
+		criteria.add(Restrictions.eq("status", BalanceStatus.ACTIVE));
+		criteria.setMaxResults(1);
 		return (AccountBalance) criteria.uniqueResult();
 	}
 	

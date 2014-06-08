@@ -23,19 +23,12 @@
 <openmrs:require privilege="View PatientDashboard"
 	otherwise="/login.htm" redirect="index.htm" />
 <%@ include file="/WEB-INF/template/header.jsp"%>
-<%@ include file="includes/js_css.jsp"%>
+<%@ include file="includes/nav.jsp" %>
 <input type="hidden" id="pageId" value="accounting" />
 <script type="text/javascript">
 	var contextPath = "${pageContext.request.contextPath}";	
 </script>
 
 
-<p>
-	<b><a href="account.list">Account</a></b>&nbsp; | &nbsp; 
-	<b><a href="fiscalyear.list">Fiscal Year</a></b>&nbsp; | &nbsp; 
-	<b><a href="period.list">Period</a></b>&nbsp; | &nbsp; 
-	<b><a href="incomereceipt.list">Income</a></b>&nbsp; | &nbsp;
-	<b><a href="budget.list#">Budget</a></b>
-</p>
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

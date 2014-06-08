@@ -36,7 +36,7 @@
 <script type="text/javascript"
 	src="${pageContext.request.contextPath}/moduleResources/accounting/scripts/jquery/jquery-1.4.2.min.js"></script>
 <h2>
-	<spring:message code="accounting.fiscalyear.manage" />
+	<spring:message code="accounting.incomeReceipt.manage" />
 </h2>
 
 <br />
@@ -57,12 +57,13 @@
 			<input type="button" onclick="checkValue()"
 				value="<spring:message code='accounting.account.deleteselected'/>" />
 			<span class="boxHeader"><spring:message
-					code="account.incomeReceipt.list" />
+					code="accounting.incomeReceipt.list" />
 			</span>
 			<div class="box">
 				<table cellpadding="5" cellspacing="0">
 					<tr>
 						<th>#</th>
+						<th>Receipt No</th>
 						<th><spring:message code="accounting.receipt.receiptDate" /></th>
 						<th></th>
 					</tr>
@@ -72,9 +73,8 @@
 							<td><c:out
 									value="${(( pagingUtil.currentPage - 1  ) * pagingUtil.pageSize ) + varStatus.count }" />
 							</td>
-							<td><a
-								href="javascript:window.location.href='incomereceipt.form?id=${incomeReceipt.id}'"><openmrs:formatDate date="${incomeReceipt.receiptDate}" type="textbox" /></a>
-							</td>
+							<td><a href="javascript:window.location.href='incomereceipt.form?id=${incomeReceipt.id}'"> ${incomeReceipt.receiptNo }</a></td>
+							<td><openmrs:formatDate date="${incomeReceipt.receiptDate}" type="textbox" /></td>
 							<td><input type="checkbox" name="ids"
 								value="${incomeReceipt.id}" />
 							</td>

@@ -1,6 +1,5 @@
 package org.openmrs.module.accounting.api;
 
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +14,7 @@ import org.openmrs.module.accounting.api.model.GeneralStatus;
 import org.openmrs.module.accounting.api.model.IncomeReceipt;
 import org.openmrs.module.accounting.api.model.IncomeReceiptItem;
 import org.openmrs.module.accounting.api.utils.AccountingConstants;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -69,11 +69,6 @@ public interface AccountingService extends OpenmrsService {
 	 */
 	public AccountBalance findAccountPeriod(Account account, Date date) ;
 	
-	public void updateAccountLedgerBalance(Account account, Date receiptDate, BigDecimal amount) throws Exception ;
-	
-	public void updateAccountAvailableBalance(Account account, Date receiptDate, BigDecimal amount) throws Exception ;
-	
-	public void updateAccountBalance(Account account, Date receiptDate, BigDecimal amount) throws Exception ;
 	/**
 	 * Fiscal Year 
 	 */
@@ -141,5 +136,8 @@ public interface AccountingService extends OpenmrsService {
 	public void delete(IncomeReceiptItem incomeReceiptItem);
 	
 	public List<IncomeReceiptItem> getListIncomeReceiptItemByAccount(Account acc);
+	
+	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
+	public void voidIncomeReceiptItem(Integer id) throws Exception;
 	
 }

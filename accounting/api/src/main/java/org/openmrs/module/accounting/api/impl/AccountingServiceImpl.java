@@ -55,10 +55,27 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	}
 	
 	public Account saveAccount(Account acc) {
-		if (acc.getId() == 0) {
+		
+		if (acc.getId() == null) {
+			
 			log.info("Create new account: " + acc.getName());
 			acc.setCreatedDate(Calendar.getInstance().getTime());
 			acc.setCreatedBy(Context.getAuthenticatedUser().getId());
+			acc = dao.saveAccount(acc);
+			
+			AccountBalance accBalance = new AccountBalance();
+			accBalance.setAccount(acc);
+			accBalance.setAvailableBalance(new BigDecimal(0));
+			accBalance.setClosingBalance(new BigDecimal(0));
+			accBalance.setCreatedBy(acc.getCreatedBy());
+			accBalance.setCreatedDate(acc.getCreatedDate());
+			accBalance.setLedgerBalance(new BigDecimal(0));
+			accBalance.setOpeningBalance(new BigDecimal(0));
+			accBalance.setStatus(BalanceStatus.ACTIVE);
+			
+			dao.saveAccountBalance(accBalance);
+			
+			return acc;
 		} else {
 			log.info("update  account: " + acc.getName());
 			acc.setUpdatedBy(Context.getAuthenticatedUser().getId());
@@ -67,8 +84,9 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 				acc.setRetiredDate(Calendar.getInstance().getTime());
 				acc.setRetiredBy(Context.getAuthenticatedUser().getId());
 			}
+			return dao.saveAccount(acc);
 		}
-		return dao.saveAccount(acc);
+		
 	}
 	
 	public void deleteAccount(Account acc) {
@@ -201,16 +219,18 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			incomeReceiptItem.setCreatedBy(Context.getAuthenticatedUser().getId());
 			incomeReceiptItem.setCreatedDate(Calendar.getInstance().getTime());
 			
-			rIncomeReceiptItem = dao.saveIncomeReceiptItem(incomeReceiptItem);
-			
 			/** Add Account Transaction **/
-			addAccountTransaction(rIncomeReceiptItem, TransactionType.CREDIT);
+			AccountTransaction accTxn = addAccountTransaction(incomeReceiptItem, TransactionType.CREDIT);
+			
+			incomeReceiptItem.setTxnNumber(accTxn.getBaseTxnNumber());
+			
+			rIncomeReceiptItem = dao.saveIncomeReceiptItem(incomeReceiptItem);
 			
 			/**
 			 * Update Account Balance
 			 */
 			updateAccountBalance(incomeReceiptItem.getAccount(), incomeReceiptItem.getReceipt().getReceiptDate(),
-			    incomeReceiptItem.getAmount());
+			    incomeReceiptItem.getAmount(), TransactionType.CREDIT);
 			
 		} else {
 			/** Update Receipt **/
@@ -240,7 +260,8 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 					
 					/** Add  transaction for new receipt amount value **/
 				
-					addAccountTransaction(incomeReceiptItem, TransactionType.CREDIT);
+					addAccountTransaction(incomeReceiptItem, TransactionType.CREDIT); 
+					
 				}
 			} 
 			
@@ -249,7 +270,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			
 			/** Update Account Balance **/
 			updateAccountBalance(incomeReceiptItem.getAccount(), incomeReceiptItem.getReceipt().getReceiptDate(),
-			    incomeReceiptItem.getAmount());
+			    incomeReceiptItem.getAmount(), TransactionType.CREDIT);
 			
 		}
 		return rIncomeReceiptItem;
@@ -312,7 +333,6 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		}
 	}
 	
-	@Override
 	public void updateAccountLedgerBalance(Account account, Date receiptDate, BigDecimal updateAmount) throws Exception {
 		
 		FiscalPeriod period = dao.getPeriodByDate(receiptDate);
@@ -320,17 +340,17 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			throw new Exception("Can not find  Period with Receipt Date: " + receiptDate.toString());
 		}
 		
-		AccountBalance accPeriod = dao.getAccountPeriod(account, period);
-		if (accPeriod == null) {
+		AccountBalance accBalance = dao.getAccountPeriod(account, period);
+		if (accBalance == null) {
 			throw new Exception("Can not find Account Period with Receipt Date: " + receiptDate.toString()
 			        + " and Account: " + account.getName());
 		}
 		
-		accPeriod.setLedgerBalance(accPeriod.getLedgerBalance().add(updateAmount));
-		accPeriod.setUpdatedBy(Context.getAuthenticatedUser().getId());
-		accPeriod.setUpdatedDate(Calendar.getInstance().getTime());
+		accBalance.setLedgerBalance(accBalance.getLedgerBalance().add(updateAmount));
+		accBalance.setUpdatedBy(Context.getAuthenticatedUser().getId());
+		accBalance.setUpdatedDate(Calendar.getInstance().getTime());
 		
-		saveAccountBalance(accPeriod);
+		saveAccountBalance(accBalance);
 	}
 	
 	@Override
@@ -338,35 +358,39 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		return dao.findAccountPeriod(account, date);
 	}
 	
-	@Override
 	public void updateAccountAvailableBalance(Account account, Date receiptDate, BigDecimal amount) throws Exception {
-		AccountBalance accPeriod = findAccountPeriod(account, receiptDate);
-		if (accPeriod == null) {
-			throw new Exception("Can not find Account Period with Account:" + account.getName() + " and Receipt Date: "
+		AccountBalance accBalance = dao.getLatestAccountBalance(account);
+		if (accBalance == null) {
+			throw new Exception("Can not find Account Balance with Account:" + account.getName() + " and Receipt Date: "
 			        + receiptDate.toString());
 		}
 		
-		accPeriod.setAvailableBalance(accPeriod.getLedgerBalance().add(amount));
-		accPeriod.setUpdatedBy(Context.getAuthenticatedUser().getId());
-		accPeriod.setUpdatedDate(Calendar.getInstance().getTime());
+		accBalance.setAvailableBalance(accBalance.getLedgerBalance().add(amount));
+		accBalance.setUpdatedBy(Context.getAuthenticatedUser().getId());
+		accBalance.setUpdatedDate(Calendar.getInstance().getTime());
 		
-		saveAccountBalance(accPeriod);
+		saveAccountBalance(accBalance);
 	}
 	
-	@Override
-	public void updateAccountBalance(Account account, Date receiptDate, BigDecimal amount) throws Exception {
-		AccountBalance accPeriod = findAccountPeriod(account, receiptDate);
-		if (accPeriod == null) {
-			throw new Exception("Can not find Account Period with Account:" + account.getName() + " and Receipt Date: "
+	public void updateAccountBalance(Account account, Date receiptDate, BigDecimal amount,TransactionType type) throws Exception {
+		AccountBalance accBalance = dao.getLatestAccountBalance(account);
+		if (accBalance == null) {
+			throw new Exception("Can not find Account Balance with Account:" + account.getName() + " and Receipt Date: "
 			        + receiptDate.toString());
 		}
 		
-		accPeriod.setAvailableBalance(accPeriod.getLedgerBalance().add(amount));
-		accPeriod.setLedgerBalance(accPeriod.getLedgerBalance().add(amount));
-		accPeriod.setUpdatedBy(Context.getAuthenticatedUser().getId());
-		accPeriod.setUpdatedDate(Calendar.getInstance().getTime());
+		if ( type.equals(TransactionType.CREDIT) ) {
+			accBalance.setAvailableBalance(accBalance.getLedgerBalance().add(amount));
+			accBalance.setLedgerBalance(accBalance.getLedgerBalance().add(amount));
+		} else if (type.equals(TransactionType.DEBIT) ) {
+			accBalance.setAvailableBalance(accBalance.getLedgerBalance().subtract(amount));
+			accBalance.setLedgerBalance(accBalance.getLedgerBalance().subtract(amount));
+		}
 		
-		saveAccountBalance(accPeriod);
+		accBalance.setUpdatedBy(Context.getAuthenticatedUser().getId());
+		accBalance.setUpdatedDate(Calendar.getInstance().getTime());
+		
+		saveAccountBalance(accBalance);
 	}
 	
 	@Override
@@ -374,7 +398,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		return dao.listAccountBalance(BalanceStatus.ACTIVE);
 	}
 	
-	public void addAccountTransaction(IncomeReceiptItem receipt, TransactionType txnType) {
+	public AccountTransaction addAccountTransaction(IncomeReceiptItem receipt, TransactionType txnType) {
 		
 		AccountTransaction oldTxn = dao.getLatestTransaction(receipt.getAccount());
 		BigDecimal newBalance = receipt.getAmount();
@@ -390,15 +414,57 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		newTxn.setAccount(receipt.getAccount());
 		newTxn.setTxnNumber(UUID.randomUUID().toString());
 		newTxn.setBaseTxnNumber(newTxn.getTxnNumber());
-		newTxn.setReferenceTxn(oldTxn.getTxnNumber());
+		if (oldTxn != null) {
+			newTxn.setReferenceTxn(oldTxn.getTxnNumber());
+		}
 		newTxn.setCreatedBy(receipt.getCreatedBy());
 		newTxn.setCreatedDate(receipt.getCreatedDate());
 		newTxn.setCredit(receipt.getAmount());
-		newTxn.setTransctionDate(receipt.getReceipt().getReceiptDate());
+		newTxn.setTransactionDate(receipt.getTransactionDate());
 		newTxn.setTxnStatus(TransactionStatus.OPEN);
 		newTxn.setBalance(newBalance);
 		newTxn.setType(txnType);
 		
-		dao.saveAccountTransaction(newTxn);
+		return  dao.saveAccountTransaction(newTxn);
+		
+		
+		
 	}
+
+	@Override
+    public void voidIncomeReceiptItem(Integer id) throws Exception { 
+		log.debug("Begin void IncomeReceiptItem id = "+id);
+		if ( id == null ) {
+			log.error("Can not find Income Receipt Item with id = "+id);
+			throw new Exception("Can not find Income Receipt Item with id = "+id);
+		}
+		IncomeReceiptItem item = dao.getIncomeReceiptItem(id);
+		if ( item == null ) {
+			log.error("Can not find Income Receipt Item with id = "+id);
+			throw new Exception("Can not find Income Receipt Item with id = "+id);
+		}
+		item.setVoided(true);
+		item.setVoidedBy(Context.getAuthenticatedUser().getId());
+		item.setVoideddDate(Calendar.getInstance().getTime());
+		dao.saveIncomeReceiptItem(item);
+		
+		AccountTransaction acctxn = dao.getAccountTxn(item.getTxnNumber());
+		
+		if ( acctxn == null ) {
+			log.error("Can not find AccountTransaction of Income Receipt Item with id = "+id);
+			throw new Exception("Can not find AccountTransaction of Income Receipt Item with id = "+id);
+		}
+		
+		cancelAccountTransaction(item);
+		
+		try {
+	        updateAccountBalance(item.getAccount(), item.getTransactionDate(), item.getAmount(), TransactionType.DEBIT);
+        }
+        catch (Exception e) {
+        	log.error(e);
+        	throw new Exception(e);
+        }
+		
+		
+    }
 }
