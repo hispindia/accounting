@@ -1,6 +1,5 @@
 package org.openmrs.module.accounting.web.controller.budget;
 
-import java.beans.PropertyEditor;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
@@ -12,8 +11,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections.FactoryUtils;
-import org.apache.commons.collections.list.LazyList;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -22,13 +19,11 @@ import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.Budget;
 import org.openmrs.module.accounting.api.model.BudgetItem;
-import org.springframework.beans.factory.config.CustomEditorConfigurer;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -77,22 +72,14 @@ public class BudgetFormController {
 	
 	@RequestMapping(value="/module/accounting/budget.form",method=RequestMethod.POST)
 	public String post(@ModelAttribute("budgetCommand") BudgetCommand command, BindingResult bindingResult,SessionStatus status) {
-		System.out.println("aaaaaaaaaaaa");
 		new BudgetValidator().validate(command, bindingResult);
 		if (bindingResult.hasErrors()) {
-			for ( ObjectError error : bindingResult.getAllErrors() ){
-			System.out.println("=============================================errorrrrrr");
-			System.out.println(error.getDefaultMessage());
-			}
 			return "/module/accounting/budget/form";
 		}
 		
 		command.getBudget().setCreatedBy(Context.getAuthenticatedUser().getId());
 		command.getBudget().setCreatedDate(Calendar.getInstance().getTime());
 		
-		System.out.println("===================="+command.getBudgetItems().size());
-		System.out.println("===================="+command.getBudgetItems());
-		System.out.println("================================");
 		for(BudgetItem item : command.getBudgetItems()) {
 			System.out.println(item);
 		}
@@ -136,39 +123,8 @@ public class BudgetFormController {
 		}
 	}
 	
-	/*
-	@RequestMapping(value="/module/accounting/budgetItem.form",method=RequestMethod.POST)
-	@ResponseBody
-	public String postUpdateItem(@RequestParam(value="budgetItemId",required=true) Integer budgetItemId,
-	                   @RequestParam("action") String action,
-	                   @RequestParam("name") String name,
-	                   @RequestParam("description") String description,
-	                   @RequestParam("startDate") String startDate,
-	                   @RequestParam("endDate") String endDate,
-	                   @RequestParam("amount") String amount,
-	                   HttpServletRequest request, SessionStatus status) {
-		if ( "delete".equals(action)) {
-			try {
-				Context.getService(AccountingService.class).retireBudgetItem(budgetItemId);
-	            return "success";
-            }
-            catch (Exception e) {
-	            e.printStackTrace();
-	            return e.getMessage();
-            } 
-			
-		}
-		return "Invalid Action";
-	}*/
 	
 	private String buildJSONAccounts(List<Account> accounts) {
-//		if (accounts == null)  return null;
-//		StringBuffer s = new StringBuffer();
-//		for (Account acc : accounts) {
-//			s.append(acc.getName()+",");
-//		}
-//		s.deleteCharAt(s.length() - 1);
-//		return s.toString();
 		
 		ObjectMapper mapper = new ObjectMapper();
 		StringWriter writer = new StringWriter();

@@ -226,7 +226,6 @@ function setItemFormValues(id, account, desc, startDate, endDate, amount) {
 	/*jQuery( "#itemAccount" ).autocomplete({
 	     source: availableTags
 	   });*/
-	alert(id + "-" + account +"-"+desc +"-"+startDate +"-" +endDate+"-"+amount);
 	jQuery("#itemId").val(id);
 	jQuery("#itemAccountName").val(account);
 	jQuery("#itemDescription").val(desc);
@@ -240,7 +239,6 @@ function setItemFormValues(id, account, desc, startDate, endDate, amount) {
 * It will update new value to the table row on the main page
 **/
 function updateItemRowValues(id, accountId, accountName, desc, startDate, endDate, amount) {
-	alert(id + "-" + accountName + "-"+ desc + "-" + startDate + "-" +endDate + "-"+ amount);
 	jQuery("#item_"+id+"_accountId").val(accountId);
 	
 	jQuery("#item_"+id+"_accountName").html(account);
@@ -285,7 +283,6 @@ function saveItem() {
 	if (item.budgetId) {
 	// EDIT BUDGET
 	
-			alert("edit");
 		jQuery.post( "budgetItem.form",
 				{ action : "update",
 				  id : item.id,
@@ -319,7 +316,6 @@ function saveItem() {
 		
 	} else {
 		// ADD BUDGET
-				alert("add");
 		addItemRow(item.id, item.accountName, item.accountId, item.description, 
 										item.startDate, 
 										item.endDate,
