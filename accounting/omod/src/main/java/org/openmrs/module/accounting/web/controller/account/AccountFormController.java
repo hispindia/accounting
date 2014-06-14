@@ -52,6 +52,24 @@ import org.springframework.web.bind.support.SessionStatus;
 @SessionAttributes("accountCommand")
 public class AccountFormController {
 	
+	@ModelAttribute("listParents")
+	public List<Account> registerListParents() {
+		List<Account> listParents = new ArrayList<Account>(Context.getService(AccountingService.class)
+		        .getListParrentAccount());
+		Collections.sort(listParents, new Comparator<Account>() {
+			
+			public int compare(Account o1, Account o2) {
+				return o1.getName().compareToIgnoreCase(o2.getName());
+			}
+		});
+		return listParents;
+	}
+	
+	@ModelAttribute("accountTypes")
+	public AccountType[] registerAccountTypes() {
+		return AccountType.values();
+	}
+	
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
 		binder.registerCustomEditor(java.lang.Boolean.class, new CustomBooleanEditor("true", "false", true));
@@ -67,23 +85,11 @@ public class AccountFormController {
 			model.addAttribute("accountCommand", account);
 		}
 		
-		model.addAttribute("accountTypes", AccountType.values());
-		
-		List<Account> listParents = new ArrayList<Account>(Context.getService(AccountingService.class)
-		        .getListParrentAccount());
-		Collections.sort(listParents, new Comparator<Account>() {
-			
-			public int compare(Account o1, Account o2) {
-				return o1.getName().compareToIgnoreCase(o2.getName());
-			}
-		});
-		
-		model.addAttribute("listParents", listParents);
 		return "/module/accounting/account/form";
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
-	public String onSubmit(@ModelAttribute("accountCommand") Account account, BindingResult bindingResult,
+	public String onSubmit(@ModelAttribute("accountCommand") Account account, BindingResult bindingResult, Model model,
 	                       HttpServletRequest request, SessionStatus status) {
 		
 		new AccountValidator().validate(account, bindingResult);
@@ -95,5 +101,7 @@ public class AccountFormController {
 		status.setComplete();
 		return "redirect:/module/accounting/account.list";
 	}
+	
+	
 	
 }

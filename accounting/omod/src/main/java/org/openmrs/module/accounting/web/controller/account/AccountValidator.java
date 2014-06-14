@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.model.Account;
+import org.openmrs.validator.ValidateUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -51,7 +52,7 @@ public class AccountValidator implements Validator {
     	} else if (account.getId() == null) {
     		AccountingService accountingService = (AccountingService)Context.getService(AccountingService.class);
     		Account acc = accountingService.getAccountByName(account.getName());
-    		if (acc != null){
+    		if (acc != null && acc.getAccountType().equals(account.getAccountType())){
     			error.reject("accounting.name.existed");
     		}
     	}
@@ -61,18 +62,5 @@ public class AccountValidator implements Validator {
     	}
     	
     	
-//		Integer companyId = account.getAccountId();
-//		if (companyId == null) {
-//			if (billingService.getAccountByName(account.getName())!= null) {
-//				error.reject("billing.name.existed");
-//			}
-//		} else {
-//			Account dbStore = billingService.getAccountById(companyId);
-//			if (!dbStore.getName().equalsIgnoreCase(account.getName())) {
-//				if (billingService.getAccountByName(account.getName()) != null) {
-//					error.reject("billing.name.existed");
-//				}
-//			}
-//		}
     }
 }

@@ -9,16 +9,16 @@ import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
-import org.openmrs.ConceptAnswer;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.db.AccountingDAO;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.AccountBalance;
-import org.openmrs.module.accounting.api.model.BalanceStatus;
 import org.openmrs.module.accounting.api.model.AccountTransaction;
+import org.openmrs.module.accounting.api.model.BalanceStatus;
+import org.openmrs.module.accounting.api.model.Budget;
+import org.openmrs.module.accounting.api.model.BudgetItem;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.openmrs.module.accounting.api.model.FiscalYear;
 import org.openmrs.module.accounting.api.model.GeneralStatus;
@@ -27,7 +27,6 @@ import org.openmrs.module.accounting.api.model.IncomeReceiptItem;
 import org.openmrs.module.accounting.api.model.TransactionStatus;
 import org.openmrs.module.accounting.api.model.TransactionType;
 import org.openmrs.module.accounting.api.utils.DateUtils;
-import org.openmrs.module.hospitalcore.BillingConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -220,7 +219,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			incomeReceiptItem.setCreatedDate(Calendar.getInstance().getTime());
 			
 			/** Add Account Transaction **/
-			AccountTransaction accTxn = addAccountTransaction(incomeReceiptItem, TransactionType.CREDIT);
+			AccountTransaction accTxn = addAccountTransaction(incomeReceiptItem, TransactionType.INCOME);
 			
 			incomeReceiptItem.setTxnNumber(accTxn.getBaseTxnNumber());
 			
@@ -230,7 +229,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			 * Update Account Balance
 			 */
 			updateAccountBalance(incomeReceiptItem.getAccount(), incomeReceiptItem.getReceipt().getReceiptDate(),
-			    incomeReceiptItem.getAmount(), TransactionType.CREDIT);
+			    incomeReceiptItem.getAmount(), TransactionType.INCOME);
 			
 		} else {
 			/** Update Receipt **/
@@ -260,7 +259,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 					
 					/** Add  transaction for new receipt amount value **/
 				
-					addAccountTransaction(incomeReceiptItem, TransactionType.CREDIT); 
+					addAccountTransaction(incomeReceiptItem, TransactionType.INCOME); 
 					
 				}
 			} 
@@ -270,7 +269,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			
 			/** Update Account Balance **/
 			updateAccountBalance(incomeReceiptItem.getAccount(), incomeReceiptItem.getReceipt().getReceiptDate(),
-			    incomeReceiptItem.getAmount(), TransactionType.CREDIT);
+			    incomeReceiptItem.getAmount(), TransactionType.INCOME);
 			
 		}
 		return rIncomeReceiptItem;
@@ -290,7 +289,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		cancelTxn.setTxnNumber(UUID.randomUUID().toString());
 		cancelTxn.setBaseTxnNumber(oldTxn.getBaseTxnNumber());
 		cancelTxn.setReferenceTxn(oldTxn.getTxnNumber());
-		cancelTxn.setType(TransactionType.DEBIT);
+		cancelTxn.setType(TransactionType.INCOME);
 		cancelTxn.setTxnStatus(TransactionStatus.CANCELED);
 		cancelTxn.setCreatedDate(receiptItem.getCreatedDate());
 		cancelTxn.setCreatedBy(receiptItem.getCreatedBy());
@@ -379,10 +378,10 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			        + receiptDate.toString());
 		}
 		
-		if ( type.equals(TransactionType.CREDIT) ) {
+		if ( type.equals(TransactionType.INCOME) ) {
 			accBalance.setAvailableBalance(accBalance.getLedgerBalance().add(amount));
 			accBalance.setLedgerBalance(accBalance.getLedgerBalance().add(amount));
-		} else if (type.equals(TransactionType.DEBIT) ) {
+		} else if (type.equals(TransactionType.INCOME) ) {
 			accBalance.setAvailableBalance(accBalance.getLedgerBalance().subtract(amount));
 			accBalance.setLedgerBalance(accBalance.getLedgerBalance().subtract(amount));
 		}
@@ -403,9 +402,9 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		AccountTransaction oldTxn = dao.getLatestTransaction(receipt.getAccount());
 		BigDecimal newBalance = receipt.getAmount();
 		if (oldTxn != null) {
-			if (txnType.equals(TransactionType.CREDIT)) {
+			if (txnType.equals(TransactionType.INCOME)) {
 				newBalance = newBalance.add(oldTxn.getBalance());
-			} else if (txnType.equals(TransactionType.DEBIT)) {
+			} else if (txnType.equals(TransactionType.INCOME)) {
 				newBalance = oldTxn.getBalance().subtract(newBalance);
 			}
 		}
@@ -458,12 +457,137 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		cancelAccountTransaction(item);
 		
 		try {
-	        updateAccountBalance(item.getAccount(), item.getTransactionDate(), item.getAmount(), TransactionType.DEBIT);
+	        updateAccountBalance(item.getAccount(), item.getTransactionDate(), item.getAmount(), TransactionType.INCOME);
         }
         catch (Exception e) {
         	log.error(e);
         	throw new Exception(e);
         }
+		
+		
+    }
+
+	@Override
+    public boolean isOverlapFiscalYear(String from, String to) {
+	    return dao.isOverlapFiscalYear(DateUtils.getDateFromStr(from), DateUtils.getDateFromStr(to));
+    }
+
+	@Override
+    public boolean isOverlapFiscalYear(Date from, Date to) {
+	    return dao.isOverlapFiscalYear(from, to);
+    }
+
+	@Override
+    public FiscalYear getActiveFiscalYear() {
+	    return dao.getActiveFicalYear();
+    }
+
+	@Override
+    public Budget saveBudget(Budget budget) {
+	    return dao.saveBudget(budget);
+    }
+
+	@Override
+    public Budget getBudget(Integer id) {
+		if (id == null) {
+			return null;
+		}
+		return dao.getBudget(id);
+    }
+
+	@Override
+    public List<Budget> getBudgets(Boolean includeRetired) {
+	    return dao.getBudgets(includeRetired);
+    }
+
+	@Override
+    public void deleteBudget(Budget budget) {
+		dao.deleteBudget(budget);
+    }
+
+	@Override
+    public void retireBudget(Integer id) {
+	    if (id == null) {
+	    	return;
+	    }
+	    
+	    Budget budget = dao.getBudget(id);
+	    if (budget != null) {
+	    	budget.setRetired(true);
+	    	budget.setRetiredBy(Context.getAuthenticatedUser().getId());
+	    	Date curDate = Calendar.getInstance().getTime();
+	    	budget.setRetiredDate(curDate);
+	    	
+	    	for(BudgetItem item : budget.getBudgetItems()) {
+	    		item.setRetired(true);
+	    		item.setRetiredBy(Context.getAuthenticatedUser().getId());
+	    		item.setRetiredDate(curDate);
+	    		dao.saveBudgetItem(item);
+	    	}
+	    	dao.saveBudget(budget);
+	    	
+	    	// TODO update expense balance
+	    	
+	    }
+    }
+
+	@Override
+    public void retireBudgetItem(Integer id) {
+	    if (id == null) {
+	    	return;
+	    }
+	    
+	    BudgetItem item = dao.getBudgetItem(id);
+	    if (item == null) {
+	    	return;
+	    }
+	    
+	    item.setRetired(true);
+	    item.setRetired(true);
+		item.setRetiredBy(Context.getAuthenticatedUser().getId());
+		item.setRetiredDate(Calendar.getInstance().getTime());
+		
+		dao.saveBudgetItem(item);
+		
+		// TODO update expense balance
+    }
+
+	@Override
+    public BudgetItem saveBudgetItem(BudgetItem item) {
+		
+		if (item == null) {
+			return null;
+		}
+		
+		if (item.getId() != null) {
+		
+			BudgetItem oldItem = dao.getBudgetItem(item.getId());
+			
+			if (!oldItem.getAccount().getId().equals(item.getAccount().getId())) {
+				//oldItem.setAccount(dao.getAccount(item.getAccount().getId()));
+				oldItem.setAccount(item.getAccount());
+			}
+			
+			oldItem.setAmount(item.getAmount());
+			oldItem.setDescription(item.getDescription());
+			oldItem.setEndDate(item.getEndDate());
+			oldItem.setStartDate(item.getStartDate());
+			
+			if (item.getRetired()) {
+				oldItem.setRetired(true);
+				oldItem.setRetiredBy(Context.getAuthenticatedUser().getId());
+				oldItem.setRetiredDate(Calendar.getInstance().getTime());
+			} else {
+				oldItem.setUpdatedBy(Context.getAuthenticatedUser().getId());
+				oldItem.setUpdatedDate(Calendar.getInstance().getTime());
+			}
+			return dao.saveBudgetItem(oldItem);
+		} else {
+			
+			item.setCreatedBy(Context.getAuthenticatedUser().getId());
+			item.setCreatedDate(Calendar.getInstance().getTime());
+			return dao.saveBudgetItem(item);
+		}
 		
 		
     }

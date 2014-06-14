@@ -1,0 +1,194 @@
+package org.openmrs.module.accounting.web.controller.budget;
+
+import java.beans.PropertyEditor;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.collections.FactoryUtils;
+import org.apache.commons.collections.list.LazyList;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.accounting.api.AccountingService;
+import org.openmrs.module.accounting.api.model.Account;
+import org.openmrs.module.accounting.api.model.Budget;
+import org.openmrs.module.accounting.api.model.BudgetItem;
+import org.springframework.beans.factory.config.CustomEditorConfigurer;
+import org.springframework.beans.propertyeditors.CustomBooleanEditor;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
+
+@Controller
+@SessionAttributes("budgetCommand")
+public class BudgetFormController {
+	
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+		binder.registerCustomEditor(java.lang.Boolean.class, new CustomBooleanEditor("true", "false", true));
+		binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat("dd/MM/yyyy"),true));
+		binder.registerCustomEditor(Account.class, new AccountPropertySupport());
+		binder.registerCustomEditor(Budget.class, new BudgetPropertySupport());
+	}
+	
+	@ModelAttribute("accounts")
+	public String registerAccounts() {
+		Collection<Account> accounts = Context.getService(AccountingService.class).getAccounts(false);
+		if (accounts != null ) {
+			return buildJSONAccounts(new ArrayList<Account>(accounts));
+		} else {
+			return "";
+		}
+	}
+	
+	@RequestMapping(value="/module/accounting/budget.form",method=RequestMethod.GET)
+	public String get(@RequestParam(value="id", required=false) Integer id, Model model) {
+		BudgetCommand command =new BudgetCommand();
+		if (id == null) {
+			command.setBudget(new Budget());
+		} else {
+			command.setBudget(Context.getService(AccountingService.class).getBudget(id));
+		}
+		model.addAttribute("budgetCommand",command);
+		
+		return "/module/accounting/budget/form";
+	}
+	
+	
+	@RequestMapping(value="/module/accounting/budget.form",method=RequestMethod.POST)
+	public String post(@ModelAttribute("budgetCommand") BudgetCommand command, BindingResult bindingResult,SessionStatus status) {
+		System.out.println("aaaaaaaaaaaa");
+		new BudgetValidator().validate(command, bindingResult);
+		if (bindingResult.hasErrors()) {
+			for ( ObjectError error : bindingResult.getAllErrors() ){
+			System.out.println("=============================================errorrrrrr");
+			System.out.println(error.getDefaultMessage());
+			}
+			return "/module/accounting/budget/form";
+		}
+		
+		command.getBudget().setCreatedBy(Context.getAuthenticatedUser().getId());
+		command.getBudget().setCreatedDate(Calendar.getInstance().getTime());
+		
+		System.out.println("===================="+command.getBudgetItems().size());
+		System.out.println("===================="+command.getBudgetItems());
+		System.out.println("================================");
+		for(BudgetItem item : command.getBudgetItems()) {
+			System.out.println(item);
+		}
+		
+		for (BudgetItem item : command.getBudgetItems()) {
+			item.setBudget(command.getBudget());
+			item.setCreatedBy(command.getBudget().getCreatedBy());
+			item.setCreatedDate(command.getBudget().getCreatedDate());
+			command.getBudget().addBudgetItem(item);
+		}
+		
+		Context.getService(AccountingService.class).saveBudget(command.getBudget());
+		status.setComplete();
+		return "redirect:/module/accounting/budget.list";
+	}
+	
+	@RequestMapping(value="/module/accounting/budgetItem.form",method=RequestMethod.POST, params = "action=delete")
+	@ResponseBody
+	public String postDeleteItem(@RequestParam(value="budgetItemId",required=true) Integer budgetItemId,
+	                   @RequestParam("action") String action,
+	                   HttpServletRequest request, SessionStatus status) {
+		try {
+			Context.getService(AccountingService.class).retireBudgetItem(budgetItemId);
+            return "success";
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return e.getMessage();
+        } 
+	}
+	
+	@RequestMapping(value="/module/accounting/budgetItem.form",method=RequestMethod.POST, params = "action=update")
+	@ResponseBody
+	public String postUpdateItem(@ModelAttribute("budgetItem") BudgetItem item, BindingResult bindingResult) {
+		try {
+			 item  =  Context.getService(AccountingService.class).saveBudgetItem(item);
+			return item.getId().toString();
+		} catch(Exception e) {
+			 e.printStackTrace();
+	         return "error";
+		}
+	}
+	
+	/*
+	@RequestMapping(value="/module/accounting/budgetItem.form",method=RequestMethod.POST)
+	@ResponseBody
+	public String postUpdateItem(@RequestParam(value="budgetItemId",required=true) Integer budgetItemId,
+	                   @RequestParam("action") String action,
+	                   @RequestParam("name") String name,
+	                   @RequestParam("description") String description,
+	                   @RequestParam("startDate") String startDate,
+	                   @RequestParam("endDate") String endDate,
+	                   @RequestParam("amount") String amount,
+	                   HttpServletRequest request, SessionStatus status) {
+		if ( "delete".equals(action)) {
+			try {
+				Context.getService(AccountingService.class).retireBudgetItem(budgetItemId);
+	            return "success";
+            }
+            catch (Exception e) {
+	            e.printStackTrace();
+	            return e.getMessage();
+            } 
+			
+		}
+		return "Invalid Action";
+	}*/
+	
+	private String buildJSONAccounts(List<Account> accounts) {
+//		if (accounts == null)  return null;
+//		StringBuffer s = new StringBuffer();
+//		for (Account acc : accounts) {
+//			s.append(acc.getName()+",");
+//		}
+//		s.deleteCharAt(s.length() - 1);
+//		return s.toString();
+		
+		ObjectMapper mapper = new ObjectMapper();
+		StringWriter writer = new StringWriter();
+		try {
+            mapper.writeValue(writer, accounts);
+        }
+        catch (JsonGenerationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (JsonMappingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+		return writer.toString();
+		
+	}
+	
+}

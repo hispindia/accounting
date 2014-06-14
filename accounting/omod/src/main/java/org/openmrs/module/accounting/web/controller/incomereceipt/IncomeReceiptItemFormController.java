@@ -32,6 +32,21 @@ import org.springframework.web.bind.support.SessionStatus;
 public class IncomeReceiptItemFormController {
 	Log log = LogFactory.getLog(getClass());
 	
+	@ModelAttribute("itemTypes")
+	public IncomeReceiptType[] registerAccountTypes() {
+		return IncomeReceiptType.values();
+	}
+	
+	@ModelAttribute("accounts")
+	public String registerAccounts() {
+		Collection<Account> accounts = Context.getService(AccountingService.class).getAccounts(false);
+		if (accounts != null ) {
+			return buildJSONAccounts(new ArrayList<Account>(accounts));
+		} else {
+			return "";
+		}
+	}
+	
 	@RequestMapping(method = RequestMethod.GET)
 	public String get( @RequestParam(value="id",required=false) Integer id,
 	                   @RequestParam(value="receiptId",required=true) Integer incomeReceiptId,
@@ -45,12 +60,8 @@ public class IncomeReceiptItemFormController {
 			model.addAttribute("incomeReceiptItem", receiptItem);
 		}
 		
-		Collection<Account> accounts = Context.getService(AccountingService.class).getAccounts(false);
-		if (accounts != null )
-			model.addAttribute("accounts", buildJSONAccounts(new ArrayList<Account>(accounts)));
 		request.getSession().setAttribute(WebConstants.OPENMRS_HEADER_USE_MINIMAL,"true");
 		
-		model.addAttribute("itemTypes",IncomeReceiptType.values());
 		model.addAttribute("incomeReceiptId",incomeReceiptId);
 		
 		return "/module/accounting/incomeReceiptItem/form";
@@ -103,8 +114,10 @@ public class IncomeReceiptItemFormController {
 		
 		// Clean the session attribute after successful submit
 		status.setComplete();
+		
 		return "module/accounting/incomeReceiptItem/success";
 	}
+	
 	private String buildJSONAccounts(List<Account> accounts) {
 		if (accounts == null)  return null;
 		StringBuffer s = new StringBuffer();
@@ -114,4 +127,6 @@ public class IncomeReceiptItemFormController {
 		s.deleteCharAt(s.length()-1 );
 		return s.toString();
 	}
+	
+	
 }

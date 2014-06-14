@@ -83,6 +83,12 @@
 			</form:select>
 			 <form:errors path="accountCommand.parentAccountId" cssClass="error" /></td>
 		</tr>
+		
+		<tr>
+			<td valign="top"><spring:message code="accounting.conceptId" /></td>
+			<td><openmrs_tag:conceptField formFieldName="conceptId" ></openmrs_tag:conceptField></td>
+		</tr>
+		
 		<tr>
 			<td><spring:message code="general.retired" /></td>
 			<td><form:radiobutton path="accountCommand.retired" value="false" />NO <form:radiobutton

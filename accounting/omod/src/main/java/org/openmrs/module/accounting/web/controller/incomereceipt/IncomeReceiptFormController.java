@@ -1,30 +1,18 @@
 package org.openmrs.module.accounting.web.controller.incomereceipt;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.IncomeReceipt;
-import org.openmrs.module.accounting.api.model.IncomeReceiptItem;
 import org.openmrs.module.accounting.api.model.IncomeReceiptType;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -42,6 +30,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class IncomeReceiptFormController {
 	Log log = LogFactory.getLog(getClass());
 	
+	@ModelAttribute("itemTypes")
+	public IncomeReceiptType[] registerAccountTypes() {
+		return IncomeReceiptType.values();
+	}
+	
+	@ModelAttribute("accounts")
+	public String registerAccounts() {
+		Collection<Account> accounts = Context.getService(AccountingService.class).getAccounts(false);
+		if (accounts != null ) {
+			return buildJSONAccounts(new ArrayList<Account>(accounts));
+		} else {
+			return "";
+		}
+	}
+	
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
 		binder.registerCustomEditor(java.lang.Boolean.class, new CustomBooleanEditor("true", "false", true));
@@ -58,12 +61,6 @@ public class IncomeReceiptFormController {
 			incomeReceipt = new IncomeReceipt();
 			model.addAttribute(incomeReceipt);
 		}
-		
-		Collection<Account> accounts = service.getAccounts(false);
-		if (accounts != null )
-			model.addAttribute("accounts", buildJSONAccounts(new ArrayList<Account>(accounts)));
-		
-		model.addAttribute("itemTypes",IncomeReceiptType.values());
 		
 		return "/module/accounting/incomereceipt/form";
 	}
@@ -86,10 +83,6 @@ public class IncomeReceiptFormController {
 			return "redirect:/module/accounting/incomereceipt.list";
 		}
 		
-		
-		
-		
-		
 	}
 	
 	
@@ -99,7 +92,10 @@ public class IncomeReceiptFormController {
 		for (Account acc : accounts) {
 			s.append(acc.getName()+",");
 		}
-		s.deleteCharAt(s.length()-1 );
+		s.deleteCharAt(s.length() - 1);
 		return s.toString();
 	}
+	
+	
+	
 }

@@ -218,5 +218,13 @@ public class FiscalYear {
     	this.status = status;
     }
 
+	@Override
+    public String toString() {
+	    return "FiscalYear [id=" + id + ", periods=" + periods + ", startDate=" + startDate + ", endDate=" + endDate
+	            + ", openingBalance=" + openingBalance + ", closingBalance=" + closingBalance + ", name=" + name
+	            + ", createdDate=" + createdDate + ", createdBy=" + createdBy + ", updatedDate=" + updatedDate
+	            + ", updatedBy=" + updatedBy + ", status=" + status + "]";
+    }
+
 	
 }

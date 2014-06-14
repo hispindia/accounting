@@ -1,7 +1,7 @@
 package org.openmrs.module.accounting.api.model;
 
 public enum AccountType {
-	B("INCOME & EXPENSE"),I("INCOME"),E("EXPENSE");
+	INCOME("INCOME"),EXPENSE("EXPENSE");
 	
 	private String name;
 	

@@ -73,8 +73,8 @@ public class Account  implements Serializable{
 	@Column(name = "account_type")
 	private AccountType accountType;
 	
-	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL, mappedBy="account")
-	private Set<AccountBalance> accountPeriods;
+	@Column(name="concept_id")
+	private Integer conceptId;
 	
 	public Account() {
 		this.retired = false;
@@ -86,14 +86,6 @@ public class Account  implements Serializable{
 		this.retired = false;
 	}
 	
-	public void addAccountPeriod(AccountBalance ap) {
-		if (ap != null) {
-			if (!getAccountPeriods().contains(ap)) {
-				ap.setAccount(this);
-				this.getAccountPeriods().add(ap);
-			}
-		}
-	}
 	
 	public String getName() {
 		return name;
@@ -117,17 +109,6 @@ public class Account  implements Serializable{
 	
 	public void setUpdatedDate(Date updatedDate) {
 		this.updatedDate = updatedDate;
-	}
-	
-	public Set<AccountBalance> getAccountPeriods() {
-		if (accountPeriods == null) {
-			accountPeriods = new HashSet<AccountBalance>();
-		}
-		return accountPeriods;
-	}
-	
-	public void setAccountPeriods(Set<AccountBalance> periods) {
-		this.accountPeriods = periods;
 	}
 	
 	@Override
@@ -236,6 +217,21 @@ public class Account  implements Serializable{
 	
     public void setAccountType(AccountType accountType) {
     	this.accountType = accountType;
+    }
+
+	
+    public Integer getConceptId() {
+    	return conceptId;
+    }
+
+	
+    public void setConceptId(Integer conceptId) {
+    	this.conceptId = conceptId;
+    }
+
+	@Override
+    public String toString() {
+	    return "Account [id=" + id + ", name=" + name + "]";
     }
 
 	

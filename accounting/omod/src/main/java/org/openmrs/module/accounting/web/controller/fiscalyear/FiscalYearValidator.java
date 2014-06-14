@@ -25,6 +25,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.FiscalYear;
+import org.openmrs.module.accounting.api.model.GeneralStatus;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -47,11 +48,11 @@ public class FiscalYearValidator implements Validator {
 	 */
 	public void validate(Object command, Errors error) {
 		FiscalYear fiscalYear = (FiscalYear) command;
-		
+		AccountingService accountingService = (AccountingService) Context.getService(AccountingService.class);
 		if (StringUtils.isBlank(fiscalYear.getName())) {
 			error.reject("accounting.name.required");
 		} else {
-			AccountingService accountingService = (AccountingService) Context.getService(AccountingService.class);
+			
 			Account acc = accountingService.getAccountByName(fiscalYear.getName());
 			if (acc != null) {
 				error.reject("accounting.name.existed");
@@ -71,6 +72,15 @@ public class FiscalYearValidator implements Validator {
 		}
 		
 		
+		if (accountingService.isOverlapFiscalYear(fiscalYear.getStartDate(), fiscalYear.getEndDate())) {
+			error.reject("accounting.overlap");
+		}
+		
+		if (fiscalYear.getStatus().equals(GeneralStatus.ACTIVE)) {
+			if (accountingService.getActiveFiscalYear() != null) {
+				error.reject("accounting.active.exisited");
+			}
+		}
 		
 		//		Integer companyId = account.getAccountId();
 		//		if (companyId == null) {

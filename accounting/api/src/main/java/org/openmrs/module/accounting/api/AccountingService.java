@@ -8,6 +8,8 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.AccountBalance;
+import org.openmrs.module.accounting.api.model.Budget;
+import org.openmrs.module.accounting.api.model.BudgetItem;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.openmrs.module.accounting.api.model.FiscalYear;
 import org.openmrs.module.accounting.api.model.GeneralStatus;
@@ -89,7 +91,16 @@ public interface AccountingService extends OpenmrsService {
 	public Collection<FiscalYear> getListFiscalYear(GeneralStatus status);
 	
 	public void deleteFiscalYear(FiscalYear fiscalYear);
-
+	
+	@Transactional(readOnly = true)
+	public boolean isOverlapFiscalYear(String from, String to);
+	
+	@Transactional(readOnly = true)
+	public boolean isOverlapFiscalYear(Date from, Date to);
+	
+	@Transactional(readOnly = true)
+	public FiscalYear getActiveFiscalYear();
+	
 	/**
 	 * 	Period
 	 */
@@ -140,4 +151,24 @@ public interface AccountingService extends OpenmrsService {
 	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
 	public void voidIncomeReceiptItem(Integer id) throws Exception;
 	
+	/**
+	 * BUDGET
+	 */
+	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
+	public Budget saveBudget(Budget budget);
+	
+	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
+	public BudgetItem saveBudgetItem(BudgetItem item);
+	
+	public Budget getBudget(Integer id);
+	
+	public List<Budget> getBudgets(Boolean includeRetired);
+	
+	public void deleteBudget(Budget budget);
+	
+	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
+	public void retireBudget(Integer id);
+	
+	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
+	public void retireBudgetItem(Integer id);
 }

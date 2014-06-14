@@ -53,7 +53,6 @@ public class FiscalYearFormController {
 			fiscalYear = new FiscalYear();
 		}
 		model.addAttribute("fiscalYear", fiscalYear);
-		model.addAttribute("status", GeneralStatus.values());
 		return "/module/accounting/fiscalyear/form";
 	}
 	
@@ -94,5 +93,10 @@ public class FiscalYearFormController {
 		
 		status.setComplete();
 		return "redirect:/module/accounting/fiscalyear.list";
+	}
+	
+	@ModelAttribute("status")
+	public GeneralStatus[] registerStatuses() {
+		return GeneralStatus.values();
 	}
 }

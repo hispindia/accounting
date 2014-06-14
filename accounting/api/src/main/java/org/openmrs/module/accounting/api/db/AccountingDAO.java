@@ -13,12 +13,10 @@
  */
 package org.openmrs.module.accounting.api.db;
 
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -28,8 +26,10 @@ import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.AccountBalance;
-import org.openmrs.module.accounting.api.model.BalanceStatus;
 import org.openmrs.module.accounting.api.model.AccountTransaction;
+import org.openmrs.module.accounting.api.model.BalanceStatus;
+import org.openmrs.module.accounting.api.model.Budget;
+import org.openmrs.module.accounting.api.model.BudgetItem;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.openmrs.module.accounting.api.model.FiscalYear;
 import org.openmrs.module.accounting.api.model.GeneralStatus;
@@ -62,18 +62,52 @@ public class AccountingDAO {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<Budget> getBudgets(boolean includeRetired) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Budget.class);
+		if (!includeRetired)
+			criteria.add(Restrictions.eq("retired", false));
+		return criteria.list();
+		
+	}
+	
+	public Budget getBudget(int id) {
+		return (Budget) sessionFactory.getCurrentSession().get(Budget.class, id);
+	}
+	
 	public Account getAccount(int id) {
 		
 		return (Account) sessionFactory.getCurrentSession().get(Account.class, id);
+	}
+	
+	public BudgetItem getBudgetItem(int id) {
+		
+		return (BudgetItem) sessionFactory.getCurrentSession().get(BudgetItem.class, id);
 	}
 	
 	public Account saveAccount(Account account) throws DAOException {
 		return (Account) sessionFactory.getCurrentSession().merge(account);
 	}
 	
+	public Budget saveBudget(Budget budget) {
+		return (Budget) sessionFactory.getCurrentSession().merge(budget);
+	}
+	
+	public BudgetItem saveBudgetItem(BudgetItem item) {
+		return (BudgetItem) sessionFactory.getCurrentSession().merge(item);
+	}
+	
+	
+	public void deleteBudget(Budget budget) {
+		sessionFactory.getCurrentSession().delete(budget);
+	}
+	
+	public void deleteBudgetItem(BudgetItem item) {
+		sessionFactory.getCurrentSession().delete(item);
+	}
+	
 	public void deleteAccount(Account account) {
 		sessionFactory.getCurrentSession().delete(account);
-		;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -297,4 +331,25 @@ public class AccountingDAO {
 		criteria.add(Restrictions.eq("account", acc));
 		return criteria.list();
 	}
+	
+	/**
+	 * Check if given date range is overlap with existing fiscal years
+	 * @param from
+	 * @param to
+	 * @return
+	 */
+	public boolean isOverlapFiscalYear(Date from, Date to) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(FiscalYear.class);
+		criteria.add(Restrictions.and(Restrictions.lt("startDate", to), Restrictions.gt("endDate",from)));
+		return criteria.list().isEmpty() ? false: true;
+		
+	}
+	
+	public FiscalYear getActiveFicalYear() {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(FiscalYear.class);
+		criteria.add(Restrictions.eq("status", GeneralStatus.ACTIVE));
+		return (FiscalYear) criteria.uniqueResult();
+	}
+	
+	
 }

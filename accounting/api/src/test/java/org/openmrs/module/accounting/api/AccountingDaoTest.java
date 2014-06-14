@@ -1,5 +1,6 @@
 package org.openmrs.module.accounting.api;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -10,13 +11,14 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.db.AccountingDAO;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.AccountBalance;
-import org.openmrs.module.accounting.api.model.BalanceStatus;
 import org.openmrs.module.accounting.api.model.AccountType;
+import org.openmrs.module.accounting.api.model.BalanceStatus;
+import org.openmrs.module.accounting.api.model.Budget;
+import org.openmrs.module.accounting.api.model.BudgetItem;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.openmrs.module.accounting.api.model.FiscalYear;
-import org.openmrs.module.accounting.api.model.GeneralStatus;
 import org.openmrs.module.accounting.api.model.IncomeReceipt;
-import org.openmrs.module.hospitalcore.util.DateUtils;
+import org.openmrs.module.accounting.api.utils.DateUtils;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,7 +33,7 @@ public class AccountingDaoTest extends BaseModuleContextSensitiveTest {
 	@Test
 	public void shouldSaveAccount() throws Exception {
 		Account acc = new Account("Account 1");
-		acc.setAccountType(AccountType.B); 
+		acc.setAccountType(AccountType.INCOME); 
 		acc.setCreatedDate(Calendar.getInstance().getTime());
 		acc = dao.saveAccount(acc);
 		Context.flushSession();
@@ -78,7 +80,7 @@ public class AccountingDaoTest extends BaseModuleContextSensitiveTest {
 		 * Create Account
 		 */
 		Account acc = new Account("Account 1");
-		acc.setAccountType(AccountType.B);
+		acc.setAccountType(AccountType.EXPENSE);
 		acc.setCreatedDate(Calendar.getInstance().getTime());
 		
 		acc = dao.saveAccount(acc);
@@ -170,4 +172,94 @@ public class AccountingDaoTest extends BaseModuleContextSensitiveTest {
 		
 	}
 	
+	@Test
+	public void shouldValidFiscalYearRange() {
+		FiscalYear fy = new FiscalYear("Fiscal Year 1",Calendar.getInstance().getTime(),1);
+		
+		fy.setStartDate(DateUtils.getDateFromStr("1/1/2014"));
+		fy.setEndDate(DateUtils.getDateFromStr("31/12/2014"));
+		
+		fy = dao.saveFiscalYear(fy);
+		
+		Context.flushSession();
+		Context.clearSession();
+		
+		Date from = DateUtils.getDateFromStr("1/6/2013");
+		Date to = DateUtils.getDateFromStr("31/12/2013");
+		
+		Assert.assertFalse(dao.isOverlapFiscalYear(from, to));
+		
+		from = DateUtils.getDateFromStr("1/1/2014");
+		to = DateUtils.getDateFromStr("31/12/2014");
+		
+		Assert.assertTrue(dao.isOverlapFiscalYear(from, to));
+		
+		from = DateUtils.getDateFromStr("1/6/2013");
+		to = DateUtils.getDateFromStr("1/6/2014");
+		
+		Assert.assertTrue(dao.isOverlapFiscalYear(from, to));
+		
+		from = DateUtils.getDateFromStr("1/6/2014");
+		to = DateUtils.getDateFromStr("1/6/2015");
+		
+		Assert.assertTrue(dao.isOverlapFiscalYear(from, to));
+		
+		from = DateUtils.getDateFromStr("1/1/2015");
+		to = DateUtils.getDateFromStr("31/12/2015");
+		
+		Assert.assertFalse(dao.isOverlapFiscalYear(from, to));
+	}
+	
+	@Test
+	public void shouldSaveBudget() {
+		Date curDate = Calendar.getInstance().getTime();
+	
+		
+		
+		
+		
+		/**
+		 * Create Account
+		 */
+		Account acc = new Account("Account 1");
+		acc.setAccountType(AccountType.EXPENSE); 
+		acc.setCreatedDate(curDate);
+		acc = dao.saveAccount(acc);
+		Context.flushSession();
+		Context.clearSession();
+		
+		
+		Budget budget = new Budget();
+		budget.setCreatedBy(1);
+		budget.setCreatedDate(curDate);
+		budget.setDescription("test");
+		budget.setName("test");
+		
+		BudgetItem item1 = new BudgetItem();
+		item1.setAccount(acc);
+		item1.setBudget(budget);
+		item1.setAmount(new BigDecimal("1000.00"));
+		item1.setCreatedBy(1);
+		item1.setCreatedDate(curDate);
+		budget.addBudgetItem(item1);
+		
+		BudgetItem item2 = new BudgetItem();
+		item2.setAccount(acc);
+		item2.setBudget(budget);
+		item2.setAmount(new BigDecimal("2000.00"));
+		item2.setCreatedBy(1);
+		item2.setCreatedDate(curDate);
+		budget.addBudgetItem(item2);
+		
+	
+		
+		Budget persitedBudget = dao.saveBudget(budget);
+
+		Context.flushSession();
+		Context.clearSession();
+		
+		Assert.assertNotNull(persitedBudget);
+		System.out.println("===============Items : "+persitedBudget.getBudgetItems());
+		
+	}
 }

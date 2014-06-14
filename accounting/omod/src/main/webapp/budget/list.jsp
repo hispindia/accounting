@@ -45,46 +45,40 @@
 	</span><
 </c:forEach>
 
+<input type="button"
+	value="<spring:message code='accounting.budget.add'/>"
+	onclick="javascript:window.location.href='budget.form'" />
 
 <br />
 <br />
 <c:choose>
-	<c:when test="${not empty accounts}">
+	<c:when test="${not empty budgets}">
 			<span class="boxHeader"><spring:message
-					code="accounting.account.list" />
+					code="accounting.budget.list" />
 			</span>
 			<div class="box">
 				<table cellpadding="5" cellspacing="0">
 					<tr>
 						<th>#</th>
 						<th><spring:message code="general.name" /></th>
-						<th><spring:message code="accounting.openingBalance" /></th>
-						<th><spring:message code="accounting.ledgerBalance" /></th>
-						<th><spring:message code="accounting.availableBalance" /></th>
-						<th><spring:message code="accounting.closingBalance" /></th>
-						<th><spring:message code="accounting.status" /></th>
-						<th><spring:message code="accounting.updatedDate" /></th>
+						<th><spring:message code="accounting.description" /></th>
+						<th><spring:message code="accounting.startDate" /></th>
+						<th><spring:message code="accounting.endDate" /></th>
 						<th></th>
 					</tr>
-					<c:forEach items="${accounts}" var="account"
+					<c:forEach items="${budgets}" var="budget"
 						varStatus="varStatus">
 						<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" } '>
 							<td><c:out
 									value="${(( pagingUtil.currentPage - 1  ) * pagingUtil.pageSize ) + varStatus.count }" />
 							</td>
 							<td><a
-								href="javascript:window.location.href='account.form?id=${account.id}'">${account.account.name}</a>
+								href="javascript:window.location.href='budget.form?id=${budget.id}'">${budget.name}</a>
 							</td>
-							<td>${account.openingBalance}</td>
-							<td>${account.ledgerBalance}</td>
-							<td>${account.availableBalance}</td>
-							<td>${account.closingBalance}</td>
-							<td>${account.status}</td>
-							<td><openmrs:formatDate date="${account.updatedDate}"
-									type="textbox" format="dd/mm/yyyy hh:mm"/>
-							</td>
-							<td>
-							</td>
+							<td>${budget.description}</td>
+							<td><openmrs:formatDate date="${budget.startDate}" type="textbox" format="dd/mm/yyyy hh:mm"/></td>
+							<td><openmrs:formatDate date="${budget.endDate}" type="textbox" format="dd/mm/yyyy hh:mm"/></td>
+							<td></td>
 						</tr>
 					</c:forEach>
 					<tr class="paging-container">

@@ -1,7 +1,7 @@
 package org.openmrs.module.accounting.api.model;
 
 public enum TransactionType {
-	DEBIT("DEBIT"), CREDIT("CREDIT");
+	INCOME("INCOME"), EXPENSE("EXPENSE");
 	
 	private String name;
 	
