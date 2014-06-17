@@ -16,6 +16,7 @@ import org.openmrs.module.accounting.api.db.AccountingDAO;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.AccountBalance;
 import org.openmrs.module.accounting.api.model.AccountTransaction;
+import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.BalanceStatus;
 import org.openmrs.module.accounting.api.model.Budget;
 import org.openmrs.module.accounting.api.model.BudgetItem;
@@ -219,7 +220,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			incomeReceiptItem.setCreatedDate(Calendar.getInstance().getTime());
 			
 			/** Add Account Transaction **/
-			AccountTransaction accTxn = addAccountTransaction(incomeReceiptItem, TransactionType.INCOME);
+			AccountTransaction accTxn = addAccountTransaction(incomeReceiptItem);
 			
 			incomeReceiptItem.setTxnNumber(accTxn.getBaseTxnNumber());
 			
@@ -228,8 +229,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			/**
 			 * Update Account Balance
 			 */
-			updateAccountBalance(incomeReceiptItem.getAccount(), incomeReceiptItem.getReceipt().getReceiptDate(),
-			    incomeReceiptItem.getAmount(), TransactionType.INCOME);
+			increaseBalance(rIncomeReceiptItem);
 			
 		} else {
 			/** Update Receipt **/
@@ -239,10 +239,12 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			/**
 			 * When updating receipt item, there are 2 cases: Voided or Update the amount
 			 * If Voided => cancelAccountTransaction for old receipt item
-			 * Else If update amount =>  cancelAccountTransaction for old receipt then addAccountTransaction for new receipt amount
+			 * If update amount =>  cancelAccountTransaction for old receipt then addAccountTransaction for new receipt amount
 			 */
 			
 			IncomeReceiptItem oldReceipt = dao.getIncomeReceiptItem(incomeReceiptItem.getId());
+			
+			AccountTransaction accTxn = null;
 			
 			if (incomeReceiptItem.isVoided()) {
 				
@@ -259,17 +261,18 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 					
 					/** Add  transaction for new receipt amount value **/
 				
-					addAccountTransaction(incomeReceiptItem, TransactionType.INCOME); 
+					accTxn = addAccountTransaction(incomeReceiptItem); 
 					
 				}
 			} 
+			
+			incomeReceiptItem.setTxnNumber(accTxn.getBaseTxnNumber());
 			
 			/** Update new receipt **/
 			rIncomeReceiptItem = dao.saveIncomeReceiptItem(incomeReceiptItem);
 			
 			/** Update Account Balance **/
-			updateAccountBalance(incomeReceiptItem.getAccount(), incomeReceiptItem.getReceipt().getReceiptDate(),
-			    incomeReceiptItem.getAmount(), TransactionType.INCOME);
+			increaseBalance(rIncomeReceiptItem);
 			
 		}
 		return rIncomeReceiptItem;
@@ -284,12 +287,11 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		AccountTransaction cancelTxn = new AccountTransaction();
 		cancelTxn.setAccount(oldTxn.getAccount());
 		cancelTxn.setBalance(newBalance);
-		cancelTxn.setDebit(receiptItem.getAmount());
+		cancelTxn.setAmount(receiptItem.getAmount());
 		cancelTxn.setCancelForTxn(oldTxn.getTxnNumber());
 		cancelTxn.setTxnNumber(UUID.randomUUID().toString());
 		cancelTxn.setBaseTxnNumber(oldTxn.getBaseTxnNumber());
 		cancelTxn.setReferenceTxn(oldTxn.getTxnNumber());
-		cancelTxn.setType(TransactionType.INCOME);
 		cancelTxn.setTxnStatus(TransactionStatus.CANCELED);
 		cancelTxn.setCreatedDate(receiptItem.getCreatedDate());
 		cancelTxn.setCreatedBy(receiptItem.getCreatedBy());
@@ -371,6 +373,30 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		saveAccountBalance(accBalance);
 	}
 	
+	private void increaseBalance(IncomeReceiptItem receipt) throws Exception {
+		updateAccountAvailableBalance(receipt.getAccount(), receipt.getReceipt().getReceiptDate(), receipt.getAmount());
+	}
+	
+	private void increaseBalance(BudgetItem budget) throws Exception {
+		updateAccountAvailableBalance(budget.getAccount(), budget.getCreatedDate(), budget.getAmount());
+	}
+	
+	private void decreaseBalance(BudgetItem budget) throws Exception {
+		BigDecimal amount = budget.getAmount().negate();
+		updateAccountAvailableBalance(budget.getAccount(), budget.getCreatedDate(), amount);
+	}
+	
+	private void decreaseBalance(IncomeReceiptItem receipt) throws Exception {
+		BigDecimal amount = receipt.getAmount().negate();
+		updateAccountAvailableBalance(receipt.getAccount(), receipt.getReceipt().getReceiptDate(), amount);
+	}
+	
+	
+	private void updateAccountBalance(BudgetItem budget) throws Exception {
+		updateAccountAvailableBalance(budget.getAccount(), budget.getCreatedDate(), budget.getAmount());
+		addAccountTransaction(budget);
+	}
+	
 	public void updateAccountBalance(Account account, Date receiptDate, BigDecimal amount,TransactionType type) throws Exception {
 		AccountBalance accBalance = dao.getLatestAccountBalance(account);
 		if (accBalance == null) {
@@ -378,13 +404,8 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			        + receiptDate.toString());
 		}
 		
-		if ( type.equals(TransactionType.INCOME) ) {
-			accBalance.setAvailableBalance(accBalance.getLedgerBalance().add(amount));
-			accBalance.setLedgerBalance(accBalance.getLedgerBalance().add(amount));
-		} else if (type.equals(TransactionType.INCOME) ) {
-			accBalance.setAvailableBalance(accBalance.getLedgerBalance().subtract(amount));
-			accBalance.setLedgerBalance(accBalance.getLedgerBalance().subtract(amount));
-		}
+		accBalance.setAvailableBalance(accBalance.getLedgerBalance().add(amount));
+		accBalance.setLedgerBalance(accBalance.getLedgerBalance().add(amount));
 		
 		accBalance.setUpdatedBy(Context.getAuthenticatedUser().getId());
 		accBalance.setUpdatedDate(Calendar.getInstance().getTime());
@@ -397,32 +418,44 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		return dao.listAccountBalance(BalanceStatus.ACTIVE);
 	}
 	
-	public AccountTransaction addAccountTransaction(IncomeReceiptItem receipt, TransactionType txnType) {
+	
+	
+	private AccountTransaction addAccountTransaction(IncomeReceiptItem receipt) {
+		return addAccountTransaction(receipt.getAccount(), receipt.getAmount(), receipt.getCreatedBy(), receipt.getCreatedDate(), receipt.getTransactionDate());
+	}
+	
+	private AccountTransaction addAccountTransaction(BudgetItem budget) {
+		return addAccountTransaction(budget.getAccount(), budget.getAmount(), budget.getCreatedBy(), budget.getCreatedDate(), budget.getCreatedDate());
+	}
+	
+	private AccountTransaction addAccountTransaction(Account account, BigDecimal amount, int createdBy, Date createdDate, Date transactionDate) {
+		if ( account == null) return null;
 		
-		AccountTransaction oldTxn = dao.getLatestTransaction(receipt.getAccount());
-		BigDecimal newBalance = receipt.getAmount();
-		if (oldTxn != null) {
-			if (txnType.equals(TransactionType.INCOME)) {
-				newBalance = newBalance.add(oldTxn.getBalance());
-			} else if (txnType.equals(TransactionType.INCOME)) {
-				newBalance = oldTxn.getBalance().subtract(newBalance);
-			}
+		if (amount.compareTo(new BigDecimal("0")) == 0 ) {
+			return null;
 		}
 		
+		AccountTransaction oldTxn = dao.getLatestTransaction(account);
+		BigDecimal newBalance = new BigDecimal("0");
 		AccountTransaction newTxn = new AccountTransaction();
-		newTxn.setAccount(receipt.getAccount());
+		if (oldTxn != null) {
+			/**
+			 * Add or Subtract the new balance with the latest transaction
+			 */
+			newBalance = oldTxn.getBalance().add(amount);
+			newTxn.setReferenceTxn(oldTxn.getTxnNumber());
+		} else {
+			newBalance = amount;
+		}
+		
+		newTxn.setBalance(newBalance);
+		newTxn.setAccount(account);
 		newTxn.setTxnNumber(UUID.randomUUID().toString());
 		newTxn.setBaseTxnNumber(newTxn.getTxnNumber());
-		if (oldTxn != null) {
-			newTxn.setReferenceTxn(oldTxn.getTxnNumber());
-		}
-		newTxn.setCreatedBy(receipt.getCreatedBy());
-		newTxn.setCreatedDate(receipt.getCreatedDate());
-		newTxn.setCredit(receipt.getAmount());
-		newTxn.setTransactionDate(receipt.getTransactionDate());
+		newTxn.setCreatedBy(createdBy);
+		newTxn.setCreatedDate(createdDate);
+		newTxn.setTransactionDate(transactionDate);
 		newTxn.setTxnStatus(TransactionStatus.OPEN);
-		newTxn.setBalance(newBalance);
-		newTxn.setType(txnType);
 		
 		return  dao.saveAccountTransaction(newTxn);
 		
@@ -457,7 +490,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		cancelAccountTransaction(item);
 		
 		try {
-	        updateAccountBalance(item.getAccount(), item.getTransactionDate(), item.getAmount(), TransactionType.INCOME);
+	        decreaseBalance(item);
         }
         catch (Exception e) {
         	log.error(e);
@@ -483,7 +516,22 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
     }
 
 	@Override
-    public Budget saveBudget(Budget budget) {
+    public Budget saveBudget(Budget budget) throws Exception {
+		if (budget.getId() == null) {
+			/**
+			 * Add new Budget => need to update account balance for each Budget Item
+			 * Balance should be increased
+			 */
+			
+			if (budget.getBudgetItems() != null && !budget.getBudgetItems().isEmpty()) {
+				for (BudgetItem item : budget.getBudgetItems()) {
+
+					addAccountTransaction(item);
+					
+					increaseBalance(item);
+				}
+			}
+		}
 	    return dao.saveBudget(budget);
     }
 

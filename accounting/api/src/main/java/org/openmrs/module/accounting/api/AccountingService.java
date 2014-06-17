@@ -155,7 +155,7 @@ public interface AccountingService extends OpenmrsService {
 	 * BUDGET
 	 */
 	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
-	public Budget saveBudget(Budget budget);
+	public Budget saveBudget(Budget budget) throws Exception;
 	
 	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
 	public BudgetItem saveBudgetItem(BudgetItem item);

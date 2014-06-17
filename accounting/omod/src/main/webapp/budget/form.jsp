@@ -281,7 +281,9 @@ function saveItem() {
 	
 	
 	if (item.budgetId) {
-	// EDIT BUDGET
+	/**
+	*	Edit Budget: add/edit each budget item by ajax
+	**/
 	
 		jQuery.post( "budgetItem.form",
 				{ action : "update",
@@ -315,7 +317,9 @@ function saveItem() {
 		});
 		
 	} else {
-		// ADD BUDGET
+		/**
+		*	Add new Budget: add budget item together with Budget
+		**/
 		addItemRow(item.id, item.accountName, item.accountId, item.description, 
 										item.startDate, 
 										item.endDate,

@@ -29,15 +29,8 @@ public class AccountTransaction {
 	@JoinColumn(name="account_id")
 	private Account account;
 	
-	@Enumerated(EnumType.STRING)
-	@Column(name = "txn_type")
-	private TransactionType type;
-	
-	@Column(name = "credit", precision = 19, scale = 2)
-	private BigDecimal credit;
-	
-	@Column(name = "debit", precision = 19, scale = 2)
-	private BigDecimal debit;
+	@Column(name = "amount", precision = 19, scale = 2)
+	private BigDecimal amount;
 	
 	@Column(name = "balance", precision = 19, scale = 2)
 	private BigDecimal balance;
@@ -96,37 +89,6 @@ public class AccountTransaction {
     	this.account = account;
     }
 
-	
-    public TransactionType getType() {
-    	return type;
-    }
-
-	
-    public void setType(TransactionType type) {
-    	this.type = type;
-    }
-
-	
-    public BigDecimal getCredit() {
-    	return credit;
-    }
-
-	
-    public void setCredit(BigDecimal credit) {
-    	this.credit = credit;
-    }
-
-	
-    public BigDecimal getDebit() {
-    	return debit;
-    }
-
-	
-    public void setDebit(BigDecimal debit) {
-    	this.debit = debit;
-    }
-
-	
     public BigDecimal getBalance() {
     	return balance;
     }
@@ -175,58 +137,8 @@ public class AccountTransaction {
     public void setUpdatedBy(int updatedBy) {
     	this.updatedBy = updatedBy;
     }
-	@Override
-    public int hashCode() {
-	    final int prime = 31;
-	    int result = 1;
-	    result = prime * result + ((balance == null) ? 0 : balance.hashCode());
-	    result = prime * result + ((credit == null) ? 0 : credit.hashCode());
-	    result = prime * result + ((debit == null) ? 0 : debit.hashCode());
-	    result = prime * result + ((id == null) ? 0 : id.hashCode());
-	    result = prime * result + ((transactionDate == null) ? 0 : transactionDate.hashCode());
-	    result = prime * result + ((type == null) ? 0 : type.hashCode());
-	    return result;
-    }
 
 
-	@Override
-    public boolean equals(Object obj) {
-	    if (this == obj)
-		    return true;
-	    if (obj == null)
-		    return false;
-	    if (getClass() != obj.getClass())
-		    return false;
-	    AccountTransaction other = (AccountTransaction) obj;
-	    if (balance == null) {
-		    if (other.balance != null)
-			    return false;
-	    } else if (!balance.equals(other.balance))
-		    return false;
-	    if (credit == null) {
-		    if (other.credit != null)
-			    return false;
-	    } else if (!credit.equals(other.credit))
-		    return false;
-	    if (debit == null) {
-		    if (other.debit != null)
-			    return false;
-	    } else if (!debit.equals(other.debit))
-		    return false;
-	    if (id == null) {
-		    if (other.id != null)
-			    return false;
-	    } else if (!id.equals(other.id))
-		    return false;
-	    if (transactionDate == null) {
-		    if (other.transactionDate != null)
-			    return false;
-	    } else if (!transactionDate.equals(other.transactionDate))
-		    return false;
-	    if (type != other.type)
-		    return false;
-	    return true;
-    }
 
 
 
@@ -267,17 +179,6 @@ public class AccountTransaction {
     }
 
 
-	@Override
-    public String toString() {
-	    return "AccountTransaction [id=" + id + ", account=" + account + ", type=" + type + ", credit=" + credit
-	            + ", debit=" + debit + ", balance=" + balance + ", transctionDate=" + transactionDate + ", createdDate="
-	            + createdDate + ", updatedDate=" + updatedDate + ", createdBy=" + createdBy + ", updatedBy=" + updatedBy
-	            + ", txnNumber=" + txnNumber + ", cancelForTxn=" + cancelForTxn + ", baseTxnNumber=" + baseTxnNumber
-	            + ", txnStatus=" + txnStatus + "]";
-    }
-
-
-	
     public TransactionStatus getTxnStatus() {
     	return txnStatus;
     }
@@ -310,6 +211,72 @@ public class AccountTransaction {
 	
     public void setTransactionDate(Date transactionDate) {
     	this.transactionDate = transactionDate;
+    }
+
+
+	
+    public BigDecimal getAmount() {
+    	return amount;
+    }
+
+
+	
+    public void setAmount(BigDecimal amount) {
+    	this.amount = amount;
+    }
+
+
+	@Override
+    public int hashCode() {
+	    final int prime = 31;
+	    int result = 1;
+	    result = prime * result + ((amount == null) ? 0 : amount.hashCode());
+	    result = prime * result + ((balance == null) ? 0 : balance.hashCode());
+	    result = prime * result + ((baseTxnNumber == null) ? 0 : baseTxnNumber.hashCode());
+	    result = prime * result + createdBy;
+	    result = prime * result + ((createdDate == null) ? 0 : createdDate.hashCode());
+	    result = prime * result + ((id == null) ? 0 : id.hashCode());
+	    return result;
+    }
+
+
+	@Override
+    public boolean equals(Object obj) {
+	    if (this == obj)
+		    return true;
+	    if (obj == null)
+		    return false;
+	    if (getClass() != obj.getClass())
+		    return false;
+	    AccountTransaction other = (AccountTransaction) obj;
+	    if (amount == null) {
+		    if (other.amount != null)
+			    return false;
+	    } else if (!amount.equals(other.amount))
+		    return false;
+	    if (balance == null) {
+		    if (other.balance != null)
+			    return false;
+	    } else if (!balance.equals(other.balance))
+		    return false;
+	    if (baseTxnNumber == null) {
+		    if (other.baseTxnNumber != null)
+			    return false;
+	    } else if (!baseTxnNumber.equals(other.baseTxnNumber))
+		    return false;
+	    if (createdBy != other.createdBy)
+		    return false;
+	    if (createdDate == null) {
+		    if (other.createdDate != null)
+			    return false;
+	    } else if (!createdDate.equals(other.createdDate))
+		    return false;
+	    if (id == null) {
+		    if (other.id != null)
+			    return false;
+	    } else if (!id.equals(other.id))
+		    return false;
+	    return true;
     }
 
 

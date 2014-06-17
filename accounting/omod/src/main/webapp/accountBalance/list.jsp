@@ -58,6 +58,7 @@
 					<tr>
 						<th>#</th>
 						<th><spring:message code="general.name" /></th>
+						<th><spring:message code="accounting.accountType" /></th>
 						<th><spring:message code="accounting.openingBalance" /></th>
 						<th><spring:message code="accounting.ledgerBalance" /></th>
 						<th><spring:message code="accounting.availableBalance" /></th>
@@ -75,6 +76,7 @@
 							<td><a
 								href="javascript:window.location.href='account.form?id=${account.id}'">${account.account.name}</a>
 							</td>
+							<td>${account.account.accountType }</td>
 							<td>${account.openingBalance}</td>
 							<td>${account.ledgerBalance}</td>
 							<td>${account.availableBalance}</td>
