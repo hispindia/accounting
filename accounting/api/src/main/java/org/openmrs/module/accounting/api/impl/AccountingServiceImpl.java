@@ -16,7 +16,6 @@ import org.openmrs.module.accounting.api.db.AccountingDAO;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.AccountBalance;
 import org.openmrs.module.accounting.api.model.AccountTransaction;
-import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.BalanceStatus;
 import org.openmrs.module.accounting.api.model.Budget;
 import org.openmrs.module.accounting.api.model.BudgetItem;
@@ -249,7 +248,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			if (incomeReceiptItem.isVoided()) {
 				
 				/** Cancel Account Transaction for old receipt **/
-				cancelAccountTransaction(oldReceipt);
+				cancelAccountTransaction(oldReceipt.getTxnNumber(), Calendar.getInstance().getTime() );
 				
 			}else {
 				
@@ -257,7 +256,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 				if (!oldReceipt.getAccount().equals(incomeReceiptItem.getAccount())) {
 					
 					/** Cancel Account Transaction for old receipt **/
-					cancelAccountTransaction(oldReceipt);
+					cancelAccountTransaction(oldReceipt.getTxnNumber(), Calendar.getInstance().getTime());
 					
 					/** Add  transaction for new receipt amount value **/
 				
@@ -278,25 +277,26 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		return rIncomeReceiptItem;
 	}
 	
-	public void cancelAccountTransaction(IncomeReceiptItem receiptItem) {
+	private  void cancelAccountTransaction(String  txnNumber, Date transactedOn) {
+		AccountTransaction oldTxn = dao.getAccountTxn(txnNumber);
+		if (oldTxn == null) {
+			log.debug("Old Transaction = "+oldTxn);
+			return;
+		} 
 		
-		AccountTransaction oldTxn = dao.getAccountTxn(receiptItem.getTxnNumber());
-		
-		BigDecimal newBalance = oldTxn.getBalance().subtract(receiptItem.getAmount());
-		
+		BigDecimal newBalance = oldTxn.getBalance().subtract(oldTxn.getAmount());
 		AccountTransaction cancelTxn = new AccountTransaction();
 		cancelTxn.setAccount(oldTxn.getAccount());
 		cancelTxn.setBalance(newBalance);
-		cancelTxn.setAmount(receiptItem.getAmount());
+		cancelTxn.setAmount(oldTxn.getAmount());
 		cancelTxn.setCancelForTxn(oldTxn.getTxnNumber());
 		cancelTxn.setTxnNumber(UUID.randomUUID().toString());
 		cancelTxn.setBaseTxnNumber(oldTxn.getBaseTxnNumber());
 		cancelTxn.setReferenceTxn(oldTxn.getTxnNumber());
 		cancelTxn.setTxnStatus(TransactionStatus.CANCELED);
-		cancelTxn.setCreatedDate(receiptItem.getCreatedDate());
-		cancelTxn.setCreatedBy(receiptItem.getCreatedBy());
+		cancelTxn.setCreatedDate(transactedOn);
+		cancelTxn.setCreatedBy(Context.getAuthenticatedUser().getId());
 		dao.saveAccountTransaction(cancelTxn);
-		
 	}
 	
 	@Override
@@ -366,7 +366,9 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			        + receiptDate.toString());
 		}
 		
-		accBalance.setAvailableBalance(accBalance.getLedgerBalance().add(amount));
+		accBalance.setAvailableBalance(accBalance.getAvailableBalance().add(amount));
+		accBalance.setLedgerBalance(accBalance.getLedgerBalance().add(amount));
+		
 		accBalance.setUpdatedBy(Context.getAuthenticatedUser().getId());
 		accBalance.setUpdatedDate(Calendar.getInstance().getTime());
 		
@@ -404,7 +406,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			        + receiptDate.toString());
 		}
 		
-		accBalance.setAvailableBalance(accBalance.getLedgerBalance().add(amount));
+		accBalance.setAvailableBalance(accBalance.getAvailableBalance().add(amount));
 		accBalance.setLedgerBalance(accBalance.getLedgerBalance().add(amount));
 		
 		accBalance.setUpdatedBy(Context.getAuthenticatedUser().getId());
@@ -448,6 +450,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			newBalance = amount;
 		}
 		
+		newTxn.setAmount(amount);
 		newTxn.setBalance(newBalance);
 		newTxn.setAccount(account);
 		newTxn.setTxnNumber(UUID.randomUUID().toString());
@@ -475,9 +478,10 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			log.error("Can not find Income Receipt Item with id = "+id);
 			throw new Exception("Can not find Income Receipt Item with id = "+id);
 		}
+		Date curDate = Calendar.getInstance().getTime();
 		item.setVoided(true);
 		item.setVoidedBy(Context.getAuthenticatedUser().getId());
-		item.setVoideddDate(Calendar.getInstance().getTime());
+		item.setVoideddDate(curDate);
 		dao.saveIncomeReceiptItem(item);
 		
 		AccountTransaction acctxn = dao.getAccountTxn(item.getTxnNumber());
@@ -487,7 +491,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			throw new Exception("Can not find AccountTransaction of Income Receipt Item with id = "+id);
 		}
 		
-		cancelAccountTransaction(item);
+		cancelAccountTransaction(item.getTxnNumber(), curDate);
 		
 		try {
 	        decreaseBalance(item);
@@ -517,22 +521,30 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 
 	@Override
     public Budget saveBudget(Budget budget) throws Exception {
+		
 		if (budget.getId() == null) {
 			/**
 			 * Add new Budget => need to update account balance for each Budget Item
 			 * Balance should be increased
 			 */
-			
+			budget = dao.saveBudget(budget);
 			if (budget.getBudgetItems() != null && !budget.getBudgetItems().isEmpty()) {
 				for (BudgetItem item : budget.getBudgetItems()) {
 
-					addAccountTransaction(item);
+					AccountTransaction acctxn = addAccountTransaction(item);
+					
+					item.setTxnNumber(acctxn.getTxnNumber());
 					
 					increaseBalance(item);
+					
 				}
 			}
+		} else {
+			budget.setUpdatedBy(Context.getAuthenticatedUser().getId());
+			budget.setUpdatedDate(Calendar.getInstance().getTime());
+			budget = dao.saveBudget(budget);
 		}
-	    return dao.saveBudget(budget);
+	    return budget;
     }
 
 	@Override
@@ -554,10 +566,11 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
     }
 
 	@Override
-    public void retireBudget(Integer id) {
+    public void retireBudget(Integer id) throws Exception {
 	    if (id == null) {
 	    	return;
 	    }
+	    
 	    
 	    Budget budget = dao.getBudget(id);
 	    if (budget != null) {
@@ -571,16 +584,17 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	    		item.setRetiredBy(Context.getAuthenticatedUser().getId());
 	    		item.setRetiredDate(curDate);
 	    		dao.saveBudgetItem(item);
+	    		
+	    		cancelAccountTransaction(item.getTxnNumber(),curDate );
+	    		
+	    		increaseBalance(item);
 	    	}
 	    	dao.saveBudget(budget);
-	    	
-	    	// TODO update expense balance
-	    	
 	    }
     }
 
 	@Override
-    public void retireBudgetItem(Integer id) {
+    public void retireBudgetItem(Integer id) throws Exception {
 	    if (id == null) {
 	    	return;
 	    }
@@ -589,52 +603,74 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	    if (item == null) {
 	    	return;
 	    }
-	    
-	    item.setRetired(true);
+	    Date curDate = Calendar.getInstance().getTime();
 	    item.setRetired(true);
 		item.setRetiredBy(Context.getAuthenticatedUser().getId());
-		item.setRetiredDate(Calendar.getInstance().getTime());
+		item.setRetiredDate(curDate);
 		
+		
+		cancelAccountTransaction(item.getTxnNumber(),curDate );
+		
+		decreaseBalance(item);
 		dao.saveBudgetItem(item);
-		
-		// TODO update expense balance
     }
 
 	@Override
-    public BudgetItem saveBudgetItem(BudgetItem item) {
+    public BudgetItem saveBudgetItem(BudgetItem item) throws Exception {
 		
 		if (item == null) {
 			return null;
 		}
-		
+		 Date curDate = Calendar.getInstance().getTime();
 		if (item.getId() != null) {
-		
-			BudgetItem oldItem = dao.getBudgetItem(item.getId());
+			// update
 			
-			if (!oldItem.getAccount().getId().equals(item.getAccount().getId())) {
-				//oldItem.setAccount(dao.getAccount(item.getAccount().getId()));
-				oldItem.setAccount(item.getAccount());
+			BudgetItem persitedItem = dao.getBudgetItem(item.getId());
+			
+			// update account if needed
+			if (!persitedItem.getAccount().getId().equals(item.getAccount().getId())) {
+				persitedItem.setAccount(item.getAccount());
 			}
 			
-			oldItem.setAmount(item.getAmount());
-			oldItem.setDescription(item.getDescription());
-			oldItem.setEndDate(item.getEndDate());
-			oldItem.setStartDate(item.getStartDate());
+			persitedItem.setAmount(item.getAmount());
+			persitedItem.setDescription(item.getDescription());
+			persitedItem.setEndDate(item.getEndDate());
+			persitedItem.setStartDate(item.getStartDate());
 			
 			if (item.getRetired()) {
-				oldItem.setRetired(true);
-				oldItem.setRetiredBy(Context.getAuthenticatedUser().getId());
-				oldItem.setRetiredDate(Calendar.getInstance().getTime());
+				persitedItem.setRetired(true);
+				persitedItem.setRetiredBy(Context.getAuthenticatedUser().getId());
+				persitedItem.setRetiredDate( curDate);
+
+				cancelAccountTransaction(item.getTxnNumber(),curDate );
+				
+				decreaseBalance(item);
 			} else {
-				oldItem.setUpdatedBy(Context.getAuthenticatedUser().getId());
-				oldItem.setUpdatedDate(Calendar.getInstance().getTime());
+				// Update Budget Item
+				persitedItem.setUpdatedBy(Context.getAuthenticatedUser().getId());
+				persitedItem.setUpdatedDate(Calendar.getInstance().getTime());
+				
+				cancelAccountTransaction(persitedItem.getTxnNumber(),curDate );
+				decreaseBalance(persitedItem);
+				
+				// Add new account transaction
+				addAccountTransaction(item);
+				increaseBalance(item);
 			}
-			return dao.saveBudgetItem(oldItem);
+			return dao.saveBudgetItem(persitedItem);
 		} else {
-			
+			// create new
 			item.setCreatedBy(Context.getAuthenticatedUser().getId());
 			item.setCreatedDate(Calendar.getInstance().getTime());
-			return dao.saveBudgetItem(item);
+			
+			
+			// add account_txn and update balance
+			AccountTransaction acctxn = addAccountTransaction(item);
+			item.setTxnNumber(acctxn.getTxnNumber());;
+			increaseBalance(item);
+			item = dao.saveBudgetItem(item);
+			
+			return item;
 		}
 		
 		

@@ -122,7 +122,7 @@
 			<tbody>
 				<tr><td  colspan="5"><a href="#" onclick="addItem();">Add Item</a></td></tr>
 				<c:forEach items="${budgetCommand.budget.budgetItems}" var="item">
-				<tr>
+				<tr <c:if test="${item.retired}"> style="text-decoration:line-through;"</c:if>>
 					<td ><a href="#" id="item_${item.id}_accountName" onclick="editItem(${item.id })">${item.account.name }</a>
 						<input type="hidden" id="item_${item.id}_accountId" value="${item.account.id}"/>
 					</td>
@@ -131,7 +131,7 @@
 					<td id="item_${item.id}_startDate"><openmrs:formatDate date="${item.startDate}" type="textbox" /></td>
 					<td id="item_${item.id}_endDate"><openmrs:formatDate date="${item.endDate}" type="textbox" /></td>
 					<td id="item_${item.id}_amount">${item.amount}</td>
-					<td><input type="button" value="Delete" onclick="deleteItem(${item.id})"/></td>
+					<td><input type="button" value="Delete" onclick="deleteItem(this,${item.id})"/></td>
 				</tr>
 				</c:forEach>
 				
@@ -350,7 +350,7 @@ function addItemRow(id, accountName, accountId, description, startDate, endDate,
 					+"<td id='item_"+id+"_startDate'>"+startDate+"</td>"
 					+"<td id='item_"+id+"_endDate'>"+endDate+"</td>"
 					+"<td id='item_"+id+"_amount'>"+amount+"</td>"
-					+"<td><input type='button' value='Delete' onclick='deleteItem("+id+")'/></td>"
+					+"<td><input type='button' value='Delete' onclick='deleteItem(this,"+id+")'/></td>"
 					+"</tr>";
 			
 				jQuery("#itemTable tbody").append(row);
@@ -361,7 +361,7 @@ function addItemRow(id, accountName, accountId, description, startDate, endDate,
 					+"<td><input type='hidden' name='budgetItems["+rowCount+"].startDate' value='"+startDate+"' />"+startDate+"</td>"
 					+"<td><input type='hidden' name='budgetItems["+rowCount+"].endDate' value='"+endDate+" '/>"+endDate+"</td>"
 					+"<td><input type='hidden' name='budgetItems["+rowCount+"].amount' value='"+amount+"'/>"+amount+"</td>"
-					+"<td><input type='button' value='Delete' onclick='deleteItem("+id+")'/></td>"
+					+"<td><input type='button' value='Delete' onclick='deleteItem(this,"+id+")'/></td>"
 					+"</tr>";
 				jQuery("#itemTable tbody").append(row);
 		}
@@ -388,7 +388,7 @@ function cancelItem() {
 function deleteItem(_this,id) {
 	if (confirm("Are you sure to delete this Budget Item ?")) {
 		
-		jQuery.post( "budgetItem.form",{budgetItem : id, action : "delete"}, function( data ) {
+		jQuery.post( "budgetItem.form",{budgetItemId : id, action : "delete"}, function( data ) {
 			if (data == "success") {
 				jQuery(_this).parents("tr").get(0).remove();
 			} else {

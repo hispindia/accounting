@@ -357,4 +357,16 @@
 			<column name="description" type="varchar(1000)" />
 		</addColumn>
 	</changeSet>
+	
+	<changeSet author="viet" id="201406191238">
+		<addColumn tableName="accounting_account_txn">
+			<column name="amount" type="decimal(9,2)" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet author="viet" id="20140619858">
+		<addColumn tableName="accounting_budget_item">
+			<column name="txn_number" type="varchar(50)" />
+		</addColumn>
+	</changeSet>
 </databaseChangeLog>

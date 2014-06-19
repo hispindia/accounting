@@ -91,7 +91,12 @@ public class BudgetFormController {
 			command.getBudget().addBudgetItem(item);
 		}
 		
-		Context.getService(AccountingService.class).saveBudget(command.getBudget());
+		try {
+	        Context.getService(AccountingService.class).saveBudget(command.getBudget());
+        }
+        catch (Exception e) {
+	        e.printStackTrace();
+        }
 		status.setComplete();
 		return "redirect:/module/accounting/budget.list";
 	}

@@ -158,7 +158,7 @@ public interface AccountingService extends OpenmrsService {
 	public Budget saveBudget(Budget budget) throws Exception;
 	
 	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
-	public BudgetItem saveBudgetItem(BudgetItem item);
+	public BudgetItem saveBudgetItem(BudgetItem item) throws Exception;
 	
 	public Budget getBudget(Integer id);
 	
@@ -167,8 +167,8 @@ public interface AccountingService extends OpenmrsService {
 	public void deleteBudget(Budget budget);
 	
 	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
-	public void retireBudget(Integer id);
+	public void retireBudget(Integer id) throws Exception;
 	
 	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
-	public void retireBudgetItem(Integer id);
+	public void retireBudgetItem(Integer id) throws Exception;
 }

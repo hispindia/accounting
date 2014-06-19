@@ -67,6 +67,9 @@ public class BudgetItem {
 	@Type(type="timestamp")
 	@Column(name="retired_date")
 	private Date retiredDate;
+	
+	@Column(name = "txn_number")
+	private String txnNumber;
 
 	
     public Integer getId() {
@@ -263,6 +266,18 @@ public class BudgetItem {
 	            + ", amount=" + amount + ", startDate=" + startDate + ", endDate=" + endDate + ", createdDate="
 	            + createdDate + ", createdBy=" + createdBy + ", updatedDate=" + updatedDate + ", updatedBy=" + updatedBy
 	            + ", retired=" + retired + ", retiredBy=" + retiredBy + ", retiredDate=" + retiredDate + "]";
+    }
+
+
+	
+    public String getTxnNumber() {
+    	return txnNumber;
+    }
+
+
+	
+    public void setTxnNumber(String txnNumber) {
+    	this.txnNumber = txnNumber;
     }
 	
 	
