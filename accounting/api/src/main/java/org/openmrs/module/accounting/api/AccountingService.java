@@ -93,13 +93,16 @@ public interface AccountingService extends OpenmrsService {
 	public void deleteFiscalYear(FiscalYear fiscalYear);
 	
 	@Transactional(readOnly = true)
-	public boolean isOverlapFiscalYear(String from, String to);
+	public boolean isOverlapFiscalYear(Integer fiscalYearId, String from, String to);
 	
 	@Transactional(readOnly = true)
-	public boolean isOverlapFiscalYear(Date from, Date to);
+	public boolean isOverlapFiscalYear(Integer fiscalYearId, Date from, Date to);
 	
 	@Transactional(readOnly = true)
 	public FiscalYear getActiveFiscalYear();
+	
+	@Transactional(readOnly = true)
+	public List<FiscalPeriod> getCurrentYearPeriods();
 	
 	/**
 	 * 	Period

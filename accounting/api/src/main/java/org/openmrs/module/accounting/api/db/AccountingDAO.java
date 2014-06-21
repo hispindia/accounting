@@ -338,9 +338,13 @@ public class AccountingDAO {
 	 * @param to
 	 * @return
 	 */
-	public boolean isOverlapFiscalYear(Date from, Date to) {
+	public boolean isOverlapFiscalYear(Integer id, Date from, Date to) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(FiscalYear.class);
 		criteria.add(Restrictions.and(Restrictions.lt("startDate", to), Restrictions.gt("endDate",from)));
+		criteria.add(Restrictions.ne("status", GeneralStatus.INACTIVE));
+		if (id != null) {
+			criteria.add(Restrictions.ne("id", id));
+		}
 		return criteria.list().isEmpty() ? false: true;
 		
 	}

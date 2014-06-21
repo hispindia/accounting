@@ -155,8 +155,16 @@
 	}
 	
 	function createPeriodRow (period){
-			var row = "<tr><td>"+period.name+"</td><td>"+formatDate(period.startDate)+"</td><td>"+formatDate(period.endDate)+"</td></tr>";
+		var table = document.getElementById("tablePeriods");
+		var rowCount = table.rows.length;
+		rowCount = rowCount - 1 // count start from 0, also need to minus the Add Item link
+		var row = "<tr>"
+			+"<td><input type='hidden' name='periods["+rowCount+"].name' value='"+period.name+"'/>"			+period.name+"</td>"
+			+"<td><input type='hidden' name='periods["+rowCount+"].description' value='"+formatDate(period.startDate)+"'/>"	+formatDate(period.startDate)+"</td>"
+			+"<td><input type='hidden' name='periods["+rowCount+"].description' value='"+formatDate(period.endDate)+"'/>"	+formatDate(period.endDate)+"</td>"
+			+"</tr>";
 		jQuery("#tablePeriods tbody").append(row);
+		
 	}
 	
 </script>
@@ -164,7 +172,7 @@
 	<span class="error"><spring:message
 			code="${error.defaultMessage}" text="${error.defaultMessage}" /> </span>
 </c:forEach>
-<spring:bind path="fiscalYear">
+<spring:bind path="command">
 	<c:if test="${not empty  status.errorMessages}">
 		<div class="error">
 			<ul>
@@ -175,7 +183,7 @@
 		</div>
 	</c:if>
 </spring:bind>
-<form method="post" class="box" id="mainForm">
+<form:form commandName="command"  method="post" cssClass="box" id="mainForm">
 <input type="hidden" id="jsonPeriods" name="jsonPeriods" />
 	<table>
 		<tr>
@@ -237,8 +245,8 @@
 	<table id="tablePeriods" class="box">
 		<thead><td>Period Name</td><td>Start Date</td>	<td>End Date</td></thead>
 		<tbody>
-			<c:if test="${ not empty fiscalYear.periods  }">
-				<c:forEach items="${fiscalYear.periods }" var="p">
+			<c:if test="${ not empty command.fiscalYear.periods  }">
+				<c:forEach items="${command.fiscalYear.periods }" var="p">
 					<tr>
 						<td>${p.name }</td>
 						<td><openmrs:formatDate date="${p.startDate}" type="textbox" /></td>
@@ -251,5 +259,5 @@
 	</table>
 	
 	
-</form>
+</form:form>
 <%@ include file="/WEB-INF/template/footer.jsp"%>

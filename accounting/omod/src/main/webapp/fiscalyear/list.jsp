@@ -69,6 +69,7 @@
 						</th>
 						<th><spring:message code="accounting.endDate" />
 						</th>
+						<th>Status</th>
 						<th></th>
 					</tr>
 					<c:forEach items="${fiscalYears}" var="fiscalyear"
@@ -82,6 +83,7 @@
 							</td>
 							<td><openmrs:formatDate date="${fiscalyear.startDate}" type="textbox" /></td>
 							<td><openmrs:formatDate date="${fiscalyear.endDate}" type="textbox" /></td>
+							<td>${fiscalyear.status }</td>
 							<td><input type="checkbox" name="ids"
 								value="${fiscalyear.id}" />
 							</td>

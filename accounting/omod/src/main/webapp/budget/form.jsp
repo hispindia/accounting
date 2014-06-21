@@ -74,6 +74,18 @@
 				</spring:bind></td>
 		</tr>
 		<tr>
+			<td>Fiscal Period</td>
+			<td>
+				<select onChange="selectPeriod(this)">
+					<option value="">--Select Period---</option>
+					<c:forEach items="${periods}" var="period">
+
+						<option value="<openmrs:formatDate date='${period.startDate}' type='textbox' />_<openmrs:formatDate date='${period.endDate}' type='textbox' />">${period.name}</option>
+					</c:forEach>
+				</select>
+			</td>
+		</tr>
+		<tr>
 			<td valign="top"><spring:message code="accounting.startDate" />
 			</td>
 			<td><spring:bind path="budget.startDate">
@@ -131,7 +143,7 @@
 					<td id="item_${item.id}_startDate"><openmrs:formatDate date="${item.startDate}" type="textbox" /></td>
 					<td id="item_${item.id}_endDate"><openmrs:formatDate date="${item.endDate}" type="textbox" /></td>
 					<td id="item_${item.id}_amount">${item.amount}</td>
-					<td><input type="button" value="Delete" onclick="deleteItem(this,${item.id})"/></td>
+					<td > <c:if test="${!item.retired}"> <input type="button" value="Delete" onclick="deleteItem(this,${item.id})" /></c:if></td>
 				</tr>
 				</c:forEach>
 				
@@ -140,6 +152,7 @@
 </form:form>
 
 <div id="itemDiv" style="display:none">
+<span><strong>Add Budget Item</strong></span>
 <input type="hidden" id="itemId" value=""/>
 
 	<table>
@@ -169,6 +182,15 @@
 
 <script>
 
+function selectPeriod(this_) {
+	var selected = jQuery(this_).val();
+	var arr = selected.split("_");
+	var startDate = arr[0];
+	var endDate = arr[1];
+
+	jQuery("#budgetStartDate").val(startDate);
+	jQuery("#budgetEndDate").val(endDate);
+}
 
 jQuery(document).ready(function(){
 	var arrAccount=[];
@@ -334,7 +356,8 @@ function saveItem() {
 }
 
 function addItemRow(id, accountName, accountId, description, startDate, endDate, amount) {
-	
+		
+		amount = parseFloat(amount).toFixed(2);
 		var table = document.getElementById("itemTable");
 		var rowCount = table.rows.length;
 		rowCount = rowCount - 2 // count start from 0, also need to minus the Add Item link
@@ -355,6 +378,7 @@ function addItemRow(id, accountName, accountId, description, startDate, endDate,
 			
 				jQuery("#itemTable tbody").append(row);
 		} else {
+			// ADD NEW BUDGET
 				var row = "<tr>"
 					+"<td><a href='#' id='item_"+id+"_accountName' onclick='editItem("+id+")'>"+accountName+"</a> <input type='hidden' name='budgetItems["+rowCount+"].account.id' value='"+accountId+"'/></td>"
 					+"<td><input type='hidden' name='budgetItems["+rowCount+"].description' value='"+description+"'/>"+description+"</td>"
@@ -376,6 +400,8 @@ function addItemRow(id, accountName, accountId, description, startDate, endDate,
 **/
 function addItem() {
 	resetItemForm();
+	jQuery("#itemStartDate").val(jQuery("#budgetStartDate").val());
+	jQuery("#itemEndDate").val(jQuery("#budgetEndDate").val());
 	tb_show("Add Budget Item","#TB_inline?height=150&width=300&inlineId=itemDiv&modal=true",null);
 }
 /**
@@ -390,11 +416,14 @@ function deleteItem(_this,id) {
 		
 		jQuery.post( "budgetItem.form",{budgetItemId : id, action : "delete"}, function( data ) {
 			if (data == "success") {
-				jQuery(_this).parents("tr").get(0).remove();
+				var tr = jQuery(_this).parents("tr");
+				jQuery(tr).css("text-decoration","line-through");
+				jQuery(_this).remove();
 			} else {
 				alert("Can not delete Budget Item." + data);
 			}
 		});
+		
 	}
 	
 }

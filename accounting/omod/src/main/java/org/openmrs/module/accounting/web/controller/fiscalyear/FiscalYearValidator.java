@@ -46,8 +46,9 @@ public class FiscalYearValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 */
-	public void validate(Object command, Errors error) {
-		FiscalYear fiscalYear = (FiscalYear) command;
+	public void validate(Object obj, Errors error) {
+		 FiscalYearCommand command = (FiscalYearCommand) obj;
+		 FiscalYear fiscalYear = command.getFiscalYear();
 		AccountingService accountingService = (AccountingService) Context.getService(AccountingService.class);
 		if (StringUtils.isBlank(fiscalYear.getName())) {
 			error.reject("accounting.name.required");
@@ -71,8 +72,7 @@ public class FiscalYearValidator implements Validator {
 			error.reject("accounting.endDate.required");
 		}
 		
-		
-		if (accountingService.isOverlapFiscalYear(fiscalYear.getStartDate(), fiscalYear.getEndDate())) {
+		if (accountingService.isOverlapFiscalYear(fiscalYear.getId(), fiscalYear.getStartDate(), fiscalYear.getEndDate())) {
 			error.reject("accounting.overlap");
 		}
 		

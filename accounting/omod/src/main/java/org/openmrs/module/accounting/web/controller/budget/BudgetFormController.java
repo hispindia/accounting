@@ -19,6 +19,7 @@ import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.Budget;
 import org.openmrs.module.accounting.api.model.BudgetItem;
+import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -56,6 +57,12 @@ public class BudgetFormController {
 		}
 	}
 	
+	
+	@ModelAttribute("periods")
+	public List<FiscalPeriod> registerPeriods() {
+		return Context.getService(AccountingService.class).getCurrentYearPeriods();
+	}
+	
 	@RequestMapping(value="/module/accounting/budget.form",method=RequestMethod.GET)
 	public String get(@RequestParam(value="id", required=false) Integer id, Model model) {
 		BudgetCommand command =new BudgetCommand();
@@ -77,18 +84,15 @@ public class BudgetFormController {
 			return "/module/accounting/budget/form";
 		}
 		
-		command.getBudget().setCreatedBy(Context.getAuthenticatedUser().getId());
-		command.getBudget().setCreatedDate(Calendar.getInstance().getTime());
-		
-		for(BudgetItem item : command.getBudgetItems()) {
-			System.out.println(item);
-		}
-		
-		for (BudgetItem item : command.getBudgetItems()) {
-			item.setBudget(command.getBudget());
-			item.setCreatedBy(command.getBudget().getCreatedBy());
-			item.setCreatedDate(command.getBudget().getCreatedDate());
-			command.getBudget().addBudgetItem(item);
+		if (command.getBudget().getId() == null ) {
+			command.getBudget().setCreatedBy(Context.getAuthenticatedUser().getId());
+			command.getBudget().setCreatedDate(Calendar.getInstance().getTime());
+			for (BudgetItem item : command.getBudgetItems()) {
+				item.setBudget(command.getBudget());
+				item.setCreatedBy(command.getBudget().getCreatedBy());
+				item.setCreatedDate(command.getBudget().getCreatedDate());
+				command.getBudget().addBudgetItem(item);
+			}
 		}
 		
 		try {

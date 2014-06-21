@@ -101,13 +101,6 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	}
 	
 	public FiscalYear saveFiscalYear(FiscalYear fy) {
-		if (fy.getId() == null) {
-			fy.setCreatedDate(Calendar.getInstance().getTime());
-			fy.setCreatedBy(Context.getAuthenticatedUser().getId());
-		} else {
-			fy.setUpdatedBy(Context.getAuthenticatedUser().getId());
-			fy.setUpdatedDate(Calendar.getInstance().getTime());
-		}
 		
 		return dao.saveFiscalYear(fy);
 	}
@@ -505,13 +498,13 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
     }
 
 	@Override
-    public boolean isOverlapFiscalYear(String from, String to) {
-	    return dao.isOverlapFiscalYear(DateUtils.getDateFromStr(from), DateUtils.getDateFromStr(to));
+    public boolean isOverlapFiscalYear(Integer fiscalYearId, String from, String to) {
+	    return dao.isOverlapFiscalYear( fiscalYearId, DateUtils.getDateFromStr(from), DateUtils.getDateFromStr(to));
     }
 
 	@Override
-    public boolean isOverlapFiscalYear(Date from, Date to) {
-	    return dao.isOverlapFiscalYear(from, to);
+    public boolean isOverlapFiscalYear(Integer fiscalYearId,  Date from, Date to) {
+	    return dao.isOverlapFiscalYear(fiscalYearId, from, to);
     }
 
 	@Override
@@ -675,4 +668,14 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		
 		
     }
+
+	@Override
+    public List<FiscalPeriod> getCurrentYearPeriods() {
+		FiscalYear year = getActiveFiscalYear();
+		if ( year != null ) {
+			return year.getPeriods();
+		} else {
+			return null;
+		}
+	}
 }

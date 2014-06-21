@@ -4,8 +4,9 @@ package org.openmrs.module.accounting.api.model;
  * @author viet
  */
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -32,7 +33,7 @@ public class FiscalYear {
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "fiscalYear", targetEntity = FiscalPeriod.class)
 	@javax.persistence.OrderBy("startDate, endDate")
-	private Set<FiscalPeriod> periods;
+	private List<FiscalPeriod> periods;
 	
 	@Column(name = "start_date")
 	@Type(type="timestamp")
@@ -197,17 +198,6 @@ public class FiscalYear {
 	public int getUpdatedBy() {
 		return updatedBy;
 	}
-
-	
-    public Set<FiscalPeriod> getPeriods() {
-    	return periods;
-    }
-
-	
-    public void setPeriods(Set<FiscalPeriod> periods) {
-    	this.periods = periods;
-    }
-
 	
     public GeneralStatus getStatus() {
     	return status;
@@ -220,11 +210,27 @@ public class FiscalYear {
 
 	@Override
     public String toString() {
-	    return "FiscalYear [id=" + id + ", periods=" + periods + ", startDate=" + startDate + ", endDate=" + endDate
+	    return "FiscalYear [id=" + id + ", startDate=" + startDate + ", endDate=" + endDate
 	            + ", openingBalance=" + openingBalance + ", closingBalance=" + closingBalance + ", name=" + name
 	            + ", createdDate=" + createdDate + ", createdBy=" + createdBy + ", updatedDate=" + updatedDate
 	            + ", updatedBy=" + updatedBy + ", status=" + status + "]";
     }
 
+	
+    public List<FiscalPeriod> getPeriods() {
+    	return periods;
+    }
+
+	
+    public void setPeriods(List<FiscalPeriod> periods) {
+    	this.periods = periods;
+    }
+
+    public void addPeriod(FiscalPeriod period) {
+    	if (periods == null) {
+    		periods = new ArrayList<FiscalPeriod>();
+    	} 
+    	periods.add(period);
+    }
 	
 }

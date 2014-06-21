@@ -148,7 +148,7 @@ public class FiscalPeriod {
 
 	@Override
     public String toString() {
-	    return "FiscalPeriod [id=" + id + ", fiscalYear=" + fiscalYear + ", name=" + name + ", startDate=" + startDate
+	    return "FiscalPeriod [id=" + id + ", name=" + name + ", startDate=" + startDate
 	            + ", endDate=" + endDate + ", status=" + status + ", createdDate=" + createdDate + ", updatedDate="
 	            + updatedDate + ", createdBy=" + createdBy + ", updatedBy=" + updatedBy + "]";
     }
