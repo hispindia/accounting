@@ -27,6 +27,7 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.AccountBalance;
 import org.openmrs.module.accounting.api.model.AccountTransaction;
+import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.BalanceStatus;
 import org.openmrs.module.accounting.api.model.Budget;
 import org.openmrs.module.accounting.api.model.BudgetItem;
@@ -35,6 +36,8 @@ import org.openmrs.module.accounting.api.model.FiscalYear;
 import org.openmrs.module.accounting.api.model.GeneralStatus;
 import org.openmrs.module.accounting.api.model.IncomeReceipt;
 import org.openmrs.module.accounting.api.model.IncomeReceiptItem;
+import org.openmrs.module.accounting.api.model.Payee;
+import org.openmrs.module.accounting.api.model.Payment;
 import org.openmrs.module.accounting.api.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -58,6 +61,15 @@ public class AccountingDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Account.class);
 		if (!includeRetired)
 			criteria.add(Restrictions.eq("retired", false));
+		return criteria.list();
+		
+	}
+	
+	public List<Account> getAccounts(AccountType accountType, boolean includeRetired) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Account.class);
+		if (!includeRetired)
+			criteria.add(Restrictions.eq("retired", false));
+		criteria.add(Restrictions.eq("accountType", accountType));
 		return criteria.list();
 		
 	}
@@ -356,4 +368,55 @@ public class AccountingDAO {
 	}
 	
 	
+	/**
+	 * PAYEE
+	 */
+	
+	public Payee savePayee(Payee payee){
+		return (Payee) sessionFactory.getCurrentSession().merge(payee);
+	}
+	
+	public void deletePayee(Payee payee){
+		sessionFactory.getCurrentSession().delete(payee);
+	}
+	
+	public Payee getPayee(Integer id) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Payee.class);
+		criteria.add(Restrictions.eq("id",id));
+		return (Payee) criteria.uniqueResult();
+	}
+	
+	public List<Payee> listPayees(boolean includeRetired) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Payee.class);
+		if (!includeRetired) {
+			criteria.add(Restrictions.eq("retired",false));
+		}
+		return criteria.list();
+	}
+	
+	/**
+	 * PAYMENT
+	 */
+	
+	public Payment savePayment(Payment payment){
+		return (Payment) sessionFactory.getCurrentSession().merge(payment);
+	}
+	
+	public void deletePayment(Payment payment){
+		sessionFactory.getCurrentSession().delete(payment);
+	}
+	
+	public Payment getPayment(Integer id) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Payment.class);
+		criteria.add(Restrictions.eq("id",id));
+		return (Payment) criteria.uniqueResult();
+	}
+	
+	public List<Payment> listPayments(boolean includeRetired) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Payment.class);
+		if (!includeRetired) {
+			criteria.add(Restrictions.eq("retired",false));
+		}
+		return criteria.list();
+	}
 }

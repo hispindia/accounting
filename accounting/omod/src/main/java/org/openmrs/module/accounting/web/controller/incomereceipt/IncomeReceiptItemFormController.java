@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.model.Account;
+import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.IncomeReceipt;
 import org.openmrs.module.accounting.api.model.IncomeReceiptItem;
 import org.openmrs.module.accounting.api.model.IncomeReceiptType;
@@ -39,7 +40,7 @@ public class IncomeReceiptItemFormController {
 	
 	@ModelAttribute("accounts")
 	public String registerAccounts() {
-		Collection<Account> accounts = Context.getService(AccountingService.class).getAccounts(false);
+		Collection<Account> accounts = Context.getService(AccountingService.class).listAccount(AccountType.INCOME,false);
 		if (accounts != null ) {
 			return buildJSONAccounts(new ArrayList<Account>(accounts));
 		} else {

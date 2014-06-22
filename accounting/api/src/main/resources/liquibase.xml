@@ -345,7 +345,7 @@
 			</column>
 			<column name="updated_by" type="int" />
 			<column name="amount" type="decimal(9,2)" />
-				<column name="retired_date" type="DATETIME" />
+			<column name="retired_date" type="DATETIME" />
 			<column name="retired_by" type="int" />
 			<column name="retired" defaultValueBoolean="false" type="BOOLEAN">
 				<constraints nullable="false" />
@@ -368,5 +368,63 @@
 		<addColumn tableName="accounting_budget_item">
 			<column name="txn_number" type="varchar(50)" />
 		</addColumn>
+	</changeSet>
+	
+	<changeSet author="viet" id="201406220305">
+		<createTable tableName="accounting_payment">
+			<column name="payment_id" autoIncrement="true" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="account_id" type="int"/>
+			<column name="payee_id" type="int"/>
+			<column name="ref_order_no" type="varchar(255)"/>
+			<column name="commitment_no" type="int"/>
+			<column name="voucher_no" type="varchar(255)"/>
+			<column name="cost" type="decimal(9,2)"/>
+			<column name="total_commitment" type="decimal(9,2)"/>
+			<column name="payable" type="decimal(9,2)"/>
+			<column name="total_payable" type="decimal(9,2)"/>
+			<column name="actual_payment" type="decimal(9,2)"/>
+			<column name="total_actual_payment" type="decimal(9,2)"/>
+			<column name="total_payable_plus_payment" type="decimal(9,2)"/>
+			<column name="payment_date" type="DATETIME"/>
+			<column name="updated_date" type="DATETIME" />
+			<column name="created_date" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="created_by" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="updated_by" type="int" />
+			<column name="retired_by" type="int" />
+			<column name="retired_date" type="DATETIME" />
+			<column name="retired" defaultValueBoolean="false" type="BOOLEAN">
+				<constraints nullable="false" />
+			</column>
+			<column name="status" type="varchar(50)"/>
+			<column name="note" type="varchar(1000)"/>
+		</createTable>
+	</changeSet>
+	<changeSet author="viet" id="201406220310">
+		<createTable tableName="accounting_payee">
+			<column name="payee_id" autoIncrement="true" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="name" type="varchar(255)"/>
+			<column name="description" type="varchar(1000)"/>
+			<column name="updated_date" type="DATETIME" />
+			<column name="created_date" type="DATETIME">
+				<constraints nullable="false" />
+			</column>
+			<column name="created_by" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="updated_by" type="int" />
+			<column name="retired_by" type="int" />
+			<column name="retired_date" type="DATETIME" />
+			<column name="retired" defaultValueBoolean="false" type="BOOLEAN">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
 	</changeSet>
 </databaseChangeLog>

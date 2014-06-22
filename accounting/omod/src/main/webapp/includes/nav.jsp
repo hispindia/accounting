@@ -23,6 +23,7 @@
 	<b><a href="fiscalyear.list">Fiscal Year</a></b>&nbsp; | &nbsp; 
 	<b><a href="accountBalance.htm">Account Balance</a></b>&nbsp; | &nbsp; 
 	<b><a href="incomereceipt.list">Income</a></b>&nbsp; | &nbsp;
-	<b><a href="budget.list#">Budget</a></b>
+	<b><a href="budget.list">Budget</a></b>&nbsp; | &nbsp;
+	<b><a href="payment.list">Payment</a></b>
 </p>
 

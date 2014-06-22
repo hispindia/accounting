@@ -17,6 +17,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.model.Account;
+import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.Budget;
 import org.openmrs.module.accounting.api.model.BudgetItem;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
@@ -49,7 +50,7 @@ public class BudgetFormController {
 	
 	@ModelAttribute("accounts")
 	public String registerAccounts() {
-		Collection<Account> accounts = Context.getService(AccountingService.class).getAccounts(false);
+		Collection<Account> accounts = Context.getService(AccountingService.class).listAccount(AccountType.EXPENSE,false);
 		if (accounts != null ) {
 			return buildJSONAccounts(new ArrayList<Account>(accounts));
 		} else {

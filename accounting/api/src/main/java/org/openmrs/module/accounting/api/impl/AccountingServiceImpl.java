@@ -16,6 +16,7 @@ import org.openmrs.module.accounting.api.db.AccountingDAO;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.AccountBalance;
 import org.openmrs.module.accounting.api.model.AccountTransaction;
+import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.BalanceStatus;
 import org.openmrs.module.accounting.api.model.Budget;
 import org.openmrs.module.accounting.api.model.BudgetItem;
@@ -24,6 +25,8 @@ import org.openmrs.module.accounting.api.model.FiscalYear;
 import org.openmrs.module.accounting.api.model.GeneralStatus;
 import org.openmrs.module.accounting.api.model.IncomeReceipt;
 import org.openmrs.module.accounting.api.model.IncomeReceiptItem;
+import org.openmrs.module.accounting.api.model.Payee;
+import org.openmrs.module.accounting.api.model.Payment;
 import org.openmrs.module.accounting.api.model.TransactionStatus;
 import org.openmrs.module.accounting.api.model.TransactionType;
 import org.openmrs.module.accounting.api.utils.DateUtils;
@@ -678,4 +681,78 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			return null;
 		}
 	}
+
+	@Override
+    public Payee savePayee(Payee payee) {
+		if (payee.getId() == null ) {
+			payee.setCreatedBy(Context.getAuthenticatedUser().getId());
+			payee.setCreatedDate(Calendar.getInstance().getTime());
+		} else {
+			payee.setUpdatedBy(Context.getAuthenticatedUser().getId());
+			payee.setUpdatedDate(Calendar.getInstance().getTime());
+		}
+		return dao.savePayee(payee);
+	}
+
+	@Override
+    public void deletePayee(Integer id) {
+		Payee payee = dao.getPayee(id);
+		if (payee != null) {
+			dao.deletePayee(payee);;
+		}
+    }
+
+	@Override
+    public Payee getPayee(Integer id) {
+	    return dao.getPayee(id);
+    }
+
+	@Override
+    public List<Payee> listActivePayees() {
+	    return dao.listPayees(false);
+    }
+
+	@Override
+    public List<Payee> listAllPayees() {
+	    return dao.listPayees(true);
+    }
+
+	@Override
+    public Payment savePayment(Payment payment) {
+		
+		if (payment.getId() == null) {
+			payment.setCreatedBy(Context.getAuthenticatedUser().getId());
+			payment.setCreatedDate(Calendar.getInstance().getTime());
+		} else {
+			payment.setUpdatedBy(Context.getAuthenticatedUser().getId());
+			payment.setUpdatedDate(Calendar.getInstance().getTime());
+		}
+		
+	    return dao.savePayment(payment);
+    }
+
+	@Override
+    public void deletePayment(Payment payment) {
+		dao.deletePayment(payment);
+    }
+
+	@Override
+    public Payment getPayment(Integer id) {
+	    return dao.getPayment(id);
+    }
+
+	@Override
+    public List<Payment> listActivePayments() {
+	    return dao.listPayments(false);
+    }
+
+	@Override
+    public List<Payment> listAllPayments() {
+	    return dao.listPayments(true);
+    }
+
+	@Override
+    public List<Account> listAccount(AccountType accType, boolean includeDisabled) {
+	    return dao.getAccounts(accType, includeDisabled);
+    }
 }

@@ -8,6 +8,7 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.AccountBalance;
+import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.Budget;
 import org.openmrs.module.accounting.api.model.BudgetItem;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
@@ -15,6 +16,8 @@ import org.openmrs.module.accounting.api.model.FiscalYear;
 import org.openmrs.module.accounting.api.model.GeneralStatus;
 import org.openmrs.module.accounting.api.model.IncomeReceipt;
 import org.openmrs.module.accounting.api.model.IncomeReceiptItem;
+import org.openmrs.module.accounting.api.model.Payee;
+import org.openmrs.module.accounting.api.model.Payment;
 import org.openmrs.module.accounting.api.utils.AccountingConstants;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +49,10 @@ public interface AccountingService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized({ AccountingConstants.PRIV_VIEW_ACCOUNT })
 	public Collection<Account> getAccounts(boolean includeDisabled);
+	
+	@Transactional(readOnly = true)
+	@Authorized({ AccountingConstants.PRIV_VIEW_ACCOUNT })
+	public List<Account> listAccount(AccountType accType, boolean includeDisabled);
 	
 	@Authorized({ AccountingConstants.PRIV_VIEW_ACCOUNT })
 	public Account getAccount(int id);
@@ -174,4 +181,33 @@ public interface AccountingService extends OpenmrsService {
 	
 	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
 	public void retireBudgetItem(Integer id) throws Exception;
+	
+	/**
+	 * PAYEE
+	 */
+	
+	public Payee savePayee(Payee payee);
+	
+	public void deletePayee(Integer id);
+	
+	public Payee getPayee(Integer id) ;
+	
+	public List<Payee> listActivePayees();
+	
+	public List<Payee> listAllPayees();
+	
+	/**
+	 * PAYMENT 
+	 */
+	
+	public Payment savePayment(Payment payment);
+	
+	public void deletePayment(Payment payment);
+	
+	public Payment getPayment(Integer id);
+	
+	public List<Payment> listActivePayments();
+	
+	public List<Payment> listAllPayments();
+	
 }

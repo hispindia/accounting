@@ -20,7 +20,7 @@ public class AccountPropertySupport extends PropertyEditorSupport{
     @Override
     public String getAsText() {
     	Account c = (Account) this.getValue();
-        return c.getName();
+        return c != null ? c.getName() : "";
     }
 	
 }

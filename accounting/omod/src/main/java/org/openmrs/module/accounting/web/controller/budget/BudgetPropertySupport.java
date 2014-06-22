@@ -11,7 +11,7 @@ public class BudgetPropertySupport extends PropertyEditorSupport {
 	@Override
     public String getAsText() {
 		Budget budget = (Budget) this.getValue();
-	    return budget.getName();
+	    return budget != null ? budget.getName() : "";
     }
 
 	@Override
