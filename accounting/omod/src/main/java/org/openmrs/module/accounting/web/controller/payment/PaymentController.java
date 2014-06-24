@@ -3,8 +3,6 @@ package org.openmrs.module.accounting.web.controller.payment;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -15,9 +13,11 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.AccountType;
+import org.openmrs.module.accounting.api.model.BudgetItem;
 import org.openmrs.module.accounting.api.model.Payee;
 import org.openmrs.module.accounting.api.model.Payment;
 import org.openmrs.module.accounting.api.model.PaymentStatus;
+import org.openmrs.module.accounting.api.utils.DateUtils;
 import org.openmrs.module.accounting.web.controller.budget.AccountPropertySupport;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class PaymentController {
@@ -54,13 +55,14 @@ public class PaymentController {
 	
 	@ModelAttribute("accounts")
 	public String registerAccounts() {
-		Collection<Account> accounts = Context.getService(AccountingService.class).listAccount(AccountType.EXPENSE,false);
+		List<Account> accounts = Context.getService(AccountingService.class).listAccount(AccountType.EXPENSE,false);
 		if (accounts != null ) {
-			return buildJSONAccounts(new ArrayList<Account>(accounts));
+			return buildJSONAccounts(accounts);
 		} else {
 			return "";
 		}
 	}
+	
 	
 	
 	@ModelAttribute("paymentStatues")
@@ -102,6 +104,17 @@ public class PaymentController {
 		return "redirect:/module/accounting/payment.list";
 	}
 	
+	@RequestMapping(value="/module/accounting/getPaymentAIE.htm", method=RequestMethod.GET)
+	@ResponseBody
+	public String getPaymentAIE(@RequestParam("accountId") Integer accountId, @RequestParam("paymentDate") String paymentDate) {
+		Date date = DateUtils.getDateFromStr(paymentDate);
+		BudgetItem item = Context.getService(AccountingService.class).getBudgetItem(accountId, date);
+		if (item != null) {
+			return item.getAmount().toString();
+		} else {
+			return "NA";
+		}
+	}
 	private String buildJSON(List<Payee> payees) {
 		
 		ObjectMapper mapper = new ObjectMapper();

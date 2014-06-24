@@ -11,6 +11,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.db.AccountingDAO;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.AccountBalance;
+import org.openmrs.module.accounting.api.model.AccountBudgetWrapper;
 import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.BalanceStatus;
 import org.openmrs.module.accounting.api.model.Budget;
@@ -187,37 +188,33 @@ public class AccountingDaoTest extends BaseModuleContextSensitiveTest {
 		Date from = DateUtils.getDateFromStr("1/6/2013");
 		Date to = DateUtils.getDateFromStr("31/12/2013");
 		
-		Assert.assertFalse(dao.isOverlapFiscalYear(from, to));
+		Assert.assertFalse(dao.isOverlapFiscalYear(fy.getId(),from, to));
 		
 		from = DateUtils.getDateFromStr("1/1/2014");
 		to = DateUtils.getDateFromStr("31/12/2014");
 		
-		Assert.assertTrue(dao.isOverlapFiscalYear(from, to));
+		Assert.assertTrue(dao.isOverlapFiscalYear(fy.getId(),from, to));
 		
 		from = DateUtils.getDateFromStr("1/6/2013");
 		to = DateUtils.getDateFromStr("1/6/2014");
 		
-		Assert.assertTrue(dao.isOverlapFiscalYear(from, to));
+		Assert.assertTrue(dao.isOverlapFiscalYear(fy.getId(),from, to));
 		
 		from = DateUtils.getDateFromStr("1/6/2014");
 		to = DateUtils.getDateFromStr("1/6/2015");
 		
-		Assert.assertTrue(dao.isOverlapFiscalYear(from, to));
+		Assert.assertTrue(dao.isOverlapFiscalYear(fy.getId(),from, to));
 		
 		from = DateUtils.getDateFromStr("1/1/2015");
 		to = DateUtils.getDateFromStr("31/12/2015");
 		
-		Assert.assertFalse(dao.isOverlapFiscalYear(from, to));
+		Assert.assertFalse(dao.isOverlapFiscalYear(fy.getId(),from, to));
 	}
 	
 	@Test
 	public void shouldSaveBudget() {
 		Date curDate = Calendar.getInstance().getTime();
 	
-		
-		
-		
-		
 		/**
 		 * Create Account
 		 */
@@ -259,7 +256,64 @@ public class AccountingDaoTest extends BaseModuleContextSensitiveTest {
 		Context.clearSession();
 		
 		Assert.assertNotNull(persitedBudget);
-		System.out.println("===============Items : "+persitedBudget.getBudgetItems());
+		
+	}
+	
+	@Test
+	public void shouldGetAccountBudget(){
+		Date curDate = Calendar.getInstance().getTime();
+		Account acc = new Account("Account 1");
+		acc.setAccountType(AccountType.EXPENSE); 
+		acc.setCreatedDate(curDate);
+		acc = dao.saveAccount(acc);
+		Context.flushSession();
+		Context.clearSession();
+		
+		Date from = DateUtils.getDateFromStr("1/6/2014");
+		Date to = DateUtils.getDateFromStr("30/6/2014");
+		
+		Budget budget = new Budget();
+		budget.setCreatedBy(1);
+		budget.setCreatedDate(curDate);
+		budget.setDescription("test");
+		budget.setName("test");
+		
+		BudgetItem item1 = new BudgetItem();
+		item1.setAccount(acc);
+		item1.setBudget(budget);
+		item1.setAmount(new BigDecimal("1000.00"));
+		item1.setCreatedBy(1);
+		item1.setCreatedDate(curDate);
+		item1.setStartDate(from);
+		item1.setEndDate(to);
+		budget.addBudgetItem(item1);
+		
+		
+		 //from = DateUtils.getDateFromStr("1/7/2014");
+		// to = DateUtils.getDateFromStr("31/7/2014");
+		
+		
+		
+		Budget persitedBudget = dao.saveBudget(budget);
+
+		Context.flushSession();
+		Context.clearSession();
+		
+		BudgetItem item2 = new BudgetItem();
+		item2.setAccount(acc);
+		item2.setBudget(budget);
+		item2.setAmount(new BigDecimal("2000.00"));
+		item2.setCreatedBy(1);
+		item2.setCreatedDate(curDate);
+		item1.setStartDate(from);
+		item1.setEndDate(to);
+		//budget.addBudgetItem(item2);
+		
+		System.out.println(dao.isBudgetItemOverlap(acc, from, to));
+		Assert.assertTrue(dao.isBudgetItemOverlap(acc, from, to));
+//		BudgetItem result = da÷o.getB÷÷udgetItem(DateUtils.getDateFromStr("31/7/2014"),acc);
+//		System.out.println÷("========"+result);
+		
 		
 	}
 }

@@ -121,10 +121,11 @@
 		type="button" value="<spring:message code="general.cancel"/>"
 		onclick="javascript:window.location.href='budget.list'">
 		<br>
+		<div  <c:if test="${empty budgetCommand.budget.id }"> style="display: none"</c:if>>
 		<span ><strong>Budget Items</strong></span>
 		<table id="itemTable">
 			<thead>
-				<th>Account</th>
+				<th>Account </th>
 				<th>Description</th>
 				<th>Start Date</th>
 				<th>End Date</th>
@@ -133,6 +134,7 @@
 			</thead>
 			<tbody>
 				<tr><td  colspan="5"><a href="#" onclick="addItem();">Add Item</a></td></tr>
+			
 				<c:forEach items="${budgetCommand.budget.budgetItems}" var="item">
 				<tr <c:if test="${item.retired}"> style="text-decoration:line-through;"</c:if>>
 					<td ><a href="#" id="item_${item.id}_accountName" onclick="editItem(${item.id })">${item.account.name }</a>
@@ -146,9 +148,10 @@
 					<td > <c:if test="${!item.retired}"> <input type="button" value="Delete" onclick="deleteItem(this,${item.id})" /></c:if></td>
 				</tr>
 				</c:forEach>
-				
+			
 			</tbody>
 		</table>
+		</div>
 </form:form>
 
 <div id="itemDiv" style="display:none">
@@ -317,24 +320,25 @@ function saveItem() {
 				  endDate : item.endDate,
 				  amount : item.amount
 		}, function( data ) {
-			if (data==="error") {
-				alert("Can not update Budget Item.");
-			} else {
+			
+			if (!isNaN(data)) {
 				if (item.id) {
-				updateItemRowValues(item.id,
-							item.accountId,
-							item.accountName,
-							item.description, 
-							item.startDate, 
-							item.endDate,
-							item.amount
-					);
-				} else {
-				addItemRow(data, item.accountName, item.accountId, item.description, 
-														item.startDate, 
-														item.endDate,
-														item.amount);
-				}
+					updateItemRowValues(item.id,
+								item.accountId,
+								item.accountName,
+								item.description, 
+								item.startDate, 
+								item.endDate,
+								item.amount
+						);
+					} else {
+					addItemRow(data, item.accountName, item.accountId, item.description, 
+															item.startDate, 
+															item.endDate,
+															item.amount);
+					}
+			} else {
+				alert("Can not update Budget Item: "+data);
 			} 
 		});
 		

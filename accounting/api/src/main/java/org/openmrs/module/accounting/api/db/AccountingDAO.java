@@ -13,19 +13,25 @@
  */
 package org.openmrs.module.accounting.api.db;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.AccountBalance;
+import org.openmrs.module.accounting.api.model.AccountBudgetWrapper;
 import org.openmrs.module.accounting.api.model.AccountTransaction;
 import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.BalanceStatus;
@@ -103,6 +109,12 @@ public class AccountingDAO {
 	
 	public Budget saveBudget(Budget budget) {
 		return (Budget) sessionFactory.getCurrentSession().merge(budget);
+	}
+	
+	public Budget getBudgetByName(String name){
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Budget.class);
+		criteria.add(Restrictions.eq("name", name));
+		return (Budget) criteria.uniqueResult();
 	}
 	
 	public BudgetItem saveBudgetItem(BudgetItem item) {
@@ -193,18 +205,50 @@ public class AccountingDAO {
 		criteria.add(Restrictions.eq("txnNumber", transactionNo));
 		return (AccountTransaction) criteria.uniqueResult();
 	}
+	/*
+	public List<AccountBudgetWrapper> getAccountBudget(Date date, Account account) {
+		String str =  "select b.account.id, a.name, b.amount  from   BudgetItem as b   where a = b.account and a = :account  ";
+		Query query = sessionFactory.getCurrentSession().createQuery(str);
+		query.setParameter("account", account);
+//		query.setParameter("date", date);
+		List<Object[]>  rows = query.list();
+		List<AccountBudgetWrapper> result = new ArrayList<AccountBudgetWrapper>();
+		for (Object[] row : rows) {
+			AccountBudgetWrapper ojb = new AccountBudgetWrapper();
+			ojb.setId(NumberUtils.toInt(row[0].toString()));
+			ojb.setName(row[1].toString());
+			ojb.setAmount(new BigDecimal(row[2].toString()));
+			System.out.println("############"+ojb);
+			
+		    result.add(ojb);
+		}
+		return result;
+	}
+	*/
+	
+	public BudgetItem getBudgetItem(Date date, Account account) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(BudgetItem.class);
+		criteria.add(Restrictions.eq("account", account));
+		criteria.add(Restrictions.and(Restrictions.le("startDate", date), Restrictions.ge("endDate", date)));
+		return (BudgetItem) criteria.uniqueResult();
+	}
+	
+	public List<BudgetItem> getBudgetItem(Date date) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(BudgetItem.class);
+		criteria.add(Restrictions.and(Restrictions.le("startDate", date), Restrictions.ge("endDate", date)));
+		return criteria.list();
+	}
+	
 	/**
 	 * FISCAL YEAR
 	 */
 	
 	public void deleteFiscalYear(FiscalYear fiscalYear) {
 		sessionFactory.getCurrentSession().delete(fiscalYear);
-		;
 	}
 	
 	public void deleteFiscalPeriod(FiscalPeriod fiscalPeriod) {
 		sessionFactory.getCurrentSession().delete(fiscalPeriod);
-		;
 	}
 	
 	public FiscalYear saveFiscalYear(FiscalYear fy) throws DAOException {
@@ -350,12 +394,12 @@ public class AccountingDAO {
 	 * @param to
 	 * @return
 	 */
-	public boolean isOverlapFiscalYear(Integer id, Date from, Date to) {
+	public boolean isOverlapFiscalYear(Integer fiscalYearId, Date from, Date to) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(FiscalYear.class);
 		criteria.add(Restrictions.and(Restrictions.lt("startDate", to), Restrictions.gt("endDate",from)));
 		criteria.add(Restrictions.ne("status", GeneralStatus.INACTIVE));
-		if (id != null) {
-			criteria.add(Restrictions.ne("id", id));
+		if (fiscalYearId != null) {
+			criteria.add(Restrictions.ne("id", fiscalYearId));
 		}
 		return criteria.list().isEmpty() ? false: true;
 		
@@ -418,5 +462,16 @@ public class AccountingDAO {
 			criteria.add(Restrictions.eq("retired",false));
 		}
 		return criteria.list();
+	}
+	
+	/*
+	 *  check budgetitem start date and end date overlap
+	 *  
+	 */
+	public boolean isBudgetItemOverlap(Account account, Date startDate, Date endDate) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(BudgetItem.class);
+		criteria.add(Restrictions.eq("account", account));
+		criteria.add(Restrictions.and(Restrictions.lt("startDate", endDate), Restrictions.gt("endDate",startDate)));
+		return criteria.list().isEmpty() ? false: true;
 	}
 }

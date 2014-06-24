@@ -26,6 +26,7 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -86,8 +87,6 @@ public class BudgetFormController {
 		}
 		
 		if (command.getBudget().getId() == null ) {
-			command.getBudget().setCreatedBy(Context.getAuthenticatedUser().getId());
-			command.getBudget().setCreatedDate(Calendar.getInstance().getTime());
 			for (BudgetItem item : command.getBudgetItems()) {
 				item.setBudget(command.getBudget());
 				item.setCreatedBy(command.getBudget().getCreatedBy());
@@ -95,15 +94,15 @@ public class BudgetFormController {
 				command.getBudget().addBudgetItem(item);
 			}
 		}
-		
+		Budget budget = null;
 		try {
-	        Context.getService(AccountingService.class).saveBudget(command.getBudget());
+	       budget =  Context.getService(AccountingService.class).saveBudget(command.getBudget());
         }
         catch (Exception e) {
 	        e.printStackTrace();
         }
 		status.setComplete();
-		return "redirect:/module/accounting/budget.list";
+		return "redirect:/module/accounting/budget.form?id="+budget.getId();
 	}
 	
 	@RequestMapping(value="/module/accounting/budgetItem.form",method=RequestMethod.POST, params = "action=delete")
@@ -111,6 +110,7 @@ public class BudgetFormController {
 	public String postDeleteItem(@RequestParam(value="budgetItemId",required=true) Integer budgetItemId,
 	                   @RequestParam("action") String action,
 	                   HttpServletRequest request, SessionStatus status) {
+		
 		try {
 			Context.getService(AccountingService.class).retireBudgetItem(budgetItemId);
             return "success";
@@ -124,6 +124,16 @@ public class BudgetFormController {
 	@RequestMapping(value="/module/accounting/budgetItem.form",method=RequestMethod.POST, params = "action=update")
 	@ResponseBody
 	public String postUpdateItem(@ModelAttribute("budgetItem") BudgetItem item, BindingResult bindingResult) {
+		new BudgetItemValidator().validate(item, bindingResult);
+		if (bindingResult.hasErrors()) {
+			List<ObjectError> errors = bindingResult.getAllErrors();
+			StringBuffer result = new StringBuffer();
+			for(ObjectError err : errors){
+				result.append(err.getDefaultMessage());
+			}
+			//return "/module/accounting/budget/form";
+			return result.toString();
+		}
 		try {
 			 item  =  Context.getService(AccountingService.class).saveBudgetItem(item);
 			return item.getId().toString();

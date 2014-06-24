@@ -519,11 +519,15 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
     public Budget saveBudget(Budget budget) throws Exception {
 		
 		if (budget.getId() == null) {
+			
+			budget.setCreatedBy(Context.getAuthenticatedUser().getId());
+			budget.setCreatedDate(Calendar.getInstance().getTime());
+			
+			budget = dao.saveBudget(budget);
 			/**
 			 * Add new Budget => need to update account balance for each Budget Item
 			 * Balance should be increased
-			 */
-			budget = dao.saveBudget(budget);
+			 
 			if (budget.getBudgetItems() != null && !budget.getBudgetItems().isEmpty()) {
 				for (BudgetItem item : budget.getBudgetItems()) {
 
@@ -534,7 +538,8 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 					increaseBalance(item);
 					
 				}
-			}
+			}*/
+			
 		} else {
 			budget.setUpdatedBy(Context.getAuthenticatedUser().getId());
 			budget.setUpdatedDate(Calendar.getInstance().getTime());
@@ -580,10 +585,11 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	    		item.setRetiredBy(Context.getAuthenticatedUser().getId());
 	    		item.setRetiredDate(curDate);
 	    		dao.saveBudgetItem(item);
-	    		
+	    		/*
 	    		cancelAccountTransaction(item.getTxnNumber(),curDate );
 	    		
 	    		increaseBalance(item);
+	    		*/
 	    	}
 	    	dao.saveBudget(budget);
 	    }
@@ -599,15 +605,17 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	    if (item == null) {
 	    	return;
 	    }
+	    
 	    Date curDate = Calendar.getInstance().getTime();
 	    item.setRetired(true);
 		item.setRetiredBy(Context.getAuthenticatedUser().getId());
 		item.setRetiredDate(curDate);
 		
-		
+		/*
 		cancelAccountTransaction(item.getTxnNumber(),curDate );
 		
 		decreaseBalance(item);
+		*/
 		dao.saveBudgetItem(item);
     }
 
@@ -637,21 +645,23 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 				persitedItem.setRetired(true);
 				persitedItem.setRetiredBy(Context.getAuthenticatedUser().getId());
 				persitedItem.setRetiredDate( curDate);
-
+				/*
 				cancelAccountTransaction(item.getTxnNumber(),curDate );
 				
 				decreaseBalance(item);
+				*/
 			} else {
 				// Update Budget Item
 				persitedItem.setUpdatedBy(Context.getAuthenticatedUser().getId());
 				persitedItem.setUpdatedDate(Calendar.getInstance().getTime());
-				
+				/*
 				cancelAccountTransaction(persitedItem.getTxnNumber(),curDate );
 				decreaseBalance(persitedItem);
 				
 				// Add new account transaction
 				addAccountTransaction(item);
 				increaseBalance(item);
+				*/
 			}
 			return dao.saveBudgetItem(persitedItem);
 		} else {
@@ -659,11 +669,12 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			item.setCreatedBy(Context.getAuthenticatedUser().getId());
 			item.setCreatedDate(Calendar.getInstance().getTime());
 			
-			
+			/*
 			// add account_txn and update balance
 			AccountTransaction acctxn = addAccountTransaction(item);
 			item.setTxnNumber(acctxn.getTxnNumber());;
 			increaseBalance(item);
+			*/
 			item = dao.saveBudgetItem(item);
 			
 			return item;
@@ -754,5 +765,33 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	@Override
     public List<Account> listAccount(AccountType accType, boolean includeDisabled) {
 	    return dao.getAccounts(accType, includeDisabled);
+    }
+
+	@Override
+    public BudgetItem getBudgetItem(Integer accountId, Date date) {
+		Account account = dao.getAccount(accountId);
+		if( account != null ){
+			return dao.getBudgetItem(date, account);
+			
+		} else {
+			return null;
+		}
+		
+    }
+
+	@Override
+    public boolean isBudgetItemOverlap(Integer accountId, Date startDate, Date endDate) {
+		if (accountId != null) {
+			Account account = dao.getAccount(accountId);
+			if (account != null) {
+				return dao.isBudgetItemOverlap(account, startDate, endDate);
+			}
+		}
+	    return true;
+    }
+
+	@Override
+    public Budget getBudgetByName(String name) {
+	    return dao.getBudgetByName(name);
     }
 }

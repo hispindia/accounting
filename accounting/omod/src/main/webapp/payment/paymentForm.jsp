@@ -57,18 +57,23 @@
 			<td></td>
 		</tr>
 		<tr>
+			<td><spring:message code="accounting.payment.date"/></td>
+			<td>
+				<form:input path="paymentDate"    onfocus="showCalendar(this)" id="paymentDate"/>
+			</td>
+			<td><form:errors path="paymentDate"  cssClass="error" /></td>
+		</tr>
+		<tr>
+			<td><spring:message code="accounting.payment.aie"/></td>
+			<td><input type="button" value="Get AIE" onclick="getAIE()"/> <span  id="paymentAIE" ></span></td>
+		</tr>
+		<tr>
 			<td><spring:message code="accounting.payee" /></td>
 			<td><input type="text" id="comboPayee"/><form:hidden path="payee" id="hiddenPayee"/>
 			</td>
 			<td><input type="button" value="Add Payee" onclick="addPayee()"/></td>
 		</tr>
-		<tr>
-			<td><spring:message code="accounting.payment.date"/></td>
-			<td>
-				<form:input path="paymentDate" onfocus="showCalendar(this)"/>
-			</td>
-			<td><form:errors path="paymentDate"  cssClass="error" /></td>
-		</tr>
+		
 		
 		<tr>
 			<td><spring:message code="accounting.orderReferenceNumber"/></td>
@@ -145,6 +150,19 @@
 <input type="hidden" value='${accounts}' id="accounts"/>
 
 <script>
+	function getAIE() {
+		var date = jQuery("#paymentDate").val();
+		var id = jQuery("#hiddenAccount").val();
+	
+			
+			jQuery.get( "getPaymentAIE.htm",
+					{ 
+					  accountId: id, paymentDate: date
+			}, function( data ) {
+				jQuery("#paymentAIE").html(data);
+			});
+	}
+
 	function addPayee() {
 		tb_show("Add Payee","payee.form?&keepThis=true&TB_iframe=true&height=250&width=400",null);
 	}

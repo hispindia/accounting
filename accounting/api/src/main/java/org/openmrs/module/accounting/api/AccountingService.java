@@ -172,6 +172,8 @@ public interface AccountingService extends OpenmrsService {
 	
 	public Budget getBudget(Integer id);
 	
+	public Budget getBudgetByName(String name);
+	
 	public List<Budget> getBudgets(Boolean includeRetired);
 	
 	public void deleteBudget(Budget budget);
@@ -182,6 +184,9 @@ public interface AccountingService extends OpenmrsService {
 	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
 	public void retireBudgetItem(Integer id) throws Exception;
 	
+	public BudgetItem getBudgetItem(Integer accountId, Date date);
+	
+	public boolean isBudgetItemOverlap(Integer accountId, Date startDate, Date endDate) ;
 	/**
 	 * PAYEE
 	 */
