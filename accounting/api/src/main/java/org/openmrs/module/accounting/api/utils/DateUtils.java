@@ -39,4 +39,19 @@ public class DateUtils {
 		cal.add(Calendar.DATE, number);
 		return cal.getTime();
 	}
+	
+	public static Date getDatePart(Date date){
+		Calendar c = Calendar.getInstance();
+		c.setTime(date);
+		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		c.set(Calendar.MILLISECOND, 0);
+		return c.getTime();
+	}
+	
+	public static String getStringFromDate(Date date){
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+		return formatter.format(date);
+	}
 }

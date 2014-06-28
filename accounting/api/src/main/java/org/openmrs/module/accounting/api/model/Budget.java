@@ -14,6 +14,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.apache.commons.collections.FactoryUtils;
 import org.apache.commons.collections.list.LazyList;
@@ -31,11 +33,11 @@ public class Budget {
 	@Column(name="name")
 	private String name;
 	
-	@Type(type="timestamp")
+	@Temporal(TemporalType.DATE)
 	@Column(name = "start_date")
 	private Date startDate;
 	
-	@Type(type="timestamp")
+	@Temporal(TemporalType.DATE)
 	@Column(name = "end_date")
 	private Date endDate;
 	

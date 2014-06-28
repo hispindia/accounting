@@ -36,11 +36,11 @@ public class FiscalYear {
 	private List<FiscalPeriod> periods;
 	
 	@Column(name = "start_date")
-	@Type(type="timestamp")
+	@Temporal(TemporalType.DATE)
 	private Date startDate;
 	
 	@Column(name = "end_date")
-	@Type(type="timestamp")
+	@Temporal(TemporalType.DATE)
 	private Date endDate;
 	
 	@Column(name = "opening_balance", precision = 19, scale = 2)
@@ -72,7 +72,7 @@ public class FiscalYear {
 	private GeneralStatus status;
 	
 	public FiscalYear() {
-		
+		this.status = GeneralStatus.OPEN;
 	}
 	
 	public FiscalYear(String name, Date createdDate, int createdBy) {
@@ -232,5 +232,4 @@ public class FiscalYear {
     	} 
     	periods.add(period);
     }
-	
 }

@@ -27,7 +27,7 @@
 	scope="page" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
-<%@ include file="../includes/nav.jsp" %>
+<%@ include file="../includes/nav.jsp"%>
 <link type="text/css" rel="stylesheet"
 	href="${pageContext.request.contextPath}/moduleResources/account/styles/paging.css" />
 <script type="text/javascript"
@@ -41,18 +41,33 @@
 <br />
 <c:forEach items="${errors.allErrors}" var="error">
 	<span class="error"><spring:message
-			code="${error.defaultMessage}" text="${error.defaultMessage}" />
-	</span><
+			code="${error.defaultMessage}" text="${error.defaultMessage}" /> </span><
 </c:forEach>
 
+<script>
+	function selectAccountType(this_) {
+
+		window.location.href = "accountBalance.htm?type=" + jQuery(this_).val();
+	}
+</script>
+
+Account Type: <select onchange="selectAccountType(this)">
+	<option value="INCOME"
+		<c:if test="${type =='INCOME'}">selected="selected"</c:if>>INCOME</option>
+	<option value="EXPENSE"
+		<c:if test="${type =='EXPENSE'}">selected="selected"</c:if>>EXPENSE</option>
+</select>
 
 <br />
 <br />
 <c:choose>
 	<c:when test="${not empty accounts}">
-			<span class="boxHeader"><spring:message
-					code="accounting.account.list" />
-			</span>
+		<c:choose>
+		
+			 <c:when	test="${type == 'INCOME'}">
+					<!-- LIST INCOME ACCOUNTS -->	
+					<span class="boxHeader"><spring:message
+								code="accounting.account.list" /></span>
 			<div class="box">
 				<table cellpadding="5" cellspacing="0">
 					<tr>
@@ -67,8 +82,7 @@
 						<th><spring:message code="accounting.updatedDate" /></th>
 						<th></th>
 					</tr>
-					<c:forEach items="${accounts}" var="account"
-						varStatus="varStatus">
+					<c:forEach items="${accounts}" var="account" varStatus="varStatus">
 						<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" } '>
 							<td><c:out
 									value="${(( pagingUtil.currentPage - 1  ) * pagingUtil.pageSize ) + varStatus.count }" />
@@ -83,10 +97,8 @@
 							<td>${account.closingBalance}</td>
 							<td>${account.status}</td>
 							<td><openmrs:formatDate date="${account.updatedDate}"
-									type="textbox" format="dd/mm/yyyy hh:mm"/>
-							</td>
-							<td>
-							</td>
+									type="textbox" format="dd/MM/yyyy hh:mm" /></td>
+							<td></td>
 						</tr>
 					</c:forEach>
 					<tr class="paging-container">
@@ -94,19 +106,68 @@
 					</tr>
 				</table>
 			</div>
-			<script>
-function checkValue()
-{
-	var form = jQuery("#form");
-	if( jQuery("input[type='checkbox']:checked",form).length > 0 ) 
-		form.submit();
-	else{
-		alert("Please choose items for deleting");
-		return false;
-	}
-}</script>
 	</c:when>
 	<c:otherwise>
+		<span class="boxHeader"><spring:message
+					code="accounting.account.list" /></span>
+		<!-- LIST EXPENSE ACCOUNTS -->
+		<div class="box">
+			<table cellpadding="5" cellspacing="0">
+				<tr>
+					<th>#</th>
+					<th><spring:message code="general.name" /></th>
+					<th><spring:message code="accounting.accountType" /></th>
+					<th><spring:message code="accounting.newAIE" /></th>
+					<th><spring:message code="accounting.cummulativeAIE" /></th>
+					<th><spring:message code="accounting.currentPayment" /></th>
+					<th><spring:message code="accounting.cummulativePayment" /></th>
+					<th><spring:message code="accounting.availableBalance" /></th>
+					<th><spring:message code="accounting.status" /></th>
+					<th><spring:message code="accounting.updatedDate" /></th>
+					<th></th>
+				</tr>
+				<c:forEach items="${accounts}" var="account" varStatus="varStatus">
+					<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" } '>
+						<td><c:out
+								value="${(( pagingUtil.currentPage - 1  ) * pagingUtil.pageSize ) + varStatus.count }" />
+						</td>
+						<td><a
+							href="javascript:window.location.href='account.form?id=${account.id}'">${account.account.name}</a>
+						</td>
+						<td>${account.account.accountType }</td>
+						<td>${account.newAIE}</td>
+						<td>${account.cummulativeAIE}</td>
+						<td>${account.currentPayment}</td>
+						<td>${account.cummulativePayment}</td>
+						<td>${account.availableBalance}</td>
+						<td>${account.status}</td>
+						<td><openmrs:formatDate date="${account.updatedDate}"
+								type="textbox" format="dd/mm/yyyy hh:mm" /></td>
+						<td></td>
+					</tr>
+				</c:forEach>
+				<tr class="paging-container">
+					<td colspan="7"><%@ include file="../paging.jsp"%></td>
+				</tr>
+			</table>
+		</div>
+
+	</c:otherwise>
+</c:choose>
+
+<script>
+	function checkValue() {
+		var form = jQuery("#form");
+		if (jQuery("input[type='checkbox']:checked", form).length > 0)
+			form.submit();
+		else {
+			alert("Please choose items for deleting");
+			return false;
+		}
+	}
+</script>
+</c:when>
+<c:otherwise>
 No Account found.
 </c:otherwise>
 </c:choose>

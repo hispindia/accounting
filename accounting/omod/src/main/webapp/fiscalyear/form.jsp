@@ -114,7 +114,7 @@
 		
 				pEndDate = new Date(nextStartDate.getFullYear(),nextStartDate.getMonth(), nextStartDate.getDate() - 1, 23,59,59,999);
 				
-				name = "Month "  + ( pStartDate.getMonth()  + 1 ) + " - " + nextStartDate.getFullYear();
+				name = "Month "  + ( pStartDate.getMonth()  + 1 ) + " - " + pEndDate.getFullYear();
 				
 				if (pEndDate >= yearEndDate){
 					pEndDate = new Date(yearEndDate.getTime());
@@ -160,8 +160,8 @@
 		rowCount = rowCount - 1 // count start from 0, also need to minus the Add Item link
 		var row = "<tr>"
 			+"<td><input type='hidden' name='periods["+rowCount+"].name' value='"+period.name+"'/>"			+period.name+"</td>"
-			+"<td><input type='hidden' name='periods["+rowCount+"].description' value='"+formatDate(period.startDate)+"'/>"	+formatDate(period.startDate)+"</td>"
-			+"<td><input type='hidden' name='periods["+rowCount+"].description' value='"+formatDate(period.endDate)+"'/>"	+formatDate(period.endDate)+"</td>"
+			+"<td><input type='hidden' name='periods["+rowCount+"].startDate' value='"+formatDate(period.startDate)+"'/>"	+formatDate(period.startDate)+"</td>"
+			+"<td><input type='hidden' name='periods["+rowCount+"].endDate' value='"+formatDate(period.endDate)+"'/>"	+formatDate(period.endDate)+"</td>"
 			+"</tr>";
 		jQuery("#tablePeriods tbody").append(row);
 		

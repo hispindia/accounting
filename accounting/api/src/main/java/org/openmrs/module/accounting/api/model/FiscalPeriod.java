@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
@@ -32,11 +34,11 @@ public class FiscalPeriod {
 	private String name;
 	
 	@Column(name = "start_date")
-	@Type(type="timestamp")
+	@Temporal(TemporalType.DATE)
 	private Date startDate;
 	
 	@Column(name = "end_date")
-	@Type(type="timestamp")
+	@Temporal(TemporalType.DATE)
 	private Date endDate;
 	
 	@Enumerated(EnumType.STRING)
@@ -165,6 +167,50 @@ public class FiscalPeriod {
 	
     public void setStatus(GeneralStatus status) {
     	this.status = status;
+    }
+
+
+
+	@Override
+    public int hashCode() {
+	    final int prime = 31;
+	    int result = 1;
+	    result = prime * result + createdBy;
+	    result = prime * result + ((createdDate == null) ? 0 : createdDate.hashCode());
+	    result = prime * result + ((id == null) ? 0 : id.hashCode());
+	    result = prime * result + ((name == null) ? 0 : name.hashCode());
+	    return result;
+    }
+
+
+
+	@Override
+    public boolean equals(Object obj) {
+	    if (this == obj)
+		    return true;
+	    if (obj == null)
+		    return false;
+	    if (getClass() != obj.getClass())
+		    return false;
+	    FiscalPeriod other = (FiscalPeriod) obj;
+	    if (createdBy != other.createdBy)
+		    return false;
+	    if (createdDate == null) {
+		    if (other.createdDate != null)
+			    return false;
+	    } else if (!createdDate.equals(other.createdDate))
+		    return false;
+	    if (id == null) {
+		    if (other.id != null)
+			    return false;
+	    } else if (!id.equals(other.id))
+		    return false;
+	    if (name == null) {
+		    if (other.name != null)
+			    return false;
+	    } else if (!name.equals(other.name))
+		    return false;
+	    return true;
     }
 	
 }

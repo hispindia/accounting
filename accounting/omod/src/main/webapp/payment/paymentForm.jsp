@@ -65,7 +65,8 @@
 		</tr>
 		<tr>
 			<td><spring:message code="accounting.payment.aie"/></td>
-			<td><input type="button" value="Get AIE" onclick="getAIE()"/> <span  id="paymentAIE" ></span></td>
+			<td><input type="button" value="Get AIE" onclick="getAIE()"/> <span  id="paymentAIE" ></span>
+			<form:hidden path="totalAIE" id="totalAIE"/></td>
 		</tr>
 		<tr>
 			<td><spring:message code="accounting.payee" /></td>
@@ -153,13 +154,17 @@
 	function getAIE() {
 		var date = jQuery("#paymentDate").val();
 		var id = jQuery("#hiddenAccount").val();
-	
+		if(!date || !id) {
+			alert("Please enter Payment Date and Account");
+			return;
+		}
 			
 			jQuery.get( "getPaymentAIE.htm",
 					{ 
 					  accountId: id, paymentDate: date
 			}, function( data ) {
 				jQuery("#paymentAIE").html(data);
+				jQuery("#totalAIE").val(data);
 			});
 	}
 

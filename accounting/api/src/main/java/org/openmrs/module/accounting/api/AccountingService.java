@@ -11,6 +11,7 @@ import org.openmrs.module.accounting.api.model.AccountBalance;
 import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.Budget;
 import org.openmrs.module.accounting.api.model.BudgetItem;
+import org.openmrs.module.accounting.api.model.ExpenseBalance;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.openmrs.module.accounting.api.model.FiscalYear;
 import org.openmrs.module.accounting.api.model.GeneralStatus;
@@ -41,7 +42,7 @@ public interface AccountingService extends OpenmrsService {
 	 * 	Account
 	 */
 	@Authorized({ AccountingConstants.PRIV_ADD_EDIT_ACCOUNT })
-	public Account saveAccount(Account acc);
+	public Account saveAccount(Account acc, Integer periodId);
 	
 	@Authorized({ AccountingConstants.PRIV_DELETE_ACCOUNT })
 	public void deleteAccount(Account acc);
@@ -69,6 +70,10 @@ public interface AccountingService extends OpenmrsService {
 	
 	@Transactional(readOnly = true)
 	public List<AccountBalance> listActiveAccountBalance();
+	@Transactional(readOnly = true)
+	public List<AccountBalance> listActiveAccountBalance(FiscalPeriod period);
+	
+	
 	
 	/**
 	 * 
@@ -111,15 +116,20 @@ public interface AccountingService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	public List<FiscalPeriod> getCurrentYearPeriods();
 	
+	public FiscalYear closeFiscalYear(Integer id);
+	
 	/**
 	 * 	Period
 	 */
 	public AccountBalance saveAccountBalance(AccountBalance ap);
 	
 	@Transactional(readOnly = true)
-	public AccountBalance getAccountPeriod(int id);
+	public AccountBalance getAccountBalance(int id);
 	
 	public void deletePeriod(FiscalPeriod period);
+	
+	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
+	public FiscalPeriod closePeriod(Integer curPeriodId, Integer nextPeriodId, boolean resetBalance);
 	
 	/**
 	 * Module initialize
@@ -160,6 +170,9 @@ public interface AccountingService extends OpenmrsService {
 	
 	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
 	public void voidIncomeReceiptItem(Integer id) throws Exception;
+	
+	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
+	public void aggregateIncomeReceipt(Date curDate) throws Exception;
 	
 	/**
 	 * BUDGET
@@ -205,6 +218,7 @@ public interface AccountingService extends OpenmrsService {
 	 * PAYMENT 
 	 */
 	
+	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
 	public Payment savePayment(Payment payment);
 	
 	public void deletePayment(Payment payment);
@@ -214,5 +228,10 @@ public interface AccountingService extends OpenmrsService {
 	public List<Payment> listActivePayments();
 	
 	public List<Payment> listAllPayments();
+	
+	public List<ExpenseBalance> listActiveExpenseBalance();
+	
+	public List<ExpenseBalance> listActiveExpenseBalance(FiscalPeriod period);
+	
 	
 }

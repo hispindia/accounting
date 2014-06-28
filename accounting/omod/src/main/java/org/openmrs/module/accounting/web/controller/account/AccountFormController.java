@@ -31,6 +31,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.AccountType;
+import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -51,6 +52,11 @@ import org.springframework.web.bind.support.SessionStatus;
 @RequestMapping("/module/accounting/account.form")
 @SessionAttributes("accountCommand")
 public class AccountFormController {
+	
+	@ModelAttribute("periods")
+	public List<FiscalPeriod> registerPeriods() {
+		return Context.getService(AccountingService.class).getCurrentYearPeriods();
+	}
 	
 	@ModelAttribute("listParents")
 	public List<Account> registerListParents() {
@@ -79,24 +85,27 @@ public class AccountFormController {
 	public String firstView( @RequestParam(value = "id", required = false) Integer id, Model model) {
 		if (id != null) {
 			Account account = Context.getService(AccountingService.class).getAccount(id);
-			model.addAttribute("accountCommand", account);
+			AccountCommand command = new AccountCommand();
+			command.setAccount(account);
+			model.addAttribute("accountCommand", command);
 		} else {
-			Account account = new Account();
-			model.addAttribute("accountCommand", account);
+			AccountCommand command = new AccountCommand();
+			
+			model.addAttribute("accountCommand", command);
 		}
 		
 		return "/module/accounting/account/form";
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
-	public String onSubmit(@ModelAttribute("accountCommand") Account account, BindingResult bindingResult, Model model,
+	public String onSubmit(@ModelAttribute("accountCommand") AccountCommand command, BindingResult bindingResult, Model model,
 	                       HttpServletRequest request, SessionStatus status) {
 		
-		new AccountValidator().validate(account, bindingResult);
+		new AccountValidator().validate(command.getAccount(), bindingResult);
 		if (bindingResult.hasErrors()) {
 			return "/module/accounting/account/form";
 		}
-		Context.getService(AccountingService.class).saveAccount(account);
+		Context.getService(AccountingService.class).saveAccount(command.getAccount(), command.getPeriod());
 		// Clean the session attribute after successful submit
 		status.setComplete();
 		return "redirect:/module/accounting/account.list";

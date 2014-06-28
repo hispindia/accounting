@@ -42,11 +42,11 @@
 		</div>
 	</c:if>
 </spring:bind>
-<form method="post" class="box">
+<form:form commandName="accountCommand" method="post" cssClass="box">
 	<table>
 		<tr>
 			<td><spring:message code="general.name" /></td>
-			<td><spring:bind path="accountCommand.name">
+			<td><spring:bind path="account.name">
 					<input type="text" name="${status.expression}"
 						value="${status.value}" size="35" />
 					<c:if test="${status.errorMessage != ''}">
@@ -57,7 +57,7 @@
 		<tr>
 			<td valign="top"><spring:message code="general.description" />
 			</td>
-			<td><spring:bind path="accountCommand.description">
+			<td><spring:bind path="account.description">
 					<input type="text" name="${status.expression}"
 						value="${status.value}" size="35" />
 					<c:if test="${status.errorMessage != ''}">
@@ -68,20 +68,32 @@
 		<tr>
 			<td valign="top"><spring:message code="accounting.accountType" />
 			</td>
-			<td><form:select path="accountCommand.accountType">
+			<td><form:select path="account.accountType">
 					<form:option value="" label="--Please Select--"/>
 					<form:options items="${accountTypes}" itemLabel="name" />
-				</form:select> <form:errors path="accountCommand.accountType"  cssClass="error" /></td>
+				</form:select> <form:errors path="account.accountType"  cssClass="error" /></td>
+		</tr>
+		
+		<tr>
+			<td>Start Period</td>
+			<td>
+				<form:select path="period">
+					<option value="">--Select Period---</option>
+					<c:forEach items="${periods}" var="period">
+						<option value="${period.id }">${period.name}</option>
+					</c:forEach>
+				</form:select>
+			</td>
 		</tr>
 		
 		<tr>
 			<td valign="top"><spring:message code="accounting.parentAccount" />
 			</td>
-			<td><form:select path="accountCommand.parentAccountId">
+			<td><form:select path="account.parentAccountId">
 				<form:option value="" label="--Please Select--"/>
 				<form:options items="${listParents}" itemValue="id" itemLabel="name"/>
 			</form:select>
-			 <form:errors path="accountCommand.parentAccountId" cssClass="error" /></td>
+			 <form:errors path="account.parentAccountId" cssClass="error" /></td>
 		</tr>
 		
 		<tr>
@@ -91,14 +103,14 @@
 		
 		<tr>
 			<td><spring:message code="general.retired" /></td>
-			<td><form:radiobutton path="accountCommand.retired" value="false" />NO <form:radiobutton
-					path="accountCommand.retired" value="true" />YES</td>
-				 <form:errors path="accountCommand.retired" cssClass="error" /></td>
+			<td><form:radiobutton path="account.retired" value="false" />NO <form:radiobutton
+					path="account.retired" value="true" />YES</td>
+				 <form:errors path="account.retired" cssClass="error" /></td>
 		</tr>
 	</table>
 	<br /> <input type="submit"
 		value="<spring:message code="general.save"/>"> <input
 		type="button" value="<spring:message code="general.cancel"/>"
 		onclick="javascript:window.location.href='account.list'">
-</form>
+</form:form>
 <%@ include file="/WEB-INF/template/footer.jsp"%>

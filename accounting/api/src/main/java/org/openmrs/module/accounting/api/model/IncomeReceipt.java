@@ -14,6 +14,7 @@
 package org.openmrs.module.accounting.api.model;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -217,6 +218,12 @@ public class IncomeReceipt {
     	this.receiptItems = receiptItems;
     }
 
+    public void addReceiptItem(IncomeReceiptItem item){
+    	if (receiptItems == null) {
+    		receiptItems = new HashSet<IncomeReceiptItem>();
+    	}
+    	receiptItems.add(item);
+    }
 	
     public GeneralStatus getStatus() {
     	return status;

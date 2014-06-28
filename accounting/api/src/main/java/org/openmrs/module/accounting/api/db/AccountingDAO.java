@@ -14,13 +14,11 @@
 package org.openmrs.module.accounting.api.db;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -31,12 +29,12 @@ import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.AccountBalance;
-import org.openmrs.module.accounting.api.model.AccountBudgetWrapper;
 import org.openmrs.module.accounting.api.model.AccountTransaction;
 import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.BalanceStatus;
 import org.openmrs.module.accounting.api.model.Budget;
 import org.openmrs.module.accounting.api.model.BudgetItem;
+import org.openmrs.module.accounting.api.model.ExpenseBalance;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.openmrs.module.accounting.api.model.FiscalYear;
 import org.openmrs.module.accounting.api.model.GeneralStatus;
@@ -163,11 +161,15 @@ public class AccountingDAO {
 		return (AccountBalance) criteria.uniqueResult();
 	}
 	
+	/**
+	 * return the only and only one active account balance of this account
+	 * @param acc
+	 * @return
+	 */
 	public AccountBalance getLatestAccountBalance(Account acc) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(AccountBalance.class);
 		criteria.add(Restrictions.eq("account", acc));
 		criteria.add(Restrictions.eq("status", BalanceStatus.ACTIVE));
-		criteria.setMaxResults(1);
 		return (AccountBalance) criteria.uniqueResult();
 	}
 	
@@ -199,6 +201,31 @@ public class AccountingDAO {
 		return criteria.list();
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<AccountBalance> listAccountBalance(BalanceStatus status, FiscalPeriod period) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(AccountBalance.class);
+		if (status != null) {
+			criteria.add(Restrictions.eq("status", status));
+		}
+		if (period != null) {
+			criteria.add(Restrictions.eq("period", period));
+		}
+		return criteria.list();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<ExpenseBalance> listExpenseBalance(BalanceStatus status, FiscalPeriod period) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ExpenseBalance.class);
+		if (status != null) {
+			criteria.add(Restrictions.eq("status", status));
+		}
+		
+		if (period != null) {
+			criteria.add(Restrictions.eq("period", period));
+		}
+		
+		return criteria.list();
+	}
 	
 	public AccountTransaction getAccountTxn(String transactionNo) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(AccountTransaction.class);
@@ -270,6 +297,7 @@ public class AccountingDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(FiscalYear.class);
 		if (status != null)
 			criteria.add(Restrictions.eq("status", status));
+		criteria.addOrder(Order.desc("endDate"));
 		return criteria.list();
 	}
 	
@@ -290,11 +318,11 @@ public class AccountingDAO {
 		return ap;
 	}
 	
-	public AccountBalance getAccountPeriod(int id) {
+	public AccountBalance getAccountBalance(int id) {
 		return (AccountBalance) sessionFactory.getCurrentSession().get(AccountBalance.class, id);
 	}
 	
-	public AccountBalance getAccountPeriod(Account account, FiscalPeriod period) {
+	public AccountBalance getAccountBalance(Account account, FiscalPeriod period) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(AccountBalance.class);
 		criteria.add(Restrictions.eq("account", account));
 		criteria.add(Restrictions.eq("fiscalPeriod", period));
@@ -317,6 +345,12 @@ public class AccountingDAO {
 	
 	public IncomeReceipt getIncomeReceipt(Integer id) {
 		return (IncomeReceipt) sessionFactory.getCurrentSession().get(IncomeReceipt.class, id);
+	}
+	
+	public IncomeReceipt getIncomeReceiptByReceiptNo(String receiptNo){
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(IncomeReceipt.class);
+		criteria.add(Restrictions.eq("receiptNo", receiptNo));
+		return (IncomeReceipt) criteria.uniqueResult();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -360,6 +394,13 @@ public class AccountingDAO {
 		return (IncomeReceiptItem) sessionFactory.getCurrentSession().get(IncomeReceiptItem.class, id);
 	}
 	
+	public IncomeReceiptItem getIncomeReceiptItemByAccountAndReceipt(Account acc, IncomeReceipt receipt){
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(IncomeReceiptItem.class);
+		criteria.add(Restrictions.eq("account", acc));
+		criteria.add(Restrictions.eq("receipt", receipt));
+		return (IncomeReceiptItem) criteria.uniqueResult();
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<IncomeReceiptItem> getListIncomeReceiptItem(boolean includeVoided) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(IncomeReceiptItem.class);
@@ -397,7 +438,7 @@ public class AccountingDAO {
 	public boolean isOverlapFiscalYear(Integer fiscalYearId, Date from, Date to) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(FiscalYear.class);
 		criteria.add(Restrictions.and(Restrictions.lt("startDate", to), Restrictions.gt("endDate",from)));
-		criteria.add(Restrictions.ne("status", GeneralStatus.INACTIVE));
+		criteria.add(Restrictions.ne("status", GeneralStatus.DISABLED));
 		if (fiscalYearId != null) {
 			criteria.add(Restrictions.ne("id", fiscalYearId));
 		}
@@ -407,7 +448,7 @@ public class AccountingDAO {
 	
 	public FiscalYear getActiveFicalYear() {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(FiscalYear.class);
-		criteria.add(Restrictions.eq("status", GeneralStatus.ACTIVE));
+		criteria.add(Restrictions.eq("status", GeneralStatus.OPEN));
 		return (FiscalYear) criteria.uniqueResult();
 	}
 	
@@ -456,7 +497,8 @@ public class AccountingDAO {
 		return (Payment) criteria.uniqueResult();
 	}
 	
-	public List<Payment> listPayments(boolean includeRetired) {
+	@SuppressWarnings("unchecked")
+    public List<Payment> listPayments(boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Payment.class);
 		if (!includeRetired) {
 			criteria.add(Restrictions.eq("retired",false));
@@ -473,5 +515,70 @@ public class AccountingDAO {
 		criteria.add(Restrictions.eq("account", account));
 		criteria.add(Restrictions.and(Restrictions.lt("startDate", endDate), Restrictions.gt("endDate",startDate)));
 		return criteria.list().isEmpty() ? false: true;
+	}
+	
+	
+	
+	
+	public void aggregateIncomeReceipt(Date date){
+		
+	}
+		
+	public BigDecimal getAggregateBill(Set<Integer> conceptIds, Date date){
+		//TODO add date condition !!!
+			if (conceptIds == null || conceptIds.size() == 0) {
+				return null;
+			}
+			Date to = DateUtils.addDate(date, 1);
+			Date from = DateUtils.addDate(date, -1);
+			
+			String str = "select  sum(bill.actualAmount) from  PatientServiceBillItem as bill right join bill.service as service  "
+					+ " where service.conceptId in (:conceptIds) and bill.createdDate >= :from and bill.createdDate < :to";
+			Query query = sessionFactory.getCurrentSession().createQuery(str);
+			query.setParameterList("conceptIds", conceptIds);
+			query.setParameter("from", from);
+			query.setParameter("to", to);
+			return  (BigDecimal) query.uniqueResult();
+	}
+	/*
+			String name;
+			BigDecimal amount;
+			Integer conceptId;
+			if (result != null && result.size() > 0) {
+				for (Object o : result) {
+					Object[] obj = (Object[]) o;
+					conceptId = NumberUtils.toInt(obj[0].toString());
+//					name = obj[1].toString();
+					amount =  obj[1] != null ? new BigDecimal(obj[1].toString()) : new BigDecimal(0);
+					results.put(conceptId,amount);
+				}
+			}
+			System.out.println("=================================================================");
+			System.out.println(results);
+			System.out.println("=================================================================");
+			return results;
+			
+	}
+	*/
+	
+	public ExpenseBalance saveExpenseBalance(ExpenseBalance expense){
+		return  (ExpenseBalance) sessionFactory.getCurrentSession().merge(expense);
+	}
+	
+	public ExpenseBalance getExpenseBalance(int id){
+		return (ExpenseBalance) sessionFactory.getCurrentSession().get(ExpenseBalance.class,id);
+	}
+	
+	
+	/**
+	 * return the only and only one active account balance of this account
+	 * @param acc
+	 * @return
+	 */
+	public ExpenseBalance getLatestExpenseBalance(Account account) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ExpenseBalance.class);
+		criteria.add(Restrictions.eq("account", account));
+		criteria.add(Restrictions.eq("status", BalanceStatus.ACTIVE));
+		return (ExpenseBalance) criteria.uniqueResult();
 	}
 }

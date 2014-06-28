@@ -76,8 +76,8 @@
 								href="javascript:window.location.href='budget.form?id=${budget.id}'">${budget.name}</a>
 							</td>
 							<td>${budget.description}</td>
-							<td><openmrs:formatDate date="${budget.startDate}" type="textbox" format="dd/mm/yyyy hh:mm"/></td>
-							<td><openmrs:formatDate date="${budget.endDate}" type="textbox" format="dd/mm/yyyy hh:mm"/></td>
+							<td><openmrs:formatDate date="${budget.startDate}" type="textbox" format="dd/MM/yyyy"/></td>
+							<td><openmrs:formatDate date="${budget.endDate}" type="textbox" format="dd/MM/yyyy"/></td>
 							<td></td>
 						</tr>
 					</c:forEach>

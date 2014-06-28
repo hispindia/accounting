@@ -21,42 +21,55 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
 <openmrs:require privilege="View Account" otherwise="/login.htm"
-	redirect="/module/account/main.form" />
+	redirect="/module/account/period.list" />
 
 <spring:message var="pageTitle" code="accounting.account.manage"
 	scope="page" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="../includes/nav.jsp" %>
+
 <link type="text/css" rel="stylesheet"
-	href="${pageContext.request.contextPath}/moduleResources/account/styles/paging.css" />
+	href="${pageContext.request.contextPath}/moduleResources/accounting/styles/paging.css" />
 <script type="text/javascript"
-	src="${pageContext.request.contextPath}/moduleResources/account/scripts/paging.js"></script>
+	src="${pageContext.request.contextPath}/moduleResources/accounting/scripts/paging.js"></script>
 <script type="text/javascript"
-	src="${pageContext.request.contextPath}/moduleResources/account/scripts/jquery/jquery-1.4.2.min.js"></script>
+	src="${pageContext.request.contextPath}/moduleResources/accounting/scripts/jquery/jquery-1.4.2.min.js"></script>
 <h2>
-	<spring:message code="accounting.account.manage" />
+	<spring:message code="accounting.period.manage" />
 </h2>
 
 <br />
+<script>
+	function selectYear(this_) {
+		var year = jQuery(this_).val();
+		
+		window.location.href = "period.list?yearId="+year;
+	}
+
+</script>
+
 <c:forEach items="${errors.allErrors}" var="error">
 	<span class="error"><spring:message
 			code="${error.defaultMessage}" text="${error.defaultMessage}" />
 	</span><
 </c:forEach>
-<input type="button"
-	value="<spring:message code='accounting.account.add'/>"
-	onclick="javascript:window.location.href='account.form'" />
+<select onChange="selectYear(this)" >
+		<option value="">---Select Fiscal Year---</option>
+		<c:forEach items="${listYears}" var="year">
+			<option value="${year.id}">${year.name }</option>
+		</c:forEach>
+</select>
 
 <br />
 <br />
 <c:choose>
-	<c:when test="${not empty accounts}">
+	<c:when test="${not empty periods}">
 		<form method="post" onsubmit="return false" id="form">
 			<input type="button" onclick="checkValue()"
 				value="<spring:message code='accounting.account.deleteselected'/>" />
 			<span class="boxHeader"><spring:message
-					code="accounting.account.list" />
+					code="accounting.period.list" />
 			</span>
 			<div class="box">
 				<table cellpadding="5" cellspacing="0">
@@ -64,29 +77,27 @@
 						<th>#</th>
 						<th><spring:message code="general.name" />
 						</th>
-						<th><spring:message code="accounting.accountType"/></th>
-						<th><spring:message code="general.description" />
+						<th><spring:message code="accounting.startDate" />
 						</th>
-						<th><spring:message code="accounting.createdDate" />
+						<th><spring:message code="accounting.endDate" />
 						</th>
+						<th>Status</th>
 						<th></th>
 					</tr>
-					<c:forEach items="${accounts}" var="account"
+					<c:forEach items="${periods}" var="period"
 						varStatus="varStatus">
 						<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" } '>
 							<td><c:out
 									value="${(( pagingUtil.currentPage - 1  ) * pagingUtil.pageSize ) + varStatus.count }" />
 							</td>
-							<td><a
-								href="javascript:window.location.href='account.form?id=${account.id}'">${account.name}</a>
-							</td>
-							<td>${account.accountType }</td>
-							<td>${account.description}</td>
-							<td><openmrs:formatDate date="${account.createdDate}"
-									type="textbox" />
-							</td>
-							<td><input type="checkbox" name="ids"
-								value="${account.id}" />
+							<td>${period.name}</td>
+							<td><openmrs:formatDate date="${period.startDate}" type="textbox" /></td>
+							<td><openmrs:formatDate date="${period.endDate}" type="textbox" /></td>
+							<td>${period.status }</td>
+							<td><input type="button" value="Close" onclick="closePeriod(${period.id})">
+								<!--<input type="checkbox" name="ids"
+								value="${period.id}" />
+								-->
 							</td>
 						</tr>
 					</c:forEach>
@@ -97,6 +108,12 @@
 				</table>
 			</div>
 			<script>
+			
+function closePeriod(id) {
+	if (confirm("Are you sure to close this period? You will not be able to add or edit any transaction within a closed period.")) {
+		window.location.href = "closePeriod.htm?periodId="+id;
+	}
+}
 function checkValue()
 {
 	var form = jQuery("#form");
@@ -109,7 +126,7 @@ function checkValue()
 }</script>
 	</c:when>
 	<c:otherwise>
-No Account found.
+No Period found.
 </c:otherwise>
 </c:choose>
 

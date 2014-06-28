@@ -71,6 +71,7 @@ public class FiscalYearFormController {
 				period.setFiscalYear(year);
 				period.setCreatedBy(year.getCreatedBy());
 				period.setCreatedDate(year.getCreatedDate());
+				period.setStatus(year.getStatus());
 				year.addPeriod(period);
 			}
 		} else {

@@ -76,7 +76,7 @@ public class FiscalYearValidator implements Validator {
 			error.reject("accounting.overlap");
 		}
 		
-		if (fiscalYear.getStatus().equals(GeneralStatus.ACTIVE)) {
+		if (fiscalYear.getStatus().equals(GeneralStatus.OPEN)) {
 			if (accountingService.getActiveFiscalYear() != null) {
 				error.reject("accounting.active.exisited");
 			}

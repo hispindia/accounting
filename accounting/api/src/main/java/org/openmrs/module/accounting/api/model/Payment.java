@@ -64,6 +64,9 @@ public class Payment {
 	@Column(name = "total_payable_plus_payment", precision = 9, scale = 2)
 	private BigDecimal totalPayablePlusPayment;
 	
+	@Column(name="total_aie", precision = 9, scale = 2)
+	private BigDecimal totalAIE;
+	
 	@Temporal(TemporalType.DATE)
 	@Column(name = "payment_date")
 	private  Date paymentDate;
@@ -380,6 +383,16 @@ public class Payment {
 	
     public void setRetired(Boolean retired) {
     	this.retired = retired;
+    }
+
+	
+    public BigDecimal getTotalAIE() {
+    	return totalAIE;
+    }
+
+	
+    public void setTotalAIE(BigDecimal totalAIE) {
+    	this.totalAIE = totalAIE;
     }
 
 	
