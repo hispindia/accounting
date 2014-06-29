@@ -88,6 +88,14 @@ public class AccountFormController {
 			AccountCommand command = new AccountCommand();
 			command.setAccount(account);
 			model.addAttribute("accountCommand", command);
+			/*
+			 *  Disable edit fields :
+			 *  - Account type
+			 *  - start period
+			 */
+			
+			model.addAttribute("disableEdit",true);
+			
 		} else {
 			AccountCommand command = new AccountCommand();
 			

@@ -49,7 +49,25 @@
 	value="<spring:message code='accounting.payment.add'/>"
 	onclick="javascript:window.location.href='payment.form'" />
 
-<br />
+<br /><br />
+
+<input type="hidden" id="pageSize" value="${pagingUtil.pageSize }"/>
+<input type="hidden" id="curPage" value="${pagingUtil.currentPage }"/>
+
+Select Account : <select onchange="selectAccount(this)">
+	<option value="">---Select All---</option>
+	<c:forEach items="${accounts}" var="account">
+		<option value="${account.id}"  <c:if test="${accountId == account.id}">selected="true"</c:if> >${account.name}</option>
+	</c:forEach>
+</select>
+<script>
+function selectAccount(this_) {
+	var accountId = jQuery(this_).val();
+	var pageSize = jQuery("#pageSize").val();
+	var curPage = jQuery("#curPage").val();
+	window.location.href = "payment.list?accountId="+accountId+"&pageSize="+pageSize;
+}
+</script>
 <br />
 <c:choose>
 	<c:when test="${not empty payments}">

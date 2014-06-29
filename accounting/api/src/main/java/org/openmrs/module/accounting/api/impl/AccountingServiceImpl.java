@@ -642,8 +642,11 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			return null;
 		}
 		 Date curDate = Calendar.getInstance().getTime();
+		 ExpenseBalance balance = dao.getLatestExpenseBalance(item.getAccount());
+		 if (balance == null) {
+			 log.error("Can not find balance for account : "+item.getAccount().getId());
+		 }
 		if (item.getId() != null) {
-			// update
 			
 			BudgetItem persitedItem = dao.getBudgetItem(item.getId());
 			
@@ -656,34 +659,46 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			persitedItem.setDescription(item.getDescription());
 			persitedItem.setEndDate(item.getEndDate());
 			persitedItem.setStartDate(item.getStartDate());
-			
 			if (item.getRetired()) {
+				// Retire
 				persitedItem.setRetired(true);
 				persitedItem.setRetiredBy(Context.getAuthenticatedUser().getId());
 				persitedItem.setRetiredDate( curDate);
-				/*
-				cancelAccountTransaction(item.getTxnNumber(),curDate );
 				
-				decreaseBalance(item);
-				*/
+				
+				/* 
+				 * Subtract the AIE from cummulative AIE
+				 * Subtract the AIE amount from available balance
+				 */
+				balance.setNewAIE(new BigDecimal("0"));
+				balance.setCummulativeAIE(balance.getCummulativeAIE().subtract(persitedItem.getAmount()));
+				balance.setAvailableBalance(balance.getAvailableBalance().subtract(persitedItem.getAmount()));
+				
 			} else {
 				// Update Budget Item
 				persitedItem.setUpdatedBy(Context.getAuthenticatedUser().getId());
 				persitedItem.setUpdatedDate(Calendar.getInstance().getTime());
-				/*
-				cancelAccountTransaction(persitedItem.getTxnNumber(),curDate );
-				decreaseBalance(persitedItem);
 				
-				// Add new account transaction
-				addAccountTransaction(item);
-				increaseBalance(item);
-				*/
+				/*
+				 * - Subtract the old AIE from cummulative AIE amount 
+				 * - Add add the new AIE to cummulative AIE amount
+				 */
+				balance.setNewAIE(item.getAmount());
+				balance.setCummulativeAIE(balance.getCummulativeAIE().subtract(persitedItem.getAmount()));
+				balance.setCummulativeAIE(balance.getCummulativeAIE().add(item.getAmount()));
+				
+				balance.setAvailableBalance(balance.getAvailableBalance().subtract(persitedItem.getAmount()));
+				balance.setAvailableBalance(balance.getAvailableBalance().add(item.getAmount()));
 			}
 			return dao.saveBudgetItem(persitedItem);
 		} else {
 			// create new
 			item.setCreatedBy(Context.getAuthenticatedUser().getId());
 			item.setCreatedDate(Calendar.getInstance().getTime());
+			
+			
+			balance.setNewAIE(item.getAmount());
+			balance.setCummulativeAIE(balance.getCummulativeAIE().add(item.getAmount()));
 			
 			/*
 			// add account_txn and update balance
@@ -758,6 +773,12 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		
 	    return dao.savePayment(payment);
     }
+	
+	/**
+	 * Update balance of expense account after add new payment
+	 * 
+	 * @param payment
+	 */
 
 	private void updateExpenseBalance(Payment payment) {
 		ExpenseBalance balance = dao.getLatestExpenseBalance(payment.getAccount());
@@ -769,12 +790,14 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		
 		// update amount
 		
-		balance.setCurrentPayment(balance.getCurrentPayment().add(payment.getTotalPayablePlusPayment()));
-		balance.setCummulativeAIE(balance.getCummulativeAIE().add(payment.getTotalAIE()));
-		balance.setCummulativePayment(balance.getCummulativePayment().add(payment.getTotalPayablePlusPayment()));
-		balance.setNewAIE(balance.getNewAIE().add(payment.getTotalAIE()));
+		balance.setCurrentPayment(balance.getCurrentPayment().add(payment.getPayable()));
+		
+		balance.setCummulativePayment(balance.getCummulativePayment().add(payment.getPayable()));
+		
 		balance.setUpdatedBy(Context.getAuthenticatedUser().getId());
+		
 		balance.setUpdatedDate(Calendar.getInstance().getTime());
+		
 		BigDecimal availableBalance = balance.getCummulativeAIE().subtract(balance.getCummulativePayment());
 		balance.setAvailableBalance(availableBalance);
 		dao.saveExpenseBalance(balance);
@@ -790,15 +813,6 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	    return dao.getPayment(id);
     }
 
-	@Override
-    public List<Payment> listActivePayments() {
-	    return dao.listPayments(false);
-    }
-
-	@Override
-    public List<Payment> listAllPayments() {
-	    return dao.listPayments(true);
-    }
 
 	@Override
     public List<Account> listAccount(AccountType accType, boolean includeDisabled) {
@@ -863,6 +877,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		Collection<Account> accounts = getAccounts(false);
 		if (accounts != null && accounts.size() > 0) {
 			
+			// Check if the receipt for the same existed
 			IncomeReceipt receipt = dao.getIncomeReceiptByReceiptNo(AccountingConstants.INCOME_RECEIPT_NO_PREFIX + DateUtils.getStringFromDate(date));
 			if ( receipt == null ) {
 				receipt = new IncomeReceipt();
@@ -879,6 +894,8 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 				receipt.setUpdatedDate(date);
 			}
 			boolean saveNewItem = false;
+			
+			// Calculate the total amount for each account
 			for (Account acc : accounts) {
 				if (acc.getConceptId() != null) {
 					
@@ -898,7 +915,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 					System.out.println(amount);				
 
 					/*
-					 * Create Income Receipt for each account 
+					 * Create Income Receipt (CASH) for each account 
 					 */
 					item = new IncomeReceiptItem();
 					
@@ -914,13 +931,14 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 					saveIncomeReceiptItem(item);
 					saveNewItem = true;
 				}
-				
-				if (saveNewItem) {
-					// Update receipt
-					receipt = saveIncomeReceipt(receipt);
-				}
-			}
+			}// end for loop 
 			
+			// Create income receipt for waive and voided 
+			
+			if (saveNewItem) {
+				// Update receipt
+				receipt = saveIncomeReceipt(receipt);
+			}
 		}
     }
 
@@ -1023,5 +1041,34 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	@Override
     public List<ExpenseBalance> listActiveExpenseBalance(FiscalPeriod period) {
 	    return dao.listExpenseBalance(BalanceStatus.ACTIVE, period);
+    }
+
+	@Override
+	public int countListPaymentsByAccount(Account account) {
+		if (account != null) {
+			return dao.countListPaymentsByAccount(account);
+		} else {
+			return 0;
+		}
+	    
+    }
+
+	@Override
+    public List<Payment> listPaymentsByAccount(Account account, Integer min, Integer max) {
+		if (account != null) {
+			return dao.listPaymentsByAccount(account,min,max);
+		} else {
+			return null;
+		}
+    }
+
+	@Override
+    public int countAllPayments() {
+	    return dao.countListPayments();
+    }
+
+	@Override
+    public List<Payment> listAllPayments(int min, int max) {
+	    return dao.listPayments(min, max);
     }
 }

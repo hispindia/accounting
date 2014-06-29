@@ -225,9 +225,13 @@ public interface AccountingService extends OpenmrsService {
 	
 	public Payment getPayment(Integer id);
 	
-	public List<Payment> listActivePayments();
+	public int countAllPayments();
 	
-	public List<Payment> listAllPayments();
+	public int countListPaymentsByAccount(Account account);
+	
+	public List<Payment> listPaymentsByAccount(Account account, Integer min, Integer max);
+	
+	public List<Payment> listAllPayments(int min, int max);
 	
 	public List<ExpenseBalance> listActiveExpenseBalance();
 	

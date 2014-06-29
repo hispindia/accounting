@@ -48,8 +48,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/module/accounting/account.list")
 public class AccountListController {
 	Log log = LogFactory.getLog(getClass());
-	
-	
     
     @RequestMapping(method=RequestMethod.POST)
     public String deleteCompanies(@RequestParam("ids") String[] ids,HttpServletRequest request){

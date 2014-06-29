@@ -68,7 +68,7 @@
 		<tr>
 			<td valign="top"><spring:message code="accounting.accountType" />
 			</td>
-			<td><form:select path="account.accountType">
+			<td><form:select path="account.accountType" <c:if test="${disableEdit}">disabled="true"</c:if>>
 					<form:option value="" label="--Please Select--"/>
 					<form:options items="${accountTypes}" itemLabel="name" />
 				</form:select> <form:errors path="account.accountType"  cssClass="error" /></td>
@@ -77,7 +77,7 @@
 		<tr>
 			<td>Start Period</td>
 			<td>
-				<form:select path="period">
+				<form:select path="period" <c:if test="${disableEdit}">disabled="true"</c:if>>
 					<option value="">--Select Period---</option>
 					<c:forEach items="${periods}" var="period">
 						<option value="${period.id }">${period.name}</option>

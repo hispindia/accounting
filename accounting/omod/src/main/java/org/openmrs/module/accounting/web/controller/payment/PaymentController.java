@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -19,6 +21,8 @@ import org.openmrs.module.accounting.api.model.Payment;
 import org.openmrs.module.accounting.api.model.PaymentStatus;
 import org.openmrs.module.accounting.api.utils.DateUtils;
 import org.openmrs.module.accounting.web.controller.budget.AccountPropertySupport;
+import org.openmrs.module.hospitalcore.util.PagingUtil;
+import org.openmrs.module.hospitalcore.util.RequestUtil;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -71,9 +75,31 @@ public class PaymentController {
 	}
 	
 	@RequestMapping("/module/accounting/payment.list")
-	public String showPaymentList(Model model){
-		List<Payment> payments = Context.getService(AccountingService.class).listActivePayments();
-		model.addAttribute("payments",payments);
+	public String showPaymentList(  @RequestParam(value="accountId",required=false) Integer accountId, 
+	                                @RequestParam(value="pageSize",required=false) Integer pageSize,
+	                                @RequestParam(value="currentPage",required=false) Integer currentPage,
+	                                Model model,HttpServletRequest request){
+		AccountingService service = Context.getService(AccountingService.class);
+		if (accountId != null) {
+			Account account = service.getAccount(accountId);
+			int count = service.countListPaymentsByAccount(account);
+			
+			PagingUtil pagingUtil = new PagingUtil( RequestUtil.getCurrentLink(request) , pageSize, currentPage, count );
+			
+			List<Payment> payments = Context.getService(AccountingService.class).listPaymentsByAccount(account, pagingUtil.getStartPos(), pagingUtil.getPageSize());
+			model.addAttribute("payments",payments);
+			model.addAttribute("pagingUtil",pagingUtil);
+		} else {
+			int count = service.countAllPayments();
+			PagingUtil pagingUtil = new PagingUtil( RequestUtil.getCurrentLink(request) , pageSize, currentPage, count );
+			List<Payment> payments = Context.getService(AccountingService.class).listAllPayments(pagingUtil.getStartPos(), pagingUtil.getPageSize());
+			model.addAttribute("payments",payments);
+			model.addAttribute("pagingUtil",pagingUtil);
+		}
+		
+		List<Account> accounts = service.listAccount(AccountType.EXPENSE, false);
+		model.addAttribute("accounts", accounts);
+		model.addAttribute("accountId", accountId);
 		
 		return "/module/accounting/payment/listPayment";
 	}
@@ -94,10 +120,11 @@ public class PaymentController {
 	
 	
 	@RequestMapping(value="/module/accounting/payment.form", method=RequestMethod.POST)
-	public String postPaymentForm(@ModelAttribute("payment") Payment payment, BindingResult bindingResult) {
+	public String postPaymentForm(@ModelAttribute("payment") Payment payment, BindingResult bindingResult, Model model) {
 		
 		new PaymentValidator().validate(payment, bindingResult);
 		if (bindingResult.hasErrors()) {
+			model.addAttribute("erors",bindingResult.getAllErrors());
 			return "/module/accounting/payment/paymentForm";
 		}
 		Context.getService(AccountingService.class).savePayment(payment);

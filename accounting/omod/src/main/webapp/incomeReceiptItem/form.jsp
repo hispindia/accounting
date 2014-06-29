@@ -33,7 +33,7 @@
 <form method="post" class="box" id="itemForm">
 <input type="hidden" id="accounts"  value="${accounts}" />
 <input type="hidden" id="incomeReceiptId" name="incomeReceiptId" value="${incomeReceiptId} }"/>
-	<span><strong> Add Receipt Item </strong></span>
+
 	<table id="tableItemForm">
 		<tr>
 			<td>Account</td>

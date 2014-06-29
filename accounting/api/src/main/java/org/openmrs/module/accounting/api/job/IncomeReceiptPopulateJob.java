@@ -45,7 +45,7 @@ public class IncomeReceiptPopulateJob  extends AbstractTask {
 			
 			
 			AccountingService accountService = Context.getService(AccountingService.class);
-			Date curDate = DateUtils.getDateFromStr("11/3/2014");
+			Date curDate = DateUtils.getDateFromStr("12/3/2014");
 			curDate = DateUtils.getDatePart(curDate);
 			accountService.aggregateIncomeReceipt(curDate);
 			

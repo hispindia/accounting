@@ -1,7 +1,7 @@
 package org.openmrs.module.accounting.api.model;
 
 public enum IncomeReceiptType {
-	CASH("CASH"), VOIDED("VOIDED"), VISA("VISA"), MASTER("MASTER"), WAIVE("WAVIE");
+	CASH("CASH"), VOIDED("VOIDED"), WAIVE("WAVIE");
 	
 	private String name;
 	

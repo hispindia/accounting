@@ -123,8 +123,11 @@ public class FiscalYearFormController {
 		return "redirect:/module/accounting/fiscalyear.list";
 	}
 	
-	@ModelAttribute("status")
+	@ModelAttribute("statuses")
 	public GeneralStatus[] registerStatuses() {
-		return GeneralStatus.values();
+		GeneralStatus[] status = new GeneralStatus[2]; 
+		status[0] = GeneralStatus.OPEN;
+		status[1] = GeneralStatus.CLOSED;
+		return status;
 	}
 }

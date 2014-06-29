@@ -25,6 +25,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.accounting.api.model.Account;
@@ -497,12 +498,20 @@ public class AccountingDAO {
 		return (Payment) criteria.uniqueResult();
 	}
 	
-	@SuppressWarnings("unchecked")
-    public List<Payment> listPayments(boolean includeRetired) {
+	public int countListPayments() {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Payment.class);
-		if (!includeRetired) {
-			criteria.add(Restrictions.eq("retired",false));
-		}
+		criteria.addOrder(Order.desc("paymentDate"));
+		Number rs = (Number) criteria.setProjection(Projections.rowCount())
+				.uniqueResult();
+		return rs != null ? rs.intValue() : 0;
+	}
+	
+	@SuppressWarnings("unchecked")
+    public List<Payment> listPayments(int min, int max) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Payment.class);
+		
+		criteria.setFirstResult(min).setMaxResults(max);
+		criteria.addOrder(Order.desc("paymentDate"));
 		return criteria.list();
 	}
 	
@@ -580,5 +589,22 @@ public class AccountingDAO {
 		criteria.add(Restrictions.eq("account", account));
 		criteria.add(Restrictions.eq("status", BalanceStatus.ACTIVE));
 		return (ExpenseBalance) criteria.uniqueResult();
+	}
+	
+	
+	public int countListPaymentsByAccount(Account account) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Payment.class);
+		criteria.add(Restrictions.eq("account", account));
+		Number rs = (Number) criteria.setProjection(Projections.rowCount())
+				.uniqueResult();
+		return rs != null ? rs.intValue() : 0;
+	}
+	
+	@SuppressWarnings("unchecked")
+    public List<Payment> listPaymentsByAccount(Account account, Integer min, Integer max){
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Payment.class);
+		criteria.add(Restrictions.eq("account", account));
+		criteria.setMaxResults(max).setFirstResult(min);
+		return criteria.list();
 	}
 }

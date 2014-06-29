@@ -21,7 +21,8 @@ public class AccountBalanceListController {
 	
 	@RequestMapping(method=RequestMethod.GET)
 	public String get(@RequestParam(value="periodId", required=false) Integer fiscalPeriodId,
-	                  @RequestParam(value="type",required=false) String type, 
+	                  @RequestParam(value="type",required=false) String type,
+	                
 	                  Model model,  HttpServletRequest request){
 		
 		AccountType accType;
@@ -39,7 +40,6 @@ public class AccountBalanceListController {
 			List<ExpenseBalance> accounts = Context.getService(AccountingService.class).listActiveExpenseBalance();
 			model.addAttribute("accounts",accounts);
 		}
-		
 		
 		model.addAttribute("type",type);
 		

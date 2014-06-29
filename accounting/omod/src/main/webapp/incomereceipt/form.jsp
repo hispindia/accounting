@@ -124,7 +124,7 @@ function deleteItem(_this,id) {
 
 function editItem(id) {
 	var receiptId = jQuery("#incomeReceiptId").val();
-	tb_show("Edit Receipt Item","incomeReceiptItem.form?id="+id+"&receiptId="+receiptId+"&keepThis=true&TB_iframe=true&height=250&width=400",null);
+	tb_show("Add/Edit Receipt Item","incomeReceiptItem.form?id="+id+"&receiptId="+receiptId+"&keepThis=true&TB_iframe=true&height=250&width=400",null);
 }
 
 
