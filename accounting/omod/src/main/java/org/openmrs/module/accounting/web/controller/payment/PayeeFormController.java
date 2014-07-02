@@ -1,13 +1,9 @@
 package org.openmrs.module.accounting.web.controller.payment;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.AccountingService;
-import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.Payee;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.stereotype.Controller;

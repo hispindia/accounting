@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.model.Account;
+import org.openmrs.module.accounting.api.model.AccountBalance;
 import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
@@ -84,7 +85,8 @@ public class AccountFormController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String firstView( @RequestParam(value = "id", required = false) Integer id, Model model) {
 		if (id != null) {
-			Account account = Context.getService(AccountingService.class).getAccount(id);
+			AccountingService service = Context.getService(AccountingService.class);
+			Account account = service.getAccount(id);
 			AccountCommand command = new AccountCommand();
 			command.setAccount(account);
 			model.addAttribute("accountCommand", command);

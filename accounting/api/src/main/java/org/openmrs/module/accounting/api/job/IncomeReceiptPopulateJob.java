@@ -21,6 +21,7 @@
 
 package org.openmrs.module.accounting.api.job;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
@@ -45,7 +46,8 @@ public class IncomeReceiptPopulateJob  extends AbstractTask {
 			
 			
 			AccountingService accountService = Context.getService(AccountingService.class);
-			Date curDate = DateUtils.getDateFromStr("12/3/2014");
+			//Date curDate = DateUtils.getDateFromStr("12/3/2014");
+			Date curDate = Calendar.getInstance().getTime();
 			curDate = DateUtils.getDatePart(curDate);
 			accountService.aggregateIncomeReceipt(curDate);
 			

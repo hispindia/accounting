@@ -72,7 +72,7 @@ public class FiscalYear {
 	private GeneralStatus status;
 	
 	public FiscalYear() {
-		this.status = GeneralStatus.OPEN;
+		this.status = GeneralStatus.ACTIVE;
 	}
 	
 	public FiscalYear(String name, Date createdDate, int createdBy) {

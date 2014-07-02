@@ -22,7 +22,7 @@
 	redirect="/module/accounting/account.list" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
-<%@ include file="../includes/nav.jsp" %>
+<%@ include file="../includes/nav.jsp"%>
 <h2>
 	<spring:message code="accounting.account.addedit" />
 </h2>
@@ -68,49 +68,65 @@
 		<tr>
 			<td valign="top"><spring:message code="accounting.accountType" />
 			</td>
-			<td><form:select path="account.accountType" <c:if test="${disableEdit}">disabled="true"</c:if>>
-					<form:option value="" label="--Please Select--"/>
-					<form:options items="${accountTypes}" itemLabel="name" />
-				</form:select> <form:errors path="account.accountType"  cssClass="error" /></td>
+
+			<td><c:choose>
+					<c:when test="${disableEdit}">
+					${accountCommand.account.accountType}
+				</c:when>
+					<c:otherwise>
+						<form:select path="account.accountType">
+							<form:option value="" label="--Please Select--" />
+							<form:options items="${accountTypes}" itemLabel="name" />
+						</form:select>
+						<form:errors path="account.accountType" cssClass="error" />
+					</c:otherwise>
+				</c:choose></td>
 		</tr>
-		
-		<tr>
-			<td>Start Period</td>
-			<td>
-				<form:select path="period" <c:if test="${disableEdit}">disabled="true"</c:if>>
-					<option value="">--Select Period---</option>
-					<c:forEach items="${periods}" var="period">
-						<option value="${period.id }">${period.name}</option>
-					</c:forEach>
-				</form:select>
-			</td>
-		</tr>
-		
+
+
+		<c:choose>
+			<c:when test="${disableEdit}">
+			</c:when>
+			<c:otherwise>
+				<tr>
+					<td>Start Period</td>
+					<td><form:select path="period">
+							<option value="">--Select Period---</option>
+							<c:forEach items="${periods}" var="period">
+								<option value="${period.id }">${period.name}</option>
+							</c:forEach>
+						</form:select></td>
+				</tr>
+			</c:otherwise>
+		</c:choose>
+
+
 		<tr>
 			<td valign="top"><spring:message code="accounting.parentAccount" />
 			</td>
 			<td><form:select path="account.parentAccountId">
-				<form:option value="" label="--Please Select--"/>
-				<form:options items="${listParents}" itemValue="id" itemLabel="name"/>
-			</form:select>
-			 <form:errors path="account.parentAccountId" cssClass="error" /></td>
+					<form:option value="" label="--Please Select--" />
+					<form:options items="${listParents}" itemValue="id"
+						itemLabel="name" />
+				</form:select> <form:errors path="account.parentAccountId" cssClass="error" /></td>
 		</tr>
-		
+
 		<tr>
 			<td valign="top"><spring:message code="accounting.conceptId" /></td>
-			<td><openmrs_tag:conceptField formFieldName="conceptId" ></openmrs_tag:conceptField></td>
+			<td><openmrs_tag:conceptField formFieldName="conceptId"></openmrs_tag:conceptField></td>
 		</tr>
-		
+
 		<tr>
 			<td><spring:message code="general.retired" /></td>
-			<td><form:radiobutton path="account.retired" value="false" />NO <form:radiobutton
-					path="account.retired" value="true" />YES</td>
-				 <form:errors path="account.retired" cssClass="error" /></td>
+			<td><form:radiobutton path="account.retired" value="false" />NO
+				<form:radiobutton path="account.retired" value="true" />YES</td>
+			<form:errors path="account.retired" cssClass="error" />
+			</td>
 		</tr>
 	</table>
-	<br /> <input type="submit"
-		value="<spring:message code="general.save"/>"> <input
-		type="button" value="<spring:message code="general.cancel"/>"
+	<br />
+	<input type="submit" value="<spring:message code="general.save"/>">
+	<input type="button" value="<spring:message code="general.cancel"/>"
 		onclick="javascript:window.location.href='account.list'">
 </form:form>
 <%@ include file="/WEB-INF/template/footer.jsp"%>

@@ -1,9 +1,13 @@
 package org.openmrs.module.accounting.web.controller.account.balance;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.model.AccountBalance;
@@ -44,6 +48,22 @@ public class AccountBalanceListController {
 		model.addAttribute("type",type);
 		
 		
+		
+		//Get the workbook instance for XLS file 
+		HSSFWorkbook workbook = new HSSFWorkbook();
+
+		
+		//Get first sheet from the workbook
+		HSSFSheet sheet = workbook.createSheet("Sheet 1");
+
+		//Get iterator to all the rows in current sheet
+
+		//Get iterator to all cells of current row
+		
 		return "/module/accounting/accountBalance/list";
 	}
+	
+	
+	
+	
 }

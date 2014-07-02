@@ -125,9 +125,6 @@ public class FiscalYearFormController {
 	
 	@ModelAttribute("statuses")
 	public GeneralStatus[] registerStatuses() {
-		GeneralStatus[] status = new GeneralStatus[2]; 
-		status[0] = GeneralStatus.OPEN;
-		status[1] = GeneralStatus.CLOSED;
-		return status;
+		return GeneralStatus.values();
 	}
 }

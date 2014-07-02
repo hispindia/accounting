@@ -885,7 +885,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 				receipt.setCreatedDate(date);
 				receipt.setReceiptDate(date);
 				receipt.setVoided(false);
-				receipt.setStatus(GeneralStatus.OPEN);
+				receipt.setStatus(GeneralStatus.ACTIVE);
 				receipt.setReceiptNo(AccountingConstants.INCOME_RECEIPT_NO_PREFIX + DateUtils.getStringFromDate(date));
 				receipt.setDescription("Income receipt auto generated");
 				receipt = saveIncomeReceipt(receipt);

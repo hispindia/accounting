@@ -51,13 +51,13 @@
 <form:form method="post" commandName="payment" cssClass="box">
 	<table>
 		<tr>
-			<td><spring:message code="accounting.account" /></td>
+			<td><spring:message code="accounting.account" /><em>*</em></td>
 			<td><input type="text" id="comboAccount"/><form:hidden path="account" id="hiddenAccount"/>
 			</td>
 			<td></td>
 		</tr>
 		<tr>
-			<td><spring:message code="accounting.payment.date"/></td>
+			<td><spring:message code="accounting.payment.date"/><em>*</em></td>
 			<td>
 				<form:input path="paymentDate"    onfocus="showCalendar(this)" id="paymentDate"/>
 			</td>
@@ -69,7 +69,7 @@
 			<form:hidden path="totalAIE" id="totalAIE"/></td>
 		</tr>
 		<tr>
-			<td><spring:message code="accounting.payee" /></td>
+			<td><spring:message code="accounting.payee" /><em>*</em></td>
 			<td><input type="text" id="comboPayee"/><form:hidden path="payee" id="hiddenPayee"/>
 			</td>
 			<td><input type="button" value="Add Payee" onclick="addPayee()"/></td>
@@ -97,30 +97,18 @@
 			<td><form:errors path="totalCommitment"  cssClass="error" /></td>
 		</tr>
 		<tr>
-			<td><spring:message code="accounting.payable"/></td>
+			<td><spring:message code="accounting.payable"/><em>*</em></td>
 			<td><form:input path="payable"/></td>
 			<td><form:errors path="payable"  cssClass="error" /></td>
 		</tr>
-		<tr>
-			<td><spring:message code="accounting.totalPayable"/></td>
-			<td><form:input path="totalPayable"/></td>
-			<td><form:errors path="totalPayable"  cssClass="error" /></td>
-		</tr>
+	
 		<tr>
 			<td><spring:message code="accounting.actualPayment"/></td>
 			<td><form:input path="actualPayment"/></td>
 			<td><form:errors path="actualPayment"  cssClass="error" /></td>
 		</tr>
-		<tr>
-			<td><spring:message code="accounting.totalActualPayment"/></td>
-			<td><form:input path="totalActualPayment"/></td>
-			<td><form:errors path="totalActualPayment"  cssClass="error" /></td>
-		</tr>
-		<tr>
-			<td><spring:message code="accounting.totalPayablePlusPayment"/></td>
-			<td><form:input path="totalPayablePlusPayment"/></td>
-			<td><form:errors path="totalPayablePlusPayment"  cssClass="error" /></td>
-		</tr>
+	
+	
 		<tr>
 			<td><spring:message code="accounting.status"/></td>
 			<td><form:select path="status">
@@ -130,7 +118,7 @@
 		</tr>
 		<tr>
 			<td><spring:message code="accounting.note"/></td>
-			<td><form:input path="note"/></td>
+			<td><form:textarea path="note"/></td>
 			<td><form:errors path="note"  cssClass="error" /></td>
 		</tr>
 		<tr>

@@ -25,6 +25,7 @@
 	<b><a href="accountBalance.htm">Account Balance</a></b>&nbsp; | &nbsp; 
 	<b><a href="incomereceipt.list">Income</a></b>&nbsp; | &nbsp;
 	<b><a href="budget.list">Budget</a></b>&nbsp; | &nbsp;
-	<b><a href="payment.list">Payment</a></b>
+	<b><a href="payment.list">Payment</a></b>&nbsp; | &nbsp;
+	<b><a href="report.form">Report</a></b>
 </p>
 

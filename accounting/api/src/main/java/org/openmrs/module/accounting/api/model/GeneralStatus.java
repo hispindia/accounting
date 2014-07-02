@@ -2,7 +2,7 @@ package org.openmrs.module.accounting.api.model;
 
 
 public enum GeneralStatus {
-	OPEN("OPEN"),DISABLED("DISABLED"),CLOSED("CLOSED"),ACTIVE("ACTIVE");
+	ACTIVE("ACTIVE"),INACTIVE("INACTIVE"),DISABLED("DISABLED"),CLOSED("CLOSED");
 	
 	private String name;
 	

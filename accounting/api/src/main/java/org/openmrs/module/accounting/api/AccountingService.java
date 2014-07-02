@@ -79,7 +79,7 @@ public interface AccountingService extends OpenmrsService {
 	 * 
 	 * @param account
 	 * @param date
-	 * @return should return only one account because there should be no overlap periods
+	 * @return should return only one account because there shouldnt be  overlap periods
 	 */
 	public AccountBalance findAccountPeriod(Account account, Date date) ;
 	

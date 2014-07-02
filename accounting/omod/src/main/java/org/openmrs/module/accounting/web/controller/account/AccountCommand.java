@@ -7,6 +7,7 @@ import org.openmrs.module.accounting.api.model.FiscalPeriod;
 public class AccountCommand {
 	private Account account;
 	private Integer period;
+	private FiscalPeriod fiscalPeriod;
 	
 	public AccountCommand(){
 		this.account = new Account();
@@ -28,6 +29,16 @@ public class AccountCommand {
 	
     public void setPeriod(Integer period) {
     	this.period = period;
+    }
+
+	
+    public FiscalPeriod getFiscalPeriod() {
+    	return fiscalPeriod;
+    }
+
+	
+    public void setFiscalPeriod(FiscalPeriod fiscalPeriod) {
+    	this.fiscalPeriod = fiscalPeriod;
     }
 	
 }

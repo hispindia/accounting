@@ -449,7 +449,7 @@ public class AccountingDAO {
 	
 	public FiscalYear getActiveFicalYear() {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(FiscalYear.class);
-		criteria.add(Restrictions.eq("status", GeneralStatus.OPEN));
+		criteria.add(Restrictions.eq("status", GeneralStatus.ACTIVE));
 		return (FiscalYear) criteria.uniqueResult();
 	}
 	
