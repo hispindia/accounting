@@ -44,21 +44,48 @@ public class AccountValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 */
-	public void validate(Object command, Errors error) {
-    	Account account= (Account) command;
+	public void validate(Object cmd, Errors error) {
+    	AccountCommand command= (AccountCommand) cmd;
+    	Account account = command.getAccount();
+    	AccountingService accountingService = Context.getService(AccountingService.class);
     	
     	if (StringUtils.isBlank(account.getName())) {
     		error.reject("accounting.name.required");
-    	} else if (account.getId() == null) {
-    		AccountingService accountingService = (AccountingService)Context.getService(AccountingService.class);
-    		Account acc = accountingService.getAccountByName(account.getName());
-    		if (acc != null && acc.getAccountType().equals(account.getAccountType())){
-    			error.reject("accounting.name.existed");
-    		}
-    	}
+    	} 
     	
     	if (account.getAccountType() == null){
     		error.reject("accounting.type.required");
+    	}
+    	
+    	
+    	if (StringUtils.isBlank(account.getAccountNumber())) {
+    		error.reject("accounting.accountNumber.required");
+    	}
+    	
+    	if (account.getId() != null) {
+    		// UPDATE
+    		Account acc = accountingService.getAccountByAccountNumber(account.getAccountNumber());
+    		if (acc != null && acc.getId() != account.getId()) {
+    			error.reject("accounting.accountNumber.existed");
+    		}
+    		
+    		acc = accountingService.getAccountByNameAndType(account.getName(),account.getAccountType());
+    		if (acc != null && acc.getId() != account.getId()) {
+    			error.reject("accounting.name.existed");
+    		}
+    		
+    	} else {
+    		
+    		if (command.getPeriod() == null){
+        		error.reject("accounting.period.required");
+        	}
+    		
+    		// CREATE NEW
+    		Account acc = accountingService.getAccountByNameAndType(account.getName(),account.getAccountType());
+    		if (acc != null){
+    			error.reject("accounting.name.existed");
+    		}
+    		
     	}
     	
     	

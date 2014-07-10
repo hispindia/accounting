@@ -23,20 +23,47 @@
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="../includes/nav.jsp" %>
-<h2>
 
-<input type="button" value="Download Report" onclick="download()"/>
 
+
+
+<span class="boxHeader">Monthly Payment and Commitment Report</span>
+<div class="box">
+<table>
+<tr> <td>Select Period:</td>
+	<td align="left">
+	<select id="comboPeriods">
+	<option>---Select Period---</option>
+	<c:forEach items="${periods }" var="period">
+		<option value="${period.id }">${period.name }</option>
+	</c:forEach>
+</select></td>
+</tr>
+<tr><td></td><td><input type="button" value="Download Report" onclick="download()"/>
+	</td>
+	</tr>
+</table>
+</div>
 <script>
+
+
 function download() {
+	
+	var periodId = jQuery("#comboPeriods").val();
+	
 	var link = document.createElement('a');
-	link.href ="downloadReport.form"
+	
+	if (periodId) {
+		link.href ="downloadReport.form?periodId="+periodId
+	} else {
+		link.href ="downloadReport.form"
+	}
+	
 	link.setAttribute('download', "AccountingReport.xls");
 	link.innerHTML = "Report Test";
     document.body.appendChild(link);
 	link.click();
 }
 </script>
-</h2>
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

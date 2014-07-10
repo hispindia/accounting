@@ -329,4 +329,10 @@
             <column name="total_aie" type="DECIMAL(9, 2)"/>
         </createTable>
     </changeSet>
+    
+    <changeSet author="viet" id="201407091146">
+    	<addColumn tableName="accounting_account">
+    		<column name="account_number" type="varchar(50)"/>
+    	</addColumn>
+    </changeSet>
 </databaseChangeLog>

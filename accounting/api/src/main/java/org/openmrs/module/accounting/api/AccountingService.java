@@ -63,6 +63,10 @@ public interface AccountingService extends OpenmrsService {
 	public Account getAccountByName(String name);
 	
 	@Transactional(readOnly = true)
+	@Authorized({ AccountingConstants.PRIV_VIEW_ACCOUNT })
+	public Account getAccountByNameAndType(String name, AccountType type);
+	
+	@Transactional(readOnly = true)
 	public Collection<Account> getListParrentAccount();
 	
 	@Transactional(readOnly = true)
@@ -73,6 +77,8 @@ public interface AccountingService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	public List<AccountBalance> listActiveAccountBalance(FiscalPeriod period);
 	
+	@Transactional(readOnly = true)
+	public Account getAccountByAccountNumber(String accNo);
 	
 	
 	/**

@@ -111,7 +111,7 @@ public class AccountFormController {
 	public String onSubmit(@ModelAttribute("accountCommand") AccountCommand command, BindingResult bindingResult, Model model,
 	                       HttpServletRequest request, SessionStatus status) {
 		
-		new AccountValidator().validate(command.getAccount(), bindingResult);
+		new AccountValidator().validate(command, bindingResult);
 		if (bindingResult.hasErrors()) {
 			return "/module/accounting/account/form";
 		}

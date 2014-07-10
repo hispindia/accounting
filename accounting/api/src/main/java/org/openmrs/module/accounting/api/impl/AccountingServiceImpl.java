@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -67,11 +68,11 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	
 	public Account saveAccount(Account acc, Integer periodId) {
 		
-		FiscalPeriod period = dao.getFiscalPeriod(periodId);
-		
-		if (period == null) return null;
+	
 		if (acc.getId() == null) {
+			FiscalPeriod period = dao.getFiscalPeriod(periodId);
 			
+			if (period == null) return null;
 			log.info("Create new account: " + acc.getName());
 			acc.setCreatedDate(Calendar.getInstance().getTime());
 			acc.setCreatedBy(Context.getAuthenticatedUser().getId());
@@ -781,7 +782,16 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	 */
 
 	private void updateExpenseBalance(Payment payment) {
-		ExpenseBalance balance = dao.getLatestExpenseBalance(payment.getAccount());
+		
+		FiscalPeriod period = dao.getPeriodByDate(payment.getPaymentDate());
+		ExpenseBalance balance = null;
+		if (period != null) {
+			balance = dao.getExpenseBalanceByAccountAndPeriod(payment.getAccount(), period);
+		} else {
+			//TODO
+			balance = dao.getLatestExpenseBalance(payment.getAccount());
+		}
+		
 		if (balance == null) {
 			// There should always at least one account balance exist for an account!
 			log.error("Expense Balance is null for account id : "+payment.getAccount().getId());
@@ -1006,11 +1016,12 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 				ExpenseBalance newBalance = new ExpenseBalance();
 				newBalance.setCreatedBy(Context.getAuthenticatedUser().getId());
 				newBalance.setCreatedDate(curDate);
+				newBalance.setPeriod(nextPeriod);
+				newBalance.setStartDate(nextPeriod.getStartDate());
 				newBalance.setAvailableBalance(balance.getAvailableBalance());
 				newBalance.setCummulativeAIE(balance.getCummulativeAIE());
 				newBalance.setCummulativePayment(balance.getCummulativePayment());
 				newBalance.setAccount(balance.getAccount());
-				newBalance.setStartDate(curDate);
 				newBalance.setStatus(BalanceStatus.ACTIVE);
 				
 				dao.saveExpenseBalance(newBalance);
@@ -1070,5 +1081,19 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	@Override
     public List<Payment> listAllPayments(int min, int max) {
 	    return dao.listPayments(min, max);
+    }
+
+	@Override
+    public Account getAccountByAccountNumber(String accNo) {
+		if (StringUtils.isNotBlank(accNo)) {
+			return dao.getAccountByAccountNumber(accNo);
+		} else {
+			return null;
+		}
+    }
+
+	@Override
+    public Account getAccountByNameAndType(String name, AccountType type) {
+	    return dao.getAccountByNameAndType(name, type);
     }
 }

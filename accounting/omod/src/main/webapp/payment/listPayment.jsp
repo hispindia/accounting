@@ -81,6 +81,7 @@ function selectAccount(this_) {
 						<th><spring:message code="accounting.account" /></th>
 						<th><spring:message code="accounting.payee" /></th>
 						<th><spring:message code="accounting.payment.date" /></th>
+						<th>Amount</th>
 						<th></th>
 					</tr>
 					<c:forEach items="${payments}" var="payment"
@@ -92,6 +93,7 @@ function selectAccount(this_) {
 							<td>${payment.account.name }</td>
 							<td>${payment.payee.name }</td>
 							<td><openmrs:formatDate type="textbox" date="${payment.paymentDate }"/></td>
+							<td>${payment.payable }</td>
 						</tr>
 					</c:forEach>
 					<tr class="paging-container">

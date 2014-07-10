@@ -39,6 +39,9 @@ public class Account  implements Serializable{
 	@Column(name = "name", length = 255)
 	private String name;
 	
+	@Column(name = "account_number", length = 50)
+	private String accountNumber;
+	
 	@Column(name = "description", length = 1000)
 	private String description;
 	
@@ -232,6 +235,16 @@ public class Account  implements Serializable{
 	@Override
     public String toString() {
 	    return "Account [id=" + id + ", name=" + name + "]";
+    }
+
+	
+    public String getAccountNumber() {
+    	return accountNumber;
+    }
+
+	
+    public void setAccountNumber(String accountNumber) {
+    	this.accountNumber = accountNumber;
     }
 
 	

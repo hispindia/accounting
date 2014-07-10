@@ -88,7 +88,7 @@ Account Type: <select onchange="selectAccountType(this)">
 									value="${(( pagingUtil.currentPage - 1  ) * pagingUtil.pageSize ) + varStatus.count }" />
 							</td>
 							<td><a
-								href="javascript:window.location.href='account.form?id=${account.id}'">${account.account.name}</a>
+								href="javascript:window.location.href='account.form?id=${account.account.id}'">${account.account.name}</a>
 							</td>
 							<td>${account.account.accountType }</td>
 							<td>${account.openingBalance}</td>
@@ -132,7 +132,7 @@ Account Type: <select onchange="selectAccountType(this)">
 								value="${(( pagingUtil.currentPage - 1  ) * pagingUtil.pageSize ) + varStatus.count }" />
 						</td>
 						<td><a
-							href="javascript:window.location.href='account.form?id=${account.id}'">${account.account.name}</a>
+							href="javascript:window.location.href='account.form?id=${account.account.id}'">${account.account.name}</a>
 						</td>
 						<td>${account.account.accountType }</td>
 						<td>${account.newAIE}</td>

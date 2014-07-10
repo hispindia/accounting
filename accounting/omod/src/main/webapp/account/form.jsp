@@ -45,7 +45,7 @@
 <form:form commandName="accountCommand" method="post" cssClass="box">
 	<table>
 		<tr>
-			<td><spring:message code="general.name" /></td>
+			<td><spring:message code="general.name" /><em>*</em></td>
 			<td><spring:bind path="account.name">
 					<input type="text" name="${status.expression}"
 						value="${status.value}" size="35" />
@@ -54,6 +54,18 @@
 					</c:if>
 				</spring:bind></td>
 		</tr>
+		
+		<tr>
+			<td><spring:message code="accounting.accountNumber" /><em>*</em></td>
+			<td><spring:bind path="account.accountNumber">
+					<input type="text" name="${status.expression}"
+						value="${status.value}" size="35" />
+					<c:if test="${status.errorMessage != ''}">
+						<span class="error">${status.errorMessage}</span>
+					</c:if>
+				</spring:bind></td>
+		</tr>
+		
 		<tr>
 			<td valign="top"><spring:message code="general.description" />
 			</td>
@@ -66,7 +78,7 @@
 				</spring:bind></td>
 		</tr>
 		<tr>
-			<td valign="top"><spring:message code="accounting.accountType" />
+			<td valign="top"><spring:message code="accounting.accountType" /><em>*</em>
 			</td>
 
 			<td><c:choose>
@@ -86,10 +98,15 @@
 
 		<c:choose>
 			<c:when test="${disableEdit}">
+				<input type='hidden' value="${accountCommand.period}"/>
+		<!-- 		<tr>
+					<td>Start Period</td>
+					<td>${accountCommand.period}</td>
+				</tr> -->
 			</c:when>
 			<c:otherwise>
 				<tr>
-					<td>Start Period</td>
+					<td>Start Period<em>*</em></td>
 					<td><form:select path="period">
 							<option value="">--Select Period---</option>
 							<c:forEach items="${periods}" var="period">
@@ -113,7 +130,9 @@
 
 		<tr>
 			<td valign="top"><spring:message code="accounting.conceptId" /></td>
-			<td><openmrs_tag:conceptField formFieldName="conceptId"></openmrs_tag:conceptField></td>
+			   <td><openmrs:fieldGen type="org.openmrs.Concept" formFieldName="account.conceptId" val="${accountCommand.account.conceptId}" /></td>
+			
+	<!--		<td><openmrs_tag:concept conceptId="${accountCommand.account.conceptId}"/> <openmrs_tag:conceptField formFieldName="account.conceptId"></openmrs_tag:conceptField></td>-->
 		</tr>
 
 		<tr>

@@ -70,6 +70,12 @@ public class AccountingDAO {
 		
 	}
 	
+	public Account getAccountByAccountNumber(String accNo){
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Account.class);
+		criteria.add(Restrictions.eq("accountNumber", accNo));
+		return (Account) criteria.uniqueResult();
+	}
+	
 	public List<Account> getAccounts(AccountType accountType, boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Account.class);
 		if (!includeRetired)
@@ -144,6 +150,13 @@ public class AccountingDAO {
 	public Account getAccountByName(String name) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Account.class);
 		criteria.add(Restrictions.eq("name", name));
+		return (Account) criteria.uniqueResult();
+	}
+	
+	public Account getAccountByNameAndType(String name, AccountType type) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Account.class);
+		criteria.add(Restrictions.eq("name", name));
+		criteria.add(Restrictions.eq("accountType", type));
 		return (Account) criteria.uniqueResult();
 	}
 	
@@ -539,13 +552,13 @@ public class AccountingDAO {
 				return null;
 			}
 			Date to = DateUtils.addDate(date, 1);
-			Date from = DateUtils.addDate(date, -1);
+//			Date from = DateUtils.addDate(date, 0);
 			
 			String str = "select  sum(bill.actualAmount) from  PatientServiceBillItem as bill right join bill.service as service  "
-					+ " where service.conceptId in (:conceptIds) and bill.createdDate >= :from and bill.createdDate < :to";
+					+ " where service.conceptId in  (:conceptIds) and bill.createdDate >= :from and bill.createdDate < :to";
 			Query query = sessionFactory.getCurrentSession().createQuery(str);
 			query.setParameterList("conceptIds", conceptIds);
-			query.setParameter("from", from);
+			query.setParameter("from", date);
 			query.setParameter("to", to);
 			return  (BigDecimal) query.uniqueResult();
 	}
@@ -588,6 +601,14 @@ public class AccountingDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ExpenseBalance.class);
 		criteria.add(Restrictions.eq("account", account));
 		criteria.add(Restrictions.eq("status", BalanceStatus.ACTIVE));
+		return (ExpenseBalance) criteria.uniqueResult();
+	}
+	
+	public ExpenseBalance getExpenseBalanceByAccountAndPeriod(Account account, FiscalPeriod period) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ExpenseBalance.class);
+		criteria.add(Restrictions.eq("account", account));
+		criteria.add(Restrictions.eq("period", period));
+//		criteria.add(Restrictions.eq("status", BalanceStatus.ACTIVE));
 		return (ExpenseBalance) criteria.uniqueResult();
 	}
 	
