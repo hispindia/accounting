@@ -790,6 +790,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		} else {
 			//TODO
 			balance = dao.getLatestExpenseBalance(payment.getAccount());
+			
 		}
 		
 		if (balance == null) {
@@ -1096,4 +1097,16 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
     public Account getAccountByNameAndType(String name, AccountType type) {
 	    return dao.getAccountByNameAndType(name, type);
     }
+
+	@Override
+    public FiscalPeriod getFiscalPeriodByDate(Date date) {
+	    return dao.getPeriodByDate(date);
+    }
+
+	@Override
+    public FiscalPeriod getFiscalPeriodByDate(String date) {
+		Date d = DateUtils.getDateFromStr(date);
+		return dao.getPeriodByDate(d);
+	}
+	
 }

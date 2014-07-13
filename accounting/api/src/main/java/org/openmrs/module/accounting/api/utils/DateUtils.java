@@ -54,4 +54,15 @@ public class DateUtils {
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 		return formatter.format(date);
 	}
+	
+	public static boolean isFutureDate(Date date) {
+		Date curDate = Calendar.getInstance().getTime();
+		if (curDate.compareTo(date) < 0 ) {
+			return true;
+		} else {
+			return false;
+		}
+				
+	}
+	
 }

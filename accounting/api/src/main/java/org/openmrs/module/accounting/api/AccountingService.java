@@ -124,6 +124,12 @@ public interface AccountingService extends OpenmrsService {
 	
 	public FiscalYear closeFiscalYear(Integer id);
 	
+	@Transactional(readOnly = true)
+	public FiscalPeriod getFiscalPeriodByDate(Date date);
+	
+	@Transactional(readOnly = true)
+	public FiscalPeriod getFiscalPeriodByDate(String date);
+	
 	/**
 	 * 	Period
 	 */

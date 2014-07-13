@@ -88,13 +88,18 @@
 		<tr>
 			<td valign="top"><spring:message code="accounting.startDate" />
 			</td>
-			<td><spring:bind path="budget.startDate">
+			<td> <spring:bind path="budget.startDate">
+				<input type="hidden" name="${status.expression}" value="${status.value}" id="hiddenBudgetStartDate"/>
+				<input type="text" readonly="readonly"  value="${status.value}" id="budgetStartDate">
+			<!-- 	
 				<input type="text" name="${status.expression}"
 						value="${status.value}" size="35" onfocus="showCalendar(this)" id="budgetStartDate"/>
 					<c:if test="${status.errorMessage != ''}">
 						<span class="error">${status.errorMessage}</span>
 					</c:if>
-				</spring:bind></td>
+			 -->
+				</spring:bind>
+			</td>
 				
 				
 		</tr>
@@ -102,11 +107,15 @@
 			<td valign="top"><spring:message code="accounting.endDate" />
 			</td>
 			<td><spring:bind path="budget.endDate">
-				<input type="text" name="${status.expression}"
+			<input type="hidden" name="${status.expression}" value="${status.value}" id = "hiddenBudgetEndDate"/>
+				<input type="text" readonly="readonly"  value="${status.value}" id="budgetEndDate">
+				
+				<!-- <input type="text" name="${status.expression}"
 						value="${status.value}" size="35" onfocus="showCalendar(this)" id = "budgetEndDate"/>
 					<c:if test="${status.errorMessage != ''}">
 						<span class="error">${status.errorMessage}</span>
 					</c:if>
+				 -->
 				</spring:bind></td>
 		</tr>
 		<tr>
@@ -169,11 +178,11 @@
 		</tr>
 		<tr>
 			<td>Start Date</td>
-			<td><input type="text" id="itemStartDate" size="35" onfocus="showCalendar(this)"/></td>
+			<td><input type="text" id="itemStartDate" size="35" readonly="readonly"/></td>
 		</tr>
 		<tr>
 			<td>End Date</td>
-			<td><input type="text" id="itemEndDate" size="35" onfocus="showCalendar(this)"/></td>
+			<td><input type="text" id="itemEndDate" size="35" readonly="readonly"/></td>
 		</tr>
 		<tr>
 			<td>Amount</td>
@@ -193,6 +202,10 @@ function selectPeriod(this_) {
 
 	jQuery("#budgetStartDate").val(startDate);
 	jQuery("#budgetEndDate").val(endDate);
+	jQuery("#hiddenBudgetStartDate").val(startDate);
+	jQuery("#hiddenBudgetEndDate").val(endDate);
+
+	
 }
 
 jQuery(document).ready(function(){
@@ -320,7 +333,7 @@ function saveItem() {
 				  endDate : item.endDate,
 				  amount : item.amount
 		}, function( data ) {
-			
+			alert("aa");
 			if (!isNaN(data)) {
 				if (item.id) {
 					updateItemRowValues(item.id,
@@ -336,6 +349,9 @@ function saveItem() {
 															item.startDate, 
 															item.endDate,
 															item.amount);
+
+					// Close item popup
+					tb_remove();
 					}
 			} else {
 				alert("Can not update Budget Item: "+data);
@@ -350,11 +366,12 @@ function saveItem() {
 										item.startDate, 
 										item.endDate,
 										item.amount);
+
+		// Close item popup
+		tb_remove();
 		
 	}
 	
-	// Close item popup
-	tb_remove();
 	
 	
 }

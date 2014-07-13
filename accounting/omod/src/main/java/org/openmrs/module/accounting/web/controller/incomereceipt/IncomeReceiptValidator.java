@@ -1,6 +1,10 @@
 package org.openmrs.module.accounting.web.controller.incomereceipt;
 
+import org.openmrs.api.context.Context;
+import org.openmrs.module.accounting.api.AccountingService;
+import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.openmrs.module.accounting.api.model.IncomeReceipt;
+import org.openmrs.module.accounting.api.utils.DateUtils;
 import org.springframework.validation.Errors;
 
 
@@ -21,12 +25,17 @@ public class IncomeReceiptValidator {
 		IncomeReceipt fiscalYear = (IncomeReceipt) command;
 		
 		
-		
+		AccountingService service = Context.getService(AccountingService.class); 
 		if (fiscalYear.getReceiptDate() == null) {
 			error.reject("accounting.receipt.receiptDate");
+		} else 	if (DateUtils.isFutureDate(fiscalYear.getReceiptDate())) {
+			error.reject("accounting.receipt.receiptDate.future");
 		}
 		
-		
+		FiscalPeriod period = service.getFiscalPeriodByDate(fiscalYear.getReceiptDate());
+		if (period == null){
+			error.reject("accounting.receipt.period.notexisted");
+		}
 		
 		//		Integer companyId = account.getAccountId();
 		//		if (companyId == null) {

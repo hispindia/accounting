@@ -19,9 +19,14 @@ public class BudgetItemValidator implements Validator{
 	    BudgetItem item = (BudgetItem) arg0;
 	    AccountingService service = Context.getService(AccountingService.class);
 	    
-	    if (service.isBudgetItemOverlap(item.getAccount().getId(), item.getStartDate(), item.getEndDate())){
-	    	error.reject("overlap"," Budget period is overlap");
-	    }
+	    if (item.getAccount() == null) {
+	    	error.reject("accounting.account.required");
+	    } else 	if (service.isBudgetItemOverlap(item.getAccount().getId(), item.getStartDate(), item.getEndDate())){
+		    	error.reject("overlap"," Budget period is overlap");
+		    }
+	    
+	    
+	    
     }
 	
 }

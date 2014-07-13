@@ -89,15 +89,16 @@ public class IncomeReceiptItemFormController {
 	
 	@RequestMapping(method = RequestMethod.POST)
 	public String post(@ModelAttribute("incomeReceiptItem") IncomeReceiptItem receiptItem, 
-	                   BindingResult bindingResult, 
+	                   BindingResult bindingResult,
 	                   @RequestParam(value="incomeReceiptId",required=true) Integer incomeReceiptId,
-	                   HttpServletRequest request, SessionStatus status) {
+	                   Model model, HttpServletRequest request, SessionStatus status) {
 		if (receiptItem == null) {
 			bindingResult.reject("Can not find Income Receipt Item");
 			return "/module/accounting/incomeReceiptItem/form";
 		}
 		new IncomeReceiptItemValidator().validate(receiptItem, bindingResult);
 		if (bindingResult.hasErrors()) {
+			model.addAttribute("error",bindingResult.getAllErrors());
 			return "/module/accounting/incomeReceiptItem/form";
 		}
 		

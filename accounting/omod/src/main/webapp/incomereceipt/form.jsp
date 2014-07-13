@@ -74,7 +74,6 @@
 				
 				
 		</tr>
-		<td></td>
 		<tr>
 			<td valign="top"><spring:message code="accounting.voided" />
 			</td>
