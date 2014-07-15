@@ -70,6 +70,7 @@ public class AccountListController {
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 			"Can not delete account because it has link to other records ");
 			log.error(e);
+			e.printStackTrace();
 			return "redirect:/module/accounting/account.list";
 		}
 		httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,

@@ -71,8 +71,6 @@
 						<span class="error">${status.errorMessage}</span>
 					</c:if>
 				</spring:bind></td>
-				
-				
 		</tr>
 		<tr>
 			<td valign="top"><spring:message code="accounting.voided" />

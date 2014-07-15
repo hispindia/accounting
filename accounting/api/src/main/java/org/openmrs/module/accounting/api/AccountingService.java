@@ -74,8 +74,12 @@ public interface AccountingService extends OpenmrsService {
 	
 	@Transactional(readOnly = true)
 	public List<AccountBalance> listActiveAccountBalance();
+	
 	@Transactional(readOnly = true)
 	public List<AccountBalance> listActiveAccountBalance(FiscalPeriod period);
+	
+	@Transactional(readOnly = true)
+	public List<AccountBalance> listActiveAccountBalanceByPeriodId(Integer periodId);
 	
 	@Transactional(readOnly = true)
 	public Account getAccountByAccountNumber(String accNo);
@@ -162,6 +166,7 @@ public interface AccountingService extends OpenmrsService {
 	
 	public void delete(IncomeReceipt incomeReceipt);
 	
+	public IncomeReceipt getIncomeReceiptByReceiptNo(String receiptNo);
 	
 	/**
 	 * INCOME RECEIPT ITEM
@@ -248,6 +253,8 @@ public interface AccountingService extends OpenmrsService {
 	public List<ExpenseBalance> listActiveExpenseBalance();
 	
 	public List<ExpenseBalance> listActiveExpenseBalance(FiscalPeriod period);
+	
+	public List<ExpenseBalance> listActiveExpenseBalanceByPeriodId(Integer periodId);
 	
 	
 }

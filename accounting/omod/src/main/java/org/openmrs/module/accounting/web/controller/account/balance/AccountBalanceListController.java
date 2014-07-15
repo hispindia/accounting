@@ -1,7 +1,5 @@
 package org.openmrs.module.accounting.web.controller.account.balance;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,8 +11,10 @@ import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.model.AccountBalance;
 import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.ExpenseBalance;
+import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,10 +23,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/module/accounting/accountBalance.htm")
 public class AccountBalanceListController {
 	
+	
+	@ModelAttribute("periods")
+	public List<FiscalPeriod> registerPeriods() {
+		return Context.getService(AccountingService.class).getCurrentYearPeriods();
+	}
+	
 	@RequestMapping(method=RequestMethod.GET)
-	public String get(@RequestParam(value="periodId", required=false) Integer fiscalPeriodId,
+	public String get(@RequestParam(value="period", required=false) Integer fiscalPeriodId,
 	                  @RequestParam(value="type",required=false) String type,
-	                
 	                  Model model,  HttpServletRequest request){
 		
 		AccountType accType;
@@ -38,14 +43,15 @@ public class AccountBalanceListController {
 		}
 		
 		if (accType.equals(AccountType.INCOME)) {
-			List<AccountBalance> accounts = Context.getService(AccountingService.class).listActiveAccountBalance();
+			List<AccountBalance> accounts = Context.getService(AccountingService.class).listActiveAccountBalanceByPeriodId(fiscalPeriodId);
 			model.addAttribute("accounts",accounts);
 		} else if (accType.equals(AccountType.EXPENSE)) {
-			List<ExpenseBalance> accounts = Context.getService(AccountingService.class).listActiveExpenseBalance();
+			List<ExpenseBalance> accounts = Context.getService(AccountingService.class).listActiveExpenseBalanceByPeriodId(fiscalPeriodId);
 			model.addAttribute("accounts",accounts);
 		}
 		
 		model.addAttribute("type",type);
+		model.addAttribute("periodId",fiscalPeriodId);
 		
 		
 		

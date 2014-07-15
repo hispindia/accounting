@@ -333,7 +333,7 @@ function saveItem() {
 				  endDate : item.endDate,
 				  amount : item.amount
 		}, function( data ) {
-			alert("aa");
+
 			if (!isNaN(data)) {
 				if (item.id) {
 					updateItemRowValues(item.id,

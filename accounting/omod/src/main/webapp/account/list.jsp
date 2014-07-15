@@ -73,7 +73,7 @@
 					</tr>
 					<c:forEach items="${accounts}" var="account"
 						varStatus="varStatus">
-						<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" } '>
+						<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" } ' <c:if test="${account.retired}"> style="text-decoration:line-through;"</c:if>>
 							<td><c:out
 									value="${(( pagingUtil.currentPage - 1  ) * pagingUtil.pageSize ) + varStatus.count }" />
 							</td>

@@ -45,21 +45,38 @@
 </c:forEach>
 
 <script>
-	function selectAccountType(this_) {
-
-		window.location.href = "accountBalance.htm?type=" + jQuery(this_).val();
+	function search() {
+		var accountType = jQuery("#comboAccountType").val();
+		var period = jQuery("#comboPeriod").val();
+		window.location.href = "accountBalance.htm?type=" + accountType+"&period="+period;
 	}
 </script>
-
-Account Type: <select onchange="selectAccountType(this)">
+<div class="box">
+<table>
+<tr><td>
+Account Type:</td><td><select id="comboAccountType">
 	<option value="INCOME"
 		<c:if test="${type =='INCOME'}">selected="selected"</c:if>>INCOME</option>
 	<option value="EXPENSE"
 		<c:if test="${type =='EXPENSE'}">selected="selected"</c:if>>EXPENSE</option>
 </select>
+</td></tr>
+<tr><td>
 
-<br />
-<br />
+
+Fiscal Period:</td><td><select id="comboPeriod">
+					<option value="">--Select Period---</option>
+					<c:forEach items="${periods}" var="period">
+						<option value="${period.id }" <c:if test="${periodId == period.id }">selected="selected"</c:if>>${period.name}</option>
+					</c:forEach>
+				</select>
+				
+</td></tr>
+<tr><td colspan="2" align="left">
+<input type="button" value="Search" onclick="search()">		
+</td></tr>
+</table>
+</div>
 <c:choose>
 	<c:when test="${not empty accounts}">
 		<c:choose>

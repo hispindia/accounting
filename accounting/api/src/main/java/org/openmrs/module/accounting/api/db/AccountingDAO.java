@@ -339,13 +339,13 @@ public class AccountingDAO {
 	public AccountBalance getAccountBalance(Account account, FiscalPeriod period) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(AccountBalance.class);
 		criteria.add(Restrictions.eq("account", account));
-		criteria.add(Restrictions.eq("fiscalPeriod", period));
+		criteria.add(Restrictions.eq("period", period));
 		return (AccountBalance) criteria.uniqueResult();
 	}
 	
 	public FiscalPeriod getPeriodByDate(Date date) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(FiscalPeriod.class);
-		criteria.add(Restrictions.and(Restrictions.ge("startDate", date), Restrictions.le("endDate", date)));
+		criteria.add(Restrictions.and(Restrictions.le("startDate", date), Restrictions.ge("endDate", date)));
 		return (FiscalPeriod) criteria.uniqueResult();
 	}
 	
