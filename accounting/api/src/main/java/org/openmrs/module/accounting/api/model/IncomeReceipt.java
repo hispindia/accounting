@@ -37,7 +37,7 @@ public class IncomeReceipt {
 	
 	@Id
 	@GeneratedValue
-	@Column(name = "id")
+	@Column(name = "income_receipt_id")
 	private Integer id;
 	
 	@Column(name = "receipt_no")

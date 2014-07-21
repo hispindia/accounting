@@ -74,12 +74,13 @@
 					</tr>
 					<c:forEach items="${fiscalYears}" var="fiscalyear"
 						varStatus="varStatus">
-						<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" } '>
+						<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" } ' 
+							<c:if test="${fiscalyear.status == 'DELETED'}"> style="text-decoration:line-through;"</c:if> >
 							<td><c:out
 									value="${(( pagingUtil.currentPage - 1  ) * pagingUtil.pageSize ) + varStatus.count }" />
 							</td>
 							<td><a
-								href="javascript:window.location.href='fiscalyear.form?id=${fiscalyear.id}'">${fiscalyear.name}</a>
+								 href="javascript:window.location.href='fiscalyear.form?id=${fiscalyear.id}'">${fiscalyear.name}</a>
 							</td>
 							<td><openmrs:formatDate date="${fiscalyear.startDate}" type="textbox" /></td>
 							<td><openmrs:formatDate date="${fiscalyear.endDate}" type="textbox" /></td>

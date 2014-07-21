@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.model.Account;
-import org.openmrs.module.accounting.api.model.AccountBalance;
+import org.openmrs.module.accounting.api.model.IncomeBalance;
 import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;

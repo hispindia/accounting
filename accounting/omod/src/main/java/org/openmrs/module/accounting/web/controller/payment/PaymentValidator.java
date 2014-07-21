@@ -28,7 +28,7 @@ public class PaymentValidator implements Validator {
 	    	error.reject("accounting.paymentDate.future");
 	    }
 	    
-	    if (payment.getPayable() == null) {
+	    if (payment.getPayableAmount() == null) {
 	    	error.reject("accounting.payable.required");
 	    }
 	    

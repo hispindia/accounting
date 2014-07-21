@@ -10,7 +10,7 @@
 
 	 <changeSet author="viet (generated)" id="1404141117126-1">
         <createTable tableName="accounting_account">
-            <column autoIncrement="true" name="id" type="INT(10)">
+            <column autoIncrement="true" name="account_id" type="INT(10)">
                 <constraints primaryKey="true"/>
             </column>
             <column name="name" type="VARCHAR(255)">
@@ -33,11 +33,12 @@
                 <constraints nullable="false"/>
             </column>
             <column name="concept_id" type="INT(10)"/>
+            <column name="account_number" type="varchar(50)"/>
         </createTable>
     </changeSet>
     <changeSet author="viet (generated)" id="1404141117126-2">
-        <createTable tableName="accounting_account_balance">
-            <column autoIncrement="true" name="id" type="INT(10)">
+        <createTable tableName="accounting_income_balance">
+            <column autoIncrement="true" name="income_balance_id" type="INT(10)">
                 <constraints primaryKey="true"/>
             </column>
             <column name="account_id" type="INT(10)">
@@ -54,10 +55,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="updated_by" type="INT(10)"/>
-            <column name="opening_balance" type="DECIMAL(10)"/>
-            <column name="closing_balance" type="DECIMAL(10)"/>
-            <column name="ledger_balance" type="DECIMAL(10)"/>
-            <column name="available_balance" type="DECIMAL(10)"/>
+            <column name="opening_balance" type="DECIMAL(9,2)"/>
+            <column name="closing_balance" type="DECIMAL(9,2)"/>
+            <column name="ledger_balance" type="DECIMAL(9,2)"/>
+            <column name="available_balance" type="DECIMAL(9,2)"/>
             <column name="status" type="VARCHAR(10)"/>
         </createTable>
     </changeSet>
@@ -69,9 +70,9 @@
             <column name="account_id" type="INT(10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="balance" type="DECIMAL(10)"/>
-            <column name="credit" type="DECIMAL(10)"/>
-            <column name="debit" type="DECIMAL(10)"/>
+            <column name="balance" type="DECIMAL(9,2)"/>
+            <column name="credit" type="DECIMAL(9,2)"/>
+            <column name="debit" type="DECIMAL(9,2)"/>
             <column name="txn_type" type="VARCHAR(20)"/>
             <column name="txn_date" type="datetime"/>
             <column name="created_date" type="datetime"/>
@@ -168,7 +169,7 @@
     </changeSet>
     <changeSet author="viet (generated)" id="1404141117126-7">
         <createTable tableName="accounting_fiscal_period">
-            <column autoIncrement="true" name="id" type="INT(10)">
+            <column autoIncrement="true" name="period_id" type="INT(10)">
                 <constraints primaryKey="true"/>
             </column>
             <column name="fiscal_year_id" type="INT(10)">
@@ -192,7 +193,7 @@
     </changeSet>
     <changeSet author="viet (generated)" id="1404141117126-8">
         <createTable tableName="accounting_fiscal_year">
-            <column autoIncrement="true" name="id" type="INT(10)">
+            <column autoIncrement="true" name="year_id" type="INT(10)">
                 <constraints primaryKey="true"/>
             </column>
             <column name="name" type="VARCHAR(255)">
@@ -209,13 +210,13 @@
             </column>
             <column name="updated_by" type="INT(10)"/>
             <column name="status" type="VARCHAR(10)"/>
-            <column name="opening_balance" type="DECIMAL(10)"/>
-            <column name="closing_balance" type="DECIMAL(10)"/>
+            <column name="opening_balance" type="DECIMAL(9,2)"/>
+            <column name="closing_balance" type="DECIMAL(9,2)"/>
         </createTable>
     </changeSet>
     <changeSet author="viet (generated)" id="1404141117126-9">
         <createTable tableName="accounting_income_receipt">
-            <column autoIncrement="true" name="id" type="INT(10)">
+            <column autoIncrement="true" name="income_receipt_id" type="INT(10)">
                 <constraints primaryKey="true"/>
             </column>
             <column name="receipt_no" type="VARCHAR(255)"/>
@@ -241,7 +242,7 @@
     </changeSet>
     <changeSet author="viet (generated)" id="1404141117126-10">
         <createTable tableName="accounting_income_receipt_item">
-            <column autoIncrement="true" name="id" type="INT(10)">
+            <column autoIncrement="true" name="income_receipt_item_id" type="INT(10)">
                 <constraints primaryKey="true"/>
             </column>
             <column name="description" type="VARCHAR(1000)"/>
@@ -251,7 +252,7 @@
             <column name="income_receipt_id" type="INT(10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="amount" type="DECIMAL(10)"/>
+            <column name="amount" type="DECIMAL(9,2)"/>
             <column name="cheque_number" type="VARCHAR(255)"/>
             <column name="type" type="VARCHAR(20)"/>
             <column name="transaction_date" type="datetime"/>
@@ -304,12 +305,9 @@
             <column name="commitment_no" type="INT(10)"/>
             <column name="voucher_no" type="VARCHAR(255)"/>
             <column name="cost" type="DECIMAL(9, 2)"/>
-            <column name="total_commitment" type="DECIMAL(9, 2)"/>
-            <column name="payable" type="DECIMAL(9, 2)"/>
-            <column name="total_payable" type="DECIMAL(9, 2)"/>
+            <column name="commitment_amount" type="DECIMAL(9, 2)"/>
+            <column name="payable_amount" type="DECIMAL(9, 2)"/>
             <column name="actual_payment" type="DECIMAL(9, 2)"/>
-            <column name="total_actual_payment" type="DECIMAL(9, 2)"/>
-            <column name="total_payable_plus_payment" type="DECIMAL(9, 2)"/>
             <column name="payment_date" type="datetime"/>
             <column name="updated_date" type="datetime"/>
             <column name="created_date" type="datetime">
@@ -329,10 +327,10 @@
             <column name="total_aie" type="DECIMAL(9, 2)"/>
         </createTable>
     </changeSet>
-    
-    <changeSet author="viet" id="201407091146">
-    	<addColumn tableName="accounting_account">
-    		<column name="account_number" type="varchar(50)"/>
-    	</addColumn>
-    </changeSet>
+	<changeSet author="viet" id="20140722">
+		<addColumn tableName="accounting_expense_balance">
+			<column name="total_committed" type="DECIMAL(9,2)"/>
+			<column name="ledger_balance" type="DECIMAL(9,2)"/>
+		</addColumn>
+	</changeSet>    
 </databaseChangeLog>

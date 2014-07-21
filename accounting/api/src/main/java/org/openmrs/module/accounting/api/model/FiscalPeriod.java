@@ -22,7 +22,7 @@ public class FiscalPeriod {
 	
 	@Id
 	@GeneratedValue
-	@Column(name = "id")
+	@Column(name = "period_id")
 	private Integer id;
 	
 	

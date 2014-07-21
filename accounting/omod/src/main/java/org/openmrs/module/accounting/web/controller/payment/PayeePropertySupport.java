@@ -11,7 +11,7 @@ public class PayeePropertySupport extends PropertyEditorSupport {
 	@Override
     public String getAsText() {
 		Payee payee = (Payee) this.getValue();
-	    return payee != null ?  payee.getName() : "";
+	    return payee != null ?  payee.getId().toString() : "";
     }
 
 	@Override

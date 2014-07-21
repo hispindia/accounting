@@ -33,7 +33,7 @@ public class Account  implements Serializable{
 
 	@Id
 	@GeneratedValue
-	@Column(name = "id")
+	@Column(name = "account_id")
 	private Integer id;
 	
 	@Column(name = "name", length = 255)

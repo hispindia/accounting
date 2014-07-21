@@ -53,6 +53,7 @@
 		<tr>
 			<td><spring:message code="accounting.account" /><em>*</em></td>
 			<td><input type="text" id="comboAccount"/><form:hidden path="account" id="hiddenAccount"/>
+			<input type="hidden" id="hAccountName" value="${payment.account.name}"/>
 			</td>
 			<td></td>
 		</tr>
@@ -67,6 +68,7 @@
 			<td><spring:message code="accounting.payment.aie"/></td>
 			<td><input type="button" value="Get AIE" onclick="getAIE()"/> <span  id="paymentAIE" ></span>
 			<form:hidden path="totalAIE" id="totalAIE"/></td>
+			<input type="hidden" id="hPayeeName" value="${payment.payee.name }"/>
 		</tr>
 		<tr>
 			<td><spring:message code="accounting.payee" /><em>*</em></td>
@@ -92,23 +94,23 @@
 			<td><form:errors path="voucherNo"  cssClass="error" /></td>
 		</tr>
 		<tr>
-			<td><spring:message code="accounting.totalCommitment"/></td>
-			<td><form:input path="totalCommitment"/></td>
-			<td><form:errors path="totalCommitment"  cssClass="error" /></td>
+			<td><spring:message code="accounting.payableAmount"/><em>*</em></td>
+			<td><form:input path="payableAmount"/></td>
+			<td><form:errors path="payableAmount"  cssClass="error" /></td>
 		</tr>
 		<tr>
-			<td><spring:message code="accounting.payable"/><em>*</em></td>
-			<td><form:input path="payable"/></td>
-			<td><form:errors path="payable"  cssClass="error" /></td>
+			<td><spring:message code="accounting.commitmentAmount"/><em>*</em></td>
+			<td><form:input path="commitmentAmount"/></td>
+			<td><form:errors path="commitmentAmount"  cssClass="error" /></td>
 		</tr>
-	
+		<c:if test="${payment.status == 'COMMITTED' }">
 		<tr>
 			<td><spring:message code="accounting.actualPayment"/></td>
-			<td><form:input path="actualPayment"/></td>
+			<td><form:input path="actualPayment"  /></td>
 			<td><form:errors path="actualPayment"  cssClass="error" /></td>
 		</tr>
-	
-	
+		</c:if>
+		
 		<tr>
 			<td><spring:message code="accounting.status"/></td>
 			<td><form:select path="status">
@@ -205,6 +207,12 @@
 					return false;
 			      }
 		   });
+		var accountName = jQuery("#hAccountName").val();
+		var payeeName = jQuery("#hPayeeName").val();
+		
+		jQuery("#comboAccount").val(accountName);
+		jQuery("#comboPayee").val(payeeName);
+		
 	});
 </script>
 <%@ include file="/WEB-INF/template/footer.jsp"%>

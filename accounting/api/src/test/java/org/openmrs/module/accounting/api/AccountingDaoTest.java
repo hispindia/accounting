@@ -4,30 +4,28 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.db.AccountingDAO;
 import org.openmrs.module.accounting.api.model.Account;
-import org.openmrs.module.accounting.api.model.AccountBalance;
-import org.openmrs.module.accounting.api.model.AccountBudgetWrapper;
 import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.BalanceStatus;
 import org.openmrs.module.accounting.api.model.Budget;
 import org.openmrs.module.accounting.api.model.BudgetItem;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.openmrs.module.accounting.api.model.FiscalYear;
+import org.openmrs.module.accounting.api.model.GeneralStatus;
+import org.openmrs.module.accounting.api.model.IncomeBalance;
 import org.openmrs.module.accounting.api.model.IncomeReceipt;
+import org.openmrs.module.accounting.api.model.IncomeReceiptItem;
 import org.openmrs.module.accounting.api.utils.DateUtils;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class AccountingDaoTest extends BaseModuleContextSensitiveTest {
-	
-	
-	
-	
 	@Autowired
 	AccountingDAO dao;
 	
@@ -117,7 +115,7 @@ public class AccountingDaoTest extends BaseModuleContextSensitiveTest {
 		/**
 		 * Create Account Period
 		 */
-		AccountBalance ap = new AccountBalance();
+		IncomeBalance ap = new IncomeBalance();
 		ap.setAccount(acc);
 		ap.setCreatedBy(1);
 		ap.setCreatedDate(Calendar.getInstance().getTime());
@@ -129,7 +127,7 @@ public class AccountingDaoTest extends BaseModuleContextSensitiveTest {
 		Context.clearSession();
 		
 		Assert.assertNotNull(ap);
-		AccountBalance persitedAP = dao.getAccountPeriod(ap.getId());
+		IncomeBalance persitedAP = dao.getAccountBalance(ap.getId());
 		Assert.assertNotNull(persitedAP);
 		
 	}
@@ -173,43 +171,6 @@ public class AccountingDaoTest extends BaseModuleContextSensitiveTest {
 		
 	}
 	
-	@Test
-	public void shouldValidFiscalYearRange() {
-		FiscalYear fy = new FiscalYear("Fiscal Year 1",Calendar.getInstance().getTime(),1);
-		
-		fy.setStartDate(DateUtils.getDateFromStr("1/1/2014"));
-		fy.setEndDate(DateUtils.getDateFromStr("31/12/2014"));
-		
-		fy = dao.saveFiscalYear(fy);
-		
-		Context.flushSession();
-		Context.clearSession();
-		
-		Date from = DateUtils.getDateFromStr("1/6/2013");
-		Date to = DateUtils.getDateFromStr("31/12/2013");
-		
-		Assert.assertFalse(dao.isOverlapFiscalYear(fy.getId(),from, to));
-		
-		from = DateUtils.getDateFromStr("1/1/2014");
-		to = DateUtils.getDateFromStr("31/12/2014");
-		
-		Assert.assertTrue(dao.isOverlapFiscalYear(fy.getId(),from, to));
-		
-		from = DateUtils.getDateFromStr("1/6/2013");
-		to = DateUtils.getDateFromStr("1/6/2014");
-		
-		Assert.assertTrue(dao.isOverlapFiscalYear(fy.getId(),from, to));
-		
-		from = DateUtils.getDateFromStr("1/6/2014");
-		to = DateUtils.getDateFromStr("1/6/2015");
-		
-		Assert.assertTrue(dao.isOverlapFiscalYear(fy.getId(),from, to));
-		
-		from = DateUtils.getDateFromStr("1/1/2015");
-		to = DateUtils.getDateFromStr("31/12/2015");
-		
-		Assert.assertFalse(dao.isOverlapFiscalYear(fy.getId(),from, to));
-	}
 	
 	@Test
 	public void shouldSaveBudget() {
@@ -315,5 +276,85 @@ public class AccountingDaoTest extends BaseModuleContextSensitiveTest {
 //		System.out.println÷("========"+result);
 		
 		
+	}
+	
+	@Test
+	public void shouldAggregateIncomeReceipt() {
+		Date curDate = Calendar.getInstance().getTime();
+		Account acc = new Account("Account 1");
+		acc.setAccountType(AccountType.EXPENSE); 
+		acc.setCreatedDate(curDate);
+		acc = dao.saveAccount(acc);
+		Context.flushSession();
+		Context.clearSession();
+		
+		Account acc2 = new Account("Account 1");
+		acc2.setAccountType(AccountType.EXPENSE); 
+		acc2.setCreatedDate(curDate);
+		acc2 = dao.saveAccount(acc);
+		Context.flushSession();
+		Context.clearSession();
+		
+		IncomeReceipt receipt = new IncomeReceipt();
+		receipt.setCreatedDate(curDate);
+		receipt.setCreatedBy(1);
+		receipt.setDescription("testing");
+		receipt.setReceiptDate(curDate);
+		receipt = dao.saveIncomeReceipt(receipt);
+		Context.flushSession();
+		Context.clearSession();
+		
+		IncomeReceiptItem item = new IncomeReceiptItem();
+		item.setAccount(acc);
+		item.setReceipt(receipt);
+		item.setCreatedBy(1);
+		item.setCreatedDate(curDate);
+		item.setAmount(new BigDecimal("100"));
+		item = dao.saveIncomeReceiptItem(item);
+		Context.flushSession();
+		Context.clearSession();
+		
+		IncomeReceiptItem item2 = new IncomeReceiptItem();
+		item2.setAccount(acc2);
+		item2.setReceipt(receipt);
+		item2.setCreatedBy(1);
+		item2.setCreatedDate(curDate);
+		item2.setAmount(new BigDecimal("100"));
+		item2 = dao.saveIncomeReceiptItem(item);
+		Context.flushSession();
+		Context.clearSession();
+		
+		Date from = DateUtils.getDateFromStr("1/7/2014");
+		Date to = DateUtils.getDateFromStr("30/7/2014");
+		Map<Integer, String> result = dao.aggregateIncomeReceiptItem(from, to);
+		System.out.println(result);
+		Assert.assertNotEquals(result.values().size(), 2);
+	}
+	
+	@Test
+	public void shouldBeOverlapFiscalYear(){
+		FiscalYear fy = new FiscalYear("Fiscal Year 1",Calendar.getInstance().getTime(),1);
+		
+		fy.setStartDate(DateUtils.getDateFromStr("1/1/2014"));
+		fy.setEndDate(DateUtils.getDateFromStr("31/12/2014"));
+		fy.setStatus(GeneralStatus.ACTIVE);
+		fy = dao.saveFiscalYear(fy);
+		
+		Context.flushSession();
+		Context.clearSession();
+		
+		Date from = DateUtils.getDateFromStr("1/6/2013");
+		Date to = DateUtils.getDateFromStr("1/6/2014");
+		List<FiscalYear> list = dao.getOverlapFiscalYears(fy.getId(),from, to);
+		boolean flag = false;;
+		for (FiscalYear year : list) {
+    		if (year.getId().equals(fy.getId()) && year.getStartDate().compareTo(from) == 0
+    				&& year.getEndDate().compareTo(to) == 0 ) {
+    			continue;
+    		} else {
+    			flag = true;
+    		}
+    	}
+		Assert.assertTrue(flag);
 	}
 }

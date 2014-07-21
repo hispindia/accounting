@@ -35,8 +35,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 @Controller
+@SessionAttributes("payment")
 public class PaymentController {
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
@@ -69,10 +71,6 @@ public class PaymentController {
 	
 	
 	
-	@ModelAttribute("paymentStatues")
-	public PaymentStatus[] registerPaymentStatus(){
-		return PaymentStatus.values();
-	}
 	
 	@RequestMapping("/module/accounting/payment.list")
 	public String showPaymentList(  @RequestParam(value="accountId",required=false) Integer accountId, 
@@ -106,12 +104,26 @@ public class PaymentController {
 	
 	// show add payment from
 	@RequestMapping(value="/module/accounting/payment.form", method=RequestMethod.GET)
-	public String showPaymentForm(@RequestParam(value="id", required=false) Integer id, @ModelAttribute("payment") Payment payment, BindingResult bindingResult) {
+	public String showPaymentForm(@RequestParam(value="id", required=false) Integer id
+	                             , Model model) {
+		Payment payment = null;
 		if (id == null) {
 			payment = new Payment();
+			PaymentStatus[] statues = {PaymentStatus.NEW, PaymentStatus.COMMITTED};
+			model.addAttribute("paymentStatuses",statues);
 		} else {
 			payment = Context.getService(AccountingService.class).getPayment(id);
+			if (payment.getStatus().equals(PaymentStatus.COMMITTED)) {
+				PaymentStatus[] statues = {PaymentStatus.PAID, PaymentStatus.DELETED};
+				model.addAttribute("paymentStatuses",statues);
+			}
+			
+			if (payment.getStatus().equals(PaymentStatus.PAID)) {
+				PaymentStatus[] statues = {PaymentStatus.DELETED};
+				model.addAttribute("paymentStatuses",statues);
+			} 
 		}
+		model.addAttribute("payment",payment);
 		
 		
 		return "/module/accounting/payment/paymentForm";

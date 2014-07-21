@@ -8,7 +8,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.AccountingService;
-import org.openmrs.module.accounting.api.model.AccountBalance;
+import org.openmrs.module.accounting.api.model.IncomeBalance;
 import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.ExpenseBalance;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
@@ -43,7 +43,7 @@ public class AccountBalanceListController {
 		}
 		
 		if (accType.equals(AccountType.INCOME)) {
-			List<AccountBalance> accounts = Context.getService(AccountingService.class).listActiveAccountBalanceByPeriodId(fiscalPeriodId);
+			List<IncomeBalance> accounts = Context.getService(AccountingService.class).listActiveAccountBalanceByPeriodId(fiscalPeriodId);
 			model.addAttribute("accounts",accounts);
 		} else if (accType.equals(AccountType.EXPENSE)) {
 			List<ExpenseBalance> accounts = Context.getService(AccountingService.class).listActiveExpenseBalanceByPeriodId(fiscalPeriodId);

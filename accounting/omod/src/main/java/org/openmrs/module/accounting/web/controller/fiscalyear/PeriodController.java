@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.AccountingService;
-import org.openmrs.module.accounting.api.model.AccountBalance;
+import org.openmrs.module.accounting.api.model.IncomeBalance;
 import org.openmrs.module.accounting.api.model.ExpenseBalance;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.openmrs.module.accounting.api.model.FiscalYear;
@@ -54,7 +54,7 @@ public class PeriodController {
 		} else {
 			AccountingService  service = Context.getService(AccountingService.class);
 			FiscalPeriod period = service.getFiscalPeriod(periodId);
-			List<AccountBalance> accBalances = service.listActiveAccountBalance(period);
+			List<IncomeBalance> accBalances = service.listActiveAccountBalance(period);
 			List<ExpenseBalance> expBalances = service.listActiveExpenseBalance(period);
 			
 			List<FiscalPeriod> periods = period.getFiscalYear().getPeriods();

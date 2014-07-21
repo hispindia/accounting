@@ -28,7 +28,7 @@ public class FiscalYear {
 	
 	@Id
 	@GeneratedValue
-	@Column(name = "id")
+	@Column(name = "year_id")
 	private Integer id;
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "fiscalYear", targetEntity = FiscalPeriod.class)

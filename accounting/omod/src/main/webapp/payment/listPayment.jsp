@@ -81,19 +81,22 @@ function selectAccount(this_) {
 						<th><spring:message code="accounting.account" /></th>
 						<th><spring:message code="accounting.payee" /></th>
 						<th><spring:message code="accounting.payment.date" /></th>
-						<th>Amount</th>
+						<th>Payable Amount</th>
+						<th>Status</th>
 						<th></th>
 					</tr>
 					<c:forEach items="${payments}" var="payment"
 						varStatus="varStatus">
-						<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" } '>
+						<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" } ' 
+							<c:if test="${payment.status == 'DELETED'}"> style="text-decoration:line-through;"</c:if> >
 							<td><c:out
 									value="${(( pagingUtil.currentPage - 1  ) * pagingUtil.pageSize ) + varStatus.count }" />
 							</td>
-							<td>${payment.account.name }</td>
+							<td><a href="payment.form?id=${payment.id}">${payment.account.name }</td>
 							<td>${payment.payee.name }</td>
 							<td><openmrs:formatDate type="textbox" date="${payment.paymentDate }"/></td>
-							<td>${payment.payable }</td>
+							<td>${payment.payableAmount }</td>
+							<td>${payment.status}</td>
 						</tr>
 					</c:forEach>
 					<tr class="paging-container">

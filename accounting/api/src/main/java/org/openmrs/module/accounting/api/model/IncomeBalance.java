@@ -23,12 +23,12 @@ import org.hibernate.annotations.Type;
  */
 
 @Entity 	   
-@Table(name = "accounting_account_balance")
-public class AccountBalance {
+@Table(name = "accounting_income_balance")
+public class IncomeBalance {
 	
 	@Id
 	@GeneratedValue
-	@Column(name = "id")
+	@Column(name = "income_balance_id")
 	private int id;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -76,7 +76,7 @@ public class AccountBalance {
 	@Enumerated(EnumType.STRING)
 	private BalanceStatus status;
 	
-	public AccountBalance(){
+	public IncomeBalance(){
 		this.availableBalance = new BigDecimal("0");
 		this.closingBalance = new BigDecimal("0");
 		this.ledgerBalance = new BigDecimal("0");
@@ -156,7 +156,7 @@ public class AccountBalance {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		AccountBalance other = (AccountBalance) obj;
+		IncomeBalance other = (IncomeBalance) obj;
 		if (createdDate == null) {
 			if (other.createdDate != null)
 				return false;

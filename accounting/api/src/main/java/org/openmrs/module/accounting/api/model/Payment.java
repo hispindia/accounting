@@ -46,23 +46,14 @@ public class Payment {
 	@Column(name = "cost", precision = 9, scale = 2)
 	private BigDecimal cost;
 	
-	@Column(name = "total_commitment", precision = 9, scale = 2)
-	private BigDecimal totalCommitment;
+	@Column(name = "commitment_amount", precision = 9, scale = 2)
+	private BigDecimal commitmentAmount;
 	
-	@Column(name = "payable", precision = 9, scale = 2)
-	private BigDecimal payable;
-	
-	@Column(name = "total_payable", precision = 9, scale = 2)
-	private BigDecimal totalPayable;
+	@Column(name = "payable_amount", precision = 9, scale = 2)
+	private BigDecimal payableAmount;
 	
 	@Column(name = "actual_payment", precision = 9, scale = 2)
 	private BigDecimal actualPayment;
-	
-	@Column(name = "total_actual_payment", precision = 9, scale = 2)
-	private BigDecimal totalActualPayment;
-	
-	@Column(name = "total_payable_plus_payment", precision = 9, scale = 2)
-	private BigDecimal totalPayablePlusPayment;
 	
 	@Column(name="total_aie", precision = 9, scale = 2)
 	private BigDecimal totalAIE;
@@ -104,7 +95,7 @@ public class Payment {
 	
 	public Payment(){
 		this.retired = false;
-		this.status = PaymentStatus.OPEN;
+		this.status = PaymentStatus.NEW;
 	}
 	
     public Integer getId() {
@@ -175,37 +166,6 @@ public class Payment {
     public void setCost(BigDecimal cost) {
     	this.cost = cost;
     }
-
-	
-    public BigDecimal getTotalCommitment() {
-    	return totalCommitment;
-    }
-
-	
-    public void setTotalCommitment(BigDecimal totalCommitment) {
-    	this.totalCommitment = totalCommitment;
-    }
-
-	
-    public BigDecimal getPayable() {
-    	return payable;
-    }
-
-	
-    public void setPayable(BigDecimal payable) {
-    	this.payable = payable;
-    }
-
-	
-    public BigDecimal getTotalPayable() {
-    	return totalPayable;
-    }
-
-	
-    public void setTotalPayable(BigDecimal totalPayable) {
-    	this.totalPayable = totalPayable;
-    }
-
 	
     public BigDecimal getActualPayment() {
     	return actualPayment;
@@ -216,25 +176,6 @@ public class Payment {
     	this.actualPayment = actualPayment;
     }
 
-	
-    public BigDecimal getTotalActualPayment() {
-    	return totalActualPayment;
-    }
-
-	
-    public void setTotalActualPayment(BigDecimal totalActualPayment) {
-    	this.totalActualPayment = totalActualPayment;
-    }
-
-	
-    public BigDecimal getTotalPayablePlusPayment() {
-    	return totalPayablePlusPayment;
-    }
-
-	
-    public void setTotalPayablePlusPayment(BigDecimal totalPayablePlusPayment) {
-    	this.totalPayablePlusPayment = totalPayablePlusPayment;
-    }
 
 	
     public Date getPaymentDate() {
@@ -393,6 +334,26 @@ public class Payment {
 	
     public void setTotalAIE(BigDecimal totalAIE) {
     	this.totalAIE = totalAIE;
+    }
+
+	
+    public BigDecimal getCommitmentAmount() {
+    	return commitmentAmount;
+    }
+
+	
+    public void setCommitmentAmount(BigDecimal commitmentAmount) {
+    	this.commitmentAmount = commitmentAmount;
+    }
+
+	
+    public BigDecimal getPayableAmount() {
+    	return payableAmount;
+    }
+
+	
+    public void setPayableAmount(BigDecimal payableAmount) {
+    	this.payableAmount = payableAmount;
     }
 
 	

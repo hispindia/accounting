@@ -7,7 +7,7 @@ import java.util.List;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.accounting.api.model.Account;
-import org.openmrs.module.accounting.api.model.AccountBalance;
+import org.openmrs.module.accounting.api.model.IncomeBalance;
 import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.Budget;
 import org.openmrs.module.accounting.api.model.BudgetItem;
@@ -70,16 +70,16 @@ public interface AccountingService extends OpenmrsService {
 	public Collection<Account> getListParrentAccount();
 	
 	@Transactional(readOnly = true)
-	public List<AccountBalance> findAccountBalance(Integer fiscalPeriodId);
+	public List<IncomeBalance> findAccountBalance(Integer fiscalPeriodId);
 	
 	@Transactional(readOnly = true)
-	public List<AccountBalance> listActiveAccountBalance();
+	public List<IncomeBalance> listActiveAccountBalance();
 	
 	@Transactional(readOnly = true)
-	public List<AccountBalance> listActiveAccountBalance(FiscalPeriod period);
+	public List<IncomeBalance> listActiveAccountBalance(FiscalPeriod period);
 	
 	@Transactional(readOnly = true)
-	public List<AccountBalance> listActiveAccountBalanceByPeriodId(Integer periodId);
+	public List<IncomeBalance> listActiveAccountBalanceByPeriodId(Integer periodId);
 	
 	@Transactional(readOnly = true)
 	public Account getAccountByAccountNumber(String accNo);
@@ -91,7 +91,7 @@ public interface AccountingService extends OpenmrsService {
 	 * @param date
 	 * @return should return only one account because there shouldnt be  overlap periods
 	 */
-	public AccountBalance findAccountPeriod(Account account, Date date) ;
+	public IncomeBalance findAccountPeriod(Account account, Date date) ;
 	
 	/**
 	 * Fiscal Year 
@@ -137,10 +137,10 @@ public interface AccountingService extends OpenmrsService {
 	/**
 	 * 	Period
 	 */
-	public AccountBalance saveAccountBalance(AccountBalance ap);
+	public IncomeBalance saveAccountBalance(IncomeBalance ap);
 	
 	@Transactional(readOnly = true)
-	public AccountBalance getAccountBalance(int id);
+	public IncomeBalance getAccountBalance(int id);
 	
 	public void deletePeriod(FiscalPeriod period);
 	

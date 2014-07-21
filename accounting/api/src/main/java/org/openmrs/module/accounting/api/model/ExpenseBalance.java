@@ -58,6 +58,12 @@ public class ExpenseBalance {
 	@Column(name = "available_balance", precision = 19, scale = 2)
 	private BigDecimal availableBalance;
 	
+	@Column(name = "total_committed", precision = 19, scale = 2)
+	private BigDecimal totalCommitted;
+	
+	@Column(name = "ledger_balance", precision = 19, scale = 2)
+	private BigDecimal ledgerBalance;
+	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status")
 	private BalanceStatus status;
@@ -83,6 +89,8 @@ public class ExpenseBalance {
 		this.currentPayment = new BigDecimal("0");
 		this.cummulativeAIE = new BigDecimal("0");
 		this.newAIE = new BigDecimal("0");
+		this.totalCommitted = new BigDecimal("0");
+		this.ledgerBalance = new BigDecimal("0");
 	}
 	
     public Integer getId() {
@@ -283,6 +291,26 @@ public class ExpenseBalance {
 	
     public void setStatus(BalanceStatus status) {
     	this.status = status;
+    }
+
+	
+    public BigDecimal getTotalCommitted() {
+    	return totalCommitted;
+    }
+
+	
+    public void setTotalCommitted(BigDecimal totalCommitted) {
+    	this.totalCommitted = totalCommitted;
+    }
+
+	
+    public BigDecimal getLedgerBalance() {
+    	return ledgerBalance;
+    }
+
+	
+    public void setLedgerBalance(BigDecimal ledgerBalance) {
+    	this.ledgerBalance = ledgerBalance;
     }
 	
 	
