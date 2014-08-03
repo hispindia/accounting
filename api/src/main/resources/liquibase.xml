@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<!-- See http://www.liquibase.org/manual/home#available_database_refactorings 
+		for a list of supported elements and attributes -->
+
+
+	 <changeSet author="viet (generated)" id="1404141117126-1">
+        <createTable tableName="accounting_account">
+            <column autoIncrement="true" name="account_id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(500)"/>
+            <column name="retired_date" type="datetime"/>
+            <column name="retired_by" type="INT(10)"/>
+            <column defaultValueNumeric="0" name="retired" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="datetime"/>
+            <column name="created_date" type="datetime"/>
+            <column defaultValueNumeric="0" name="created_by" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_by" type="INT(10)"/>
+            <column name="parrent_account_id" type="INT(10)"/>
+            <column name="account_type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="concept_id" type="INT(10)"/>
+            <column name="account_number" type="varchar(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="viet (generated)" id="1404141117126-2">
+        <createTable tableName="accounting_income_balance">
+            <column autoIncrement="true" name="income_balance_id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="account_id" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fiscal_period_id" type="INT(10)"/>
+            <column name="start_date" type="datetime"/>
+            <column name="end_date" type="datetime"/>
+            <column name="updated_date" type="datetime"/>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_by" type="INT(10)"/>
+            <column name="opening_balance" type="DECIMAL(9,2)"/>
+            <column name="closing_balance" type="DECIMAL(9,2)"/>
+            <column name="ledger_balance" type="DECIMAL(9,2)"/>
+            <column name="available_balance" type="DECIMAL(9,2)"/>
+            <column name="status" type="VARCHAR(10)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="viet (generated)" id="1404141117126-3">
+        <createTable tableName="accounting_account_txn">
+            <column autoIncrement="true" name="account_txn_id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="account_id" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="balance" type="DECIMAL(9,2)"/>
+            <column name="credit" type="DECIMAL(9,2)"/>
+            <column name="debit" type="DECIMAL(9,2)"/>
+            <column name="txn_type" type="VARCHAR(20)"/>
+            <column name="txn_date" type="datetime"/>
+            <column name="created_date" type="datetime"/>
+            <column defaultValueNumeric="0" name="created_by" type="INT(10)"/>
+            <column name="updated_date" type="datetime"/>
+            <column defaultValueNumeric="0" name="updated_by" type="INT(10)"/>
+            <column name="txn_number" type="VARCHAR(50)"/>
+            <column name="base_txn_number" type="VARCHAR(50)"/>
+            <column name="reference_txn" type="VARCHAR(50)"/>
+            <column name="cancel_for_txn" type="VARCHAR(50)"/>
+            <column name="txn_status" type="VARCHAR(10)"/>
+            <column name="amount" type="DECIMAL(9, 2)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="viet (generated)" id="1404141117126-4">
+        <createTable tableName="accounting_budget">
+            <column autoIncrement="true" name="budget_id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(1000)"/>
+            <column name="start_date" type="datetime"/>
+            <column name="end_date" type="datetime"/>
+            <column name="updated_date" type="datetime"/>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_by" type="INT(10)"/>
+            <column name="retired_date" type="datetime"/>
+            <column name="retired_by" type="INT(10)"/>
+            <column defaultValueNumeric="0" name="retired" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="viet (generated)" id="1404141117126-5">
+        <createTable tableName="accounting_budget_item">
+            <column autoIncrement="true" name="budget_item_id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="account_id" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="budget_id" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_date" type="datetime"/>
+            <column name="end_date" type="datetime"/>
+            <column name="updated_date" type="datetime"/>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_by" type="INT(10)"/>
+            <column name="amount" type="DECIMAL(9, 2)"/>
+            <column name="retired_date" type="datetime"/>
+            <column name="retired_by" type="INT(10)"/>
+            <column defaultValueNumeric="0" name="retired" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(1000)"/>
+            <column name="txn_number" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="viet (generated)" id="1404141117126-6">
+        <createTable tableName="accounting_expense_balance">
+            <column autoIncrement="true" name="expense_balance_id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="account_id" type="INT(10)"/>
+            <column name="fiscal_period_id" type="INT(10)"/>
+            <column name="new_aie" type="DECIMAL(9, 2)"/>
+            <column name="cummulative_aie" type="DECIMAL(9, 2)"/>
+            <column name="current_payment" type="DECIMAL(9, 2)"/>
+            <column name="cummulative_payment" type="DECIMAL(9, 2)"/>
+            <column name="available_balance" type="DECIMAL(9, 2)"/>
+            <column name="start_date" type="datetime"/>
+            <column name="end_date" type="datetime"/>
+            <column name="updated_date" type="datetime"/>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_by" type="INT(10)"/>
+            <column name="status" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="viet (generated)" id="1404141117126-7">
+        <createTable tableName="accounting_fiscal_period">
+            <column autoIncrement="true" name="period_id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="fiscal_year_id" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_date" type="datetime"/>
+            <column name="end_date" type="datetime"/>
+            <column name="updated_date" type="datetime"/>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="created_by" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_by" type="INT(10)"/>
+            <column name="status" type="VARCHAR(10)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="viet (generated)" id="1404141117126-8">
+        <createTable tableName="accounting_fiscal_year">
+            <column autoIncrement="true" name="year_id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_date" type="datetime"/>
+            <column name="end_date" type="datetime"/>
+            <column name="updated_date" type="datetime"/>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="created_by" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_by" type="INT(10)"/>
+            <column name="status" type="VARCHAR(10)"/>
+            <column name="opening_balance" type="DECIMAL(9,2)"/>
+            <column name="closing_balance" type="DECIMAL(9,2)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="viet (generated)" id="1404141117126-9">
+        <createTable tableName="accounting_income_receipt">
+            <column autoIncrement="true" name="income_receipt_id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="receipt_no" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(1000)"/>
+            <column defaultValueNumeric="0" name="voided" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voided_date" type="datetime"/>
+            <column name="voided_by" type="INT(10)"/>
+            <column name="receipt_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="created_by" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="datetime"/>
+            <column name="updated_by" type="INT(10)"/>
+            <column name="status" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="viet (generated)" id="1404141117126-10">
+        <createTable tableName="accounting_income_receipt_item">
+            <column autoIncrement="true" name="income_receipt_item_id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="VARCHAR(1000)"/>
+            <column name="account_id" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="income_receipt_id" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="DECIMAL(9,2)"/>
+            <column name="cheque_number" type="VARCHAR(255)"/>
+            <column name="type" type="VARCHAR(20)"/>
+            <column name="transaction_date" type="datetime"/>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="created_by" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="voided" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voided_date" type="datetime"/>
+            <column name="voided_by" type="INT(10)"/>
+            <column name="updated_date" type="datetime"/>
+            <column name="updated_by" type="INT(10)"/>
+            <column name="txn_number" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="viet (generated)" id="1404141117126-11">
+        <createTable tableName="accounting_payee">
+            <column autoIncrement="true" name="payee_id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(1000)"/>
+            <column name="updated_date" type="datetime"/>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_by" type="INT(10)"/>
+            <column name="retired_by" type="INT(10)"/>
+            <column name="retired_date" type="datetime"/>
+            <column defaultValueNumeric="0" name="retired" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="viet (generated)" id="1404141117126-12">
+        <createTable tableName="accounting_payment">
+            <column autoIncrement="true" name="payment_id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="account_id" type="INT(10)"/>
+            <column name="payee_id" type="INT(10)"/>
+            <column name="ref_order_no" type="VARCHAR(255)"/>
+            <column name="commitment_no" type="INT(10)"/>
+            <column name="voucher_no" type="VARCHAR(255)"/>
+            <column name="cost" type="DECIMAL(9, 2)"/>
+            <column name="commitment_amount" type="DECIMAL(9, 2)"/>
+            <column name="payable_amount" type="DECIMAL(9, 2)"/>
+            <column name="actual_payment" type="DECIMAL(9, 2)"/>
+            <column name="payment_date" type="datetime"/>
+            <column name="updated_date" type="datetime"/>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_by" type="INT(10)"/>
+            <column name="retired_by" type="INT(10)"/>
+            <column name="retired_date" type="datetime"/>
+            <column defaultValueNumeric="0" name="retired" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(50)"/>
+            <column name="note" type="VARCHAR(1000)"/>
+            <column name="total_aie" type="DECIMAL(9, 2)"/>
+        </createTable>
+    </changeSet>
+	<changeSet author="viet" id="20140722">
+		<addColumn tableName="accounting_expense_balance">
+			<column name="total_committed" type="DECIMAL(9,2)"/>
+			<column name="ledger_balance" type="DECIMAL(9,2)"/>
+		</addColumn>
+	</changeSet>    
+</databaseChangeLog>
