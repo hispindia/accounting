@@ -23,7 +23,6 @@ package org.openmrs.module.accounting.web.controller.fiscalyear;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.AccountingService;
-import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.FiscalYear;
 import org.openmrs.module.accounting.api.model.GeneralStatus;
 import org.springframework.validation.Errors;
@@ -52,13 +51,7 @@ public class FiscalYearValidator implements Validator {
 		AccountingService accountingService = (AccountingService) Context.getService(AccountingService.class);
 		if (StringUtils.isBlank(fiscalYear.getName())) {
 			error.reject("accounting.name.required");
-		} else {
-			
-			Account acc = accountingService.getAccountByName(fiscalYear.getName());
-			if (acc != null) {
-				error.reject("accounting.name.existed");
-			}
-		}
+		} 
 		
 		if (fiscalYear.getStatus() == null) {
 			error.reject("accounting.type.required");
@@ -76,24 +69,20 @@ public class FiscalYearValidator implements Validator {
 			error.reject("accounting.overlap");
 		}
 		
-		if (fiscalYear.getStatus().equals(GeneralStatus.ACTIVE)) {
-			if (accountingService.getActiveFiscalYear() != null) {
-				error.reject("accounting.active.exisited");
-			}
-		}
+		if (fiscalYear.getId() != null) {
 		
-		//		Integer companyId = account.getAccountId();
-		//		if (companyId == null) {
-		//			if (billingService.getAccountByName(account.getName())!= null) {
-		//				error.reject("billing.name.existed");
-		//			}
-		//		} else {
-		//			Account dbStore = billingService.getAccountById(companyId);
-		//			if (!dbStore.getName().equalsIgnoreCase(account.getName())) {
-		//				if (billingService.getAccountByName(account.getName()) != null) {
-		//					error.reject("billing.name.existed");
-		//				}
-		//			}
-		//		}
+			if (fiscalYear.getStatus().equals(GeneralStatus.ACTIVE)) {
+				FiscalYear year = accountingService.getActiveFiscalYear() ; 
+				if (year != null && !fiscalYear.getId().equals(year.getId())) {
+					error.reject("accounting.active.exisited");
+				}
+			}
+			
+			FiscalYear year = accountingService.getFiscalYearByName(fiscalYear.getName());
+			if (year != null && !year.getId().equals(fiscalYear.getId())){
+				error.reject("accounting.name.exisited");
+			}
+		
+		}
 	}
 }

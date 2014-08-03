@@ -79,6 +79,9 @@
 		
 		nextStartDate = new Date(yearStartDate.getTime());
 		
+		var quarterNo = 0;
+		
+		var monthName = "";
 
 		if ("quarterly" == type) {
 			
@@ -90,7 +93,11 @@
 		
 				pEndDate = new Date(nextStartDate.getFullYear(),nextStartDate.getMonth(), nextStartDate.getDate() - 1, 23,59,59,999);
 				
-				name = "Quarter " + (Math.floor((pStartDate.getMonth() + 3) / 3)) + " - " + nextStartDate.getFullYear();
+				quarterNo = i+1;
+				
+				//quarterNo = (Math.floor((pStartDate.getMonth() + 3) / 3)) ;
+				
+				name = "Quarter " + quarterNo + " - " + nextStartDate.getFullYear();
 				
 				if (pEndDate >= yearEndDate){
 					pEndDate = new Date(yearEndDate.getTime());
@@ -105,6 +112,20 @@
 				}
 			}
 		} else if ("monthly" == type) {
+			var months = [];
+			months[1] = "January";
+			months[2] = "February";
+			months[3] = 'March';
+			months[4] = 'April';
+			months[5] = 'May';
+			months[6] = 'June';
+			months[7] = 'July';
+			months[8] = 'August';
+			months[9] = 'September';
+			months[10] = 'October';
+			months[11] = 'November';
+			months[12] = 'December';
+			
 
 			for (var i=0; i<12; i++) {
 				
@@ -114,7 +135,11 @@
 		
 				pEndDate = new Date(nextStartDate.getFullYear(),nextStartDate.getMonth(), nextStartDate.getDate() - 1, 23,59,59,999);
 				
-				name = "Month "  + ( pStartDate.getMonth()  + 1 ) + " - " + pEndDate.getFullYear();
+				//monthName = "Month "  + ( pStartDate.getMonth()  + 1 );
+				
+				monthName = months[pEndDate.getMonth() + 1];
+				
+				name = monthName + " - " + pEndDate.getFullYear();
 				
 				if (pEndDate >= yearEndDate){
 					pEndDate = new Date(yearEndDate.getTime());

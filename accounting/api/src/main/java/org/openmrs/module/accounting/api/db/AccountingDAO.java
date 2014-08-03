@@ -641,7 +641,7 @@ public class AccountingDAO {
 	 * @return
 	 */
 	
-	public Map<Integer,String> aggregateIncomeReceiptItem(Date from, Date to) {
+	public Map<Integer,Object[]> aggregateIncomeReceiptItem(Date from, Date to) {
 		String squery = "select ir.account.id, ir.account.name, sum(ir.amount) from IncomeReceiptItem  as ir "
 				+" left join ir.receipt as  r  "
 				+"where r.receiptDate >= :from and r.receiptDate <= :to "
@@ -652,7 +652,7 @@ public class AccountingDAO {
 		query.setParameter("from", from);
 		query.setParameter("to", to);
 		List result = query.list();
-		Map<Integer, String> mapResult = new HashMap<Integer, String>();
+		Map<Integer, Object[]> mapResult = new HashMap<Integer, Object[]>();
 		String accountName;
 		BigDecimal amount;
 		Integer accountId;
@@ -661,12 +661,10 @@ public class AccountingDAO {
 			for (Object o : result) {
 				Object[] obj = (Object[]) o;
 				accountId = NumberUtils.toInt(obj[0].toString());
-				accountName = obj[1].toString();
-				amount =  obj[2] != null ? new BigDecimal(obj[2].toString()) : new BigDecimal("0");
-				tmp = accountName + "|"+ amount.toString();
-				mapResult.put(accountId,tmp);
+				mapResult.put(accountId,obj);
 			}
 		}
 		return mapResult;
 	}
+	
 }

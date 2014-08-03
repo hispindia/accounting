@@ -326,7 +326,7 @@ public class AccountingDaoTest extends BaseModuleContextSensitiveTest {
 		
 		Date from = DateUtils.getDateFromStr("1/7/2014");
 		Date to = DateUtils.getDateFromStr("30/7/2014");
-		Map<Integer, String> result = dao.aggregateIncomeReceiptItem(from, to);
+		Map<Integer, Object[]> result = dao.aggregateIncomeReceiptItem(from, to);
 		System.out.println(result);
 		Assert.assertNotEquals(result.values().size(), 2);
 	}
