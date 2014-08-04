@@ -1,4 +1,1 @@
-accounting
-==========
-
-Accounting module for OpenMRS
+Accounting module for OpenMRS 1.9.7
