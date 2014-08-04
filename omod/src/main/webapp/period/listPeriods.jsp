@@ -66,8 +66,9 @@
 <c:choose>
 	<c:when test="${not empty periods}">
 		<form method="post" onsubmit="return false" id="form">
-			<input type="button" onclick="checkValue()"
-				value="<spring:message code='accounting.account.deleteselected'/>" />
+			
+		<!-- 	<input type="button" onclick="checkValue()"
+				value="<spring:message code='accounting.account.deleteselected'/>" /> -->
 			<span class="boxHeader"><spring:message
 					code="accounting.period.list" />
 			</span>

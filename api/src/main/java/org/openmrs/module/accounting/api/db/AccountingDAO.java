@@ -306,6 +306,7 @@ public class AccountingDAO {
 	public FiscalYear getFiscalYearByName(String name) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(FiscalYear.class);
 		criteria.add(Restrictions.eq("name", name));
+		criteria.add(Restrictions.ne("status", GeneralStatus.DELETED));
 		return (FiscalYear) criteria.uniqueResult();
 	}
 	

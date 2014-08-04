@@ -333,4 +333,12 @@
 			<column name="ledger_balance" type="DECIMAL(9,2)"/>
 		</addColumn>
 	</changeSet>    
+	
+	<changeSet author="viet" id="201408040116">
+		  <addForeignKeyConstraint baseColumnNames="fiscal_year_id"
+            baseTableName="accounting_fiscal_period"
+            constraintName="fk_year_period"
+            referencedColumnNames="year_id"
+            referencedTableName="accounting_fiscal_year"/>
+	</changeSet>   
 </databaseChangeLog>

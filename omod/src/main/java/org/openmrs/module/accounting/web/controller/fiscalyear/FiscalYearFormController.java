@@ -2,6 +2,7 @@ package org.openmrs.module.accounting.web.controller.fiscalyear;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -40,15 +41,22 @@ public class FiscalYearFormController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String firstView(@RequestParam(value = "id", required = false) Integer id, Model model) {
 		FiscalYearCommand fiscalYearCommand = new FiscalYearCommand();
+		boolean editable = true;
 		if (id != null) {
 			FiscalYear fy = Context.getService(AccountingService.class).getFiscalYear(id);
 			fiscalYearCommand.setFiscalYear(fy);
-			
+			model.addAttribute("listStatus", getStatues(fy.getStatus()));
+			if (fy.getStatus().equals(GeneralStatus.DELETED)) {
+				editable = false;
+			}
 		} else {
 			fiscalYearCommand = new FiscalYearCommand();
 			fiscalYearCommand.setFiscalYear(new FiscalYear());
+			model.addAttribute("listStatus", getStatues(null));
 		}
 		model.addAttribute("command", fiscalYearCommand);
+		
+		model.addAttribute("editable", editable);
 		return "/module/accounting/fiscalyear/form";
 	}
 	
@@ -74,13 +82,27 @@ public class FiscalYearFormController {
 				period.setStatus(year.getStatus());
 				year.addPeriod(period);
 			}
+			 accountingService.saveFiscalYear(year);
 		} else {
-			year.setUpdatedBy(Context.getAuthenticatedUser().getId());
-			year.setUpdatedDate(Calendar.getInstance().getTime());
+			FiscalYear persistedYear = accountingService.getFiscalYear(year.getId());
+		
+			persistedYear.getPeriods().clear();
+			for (FiscalPeriod period : fiscalYearCommand.getPeriods()) {
+				period.setFiscalYear(persistedYear);
+				period.setCreatedBy(persistedYear.getCreatedBy());
+				period.setCreatedDate(persistedYear.getCreatedDate());
+				period.setStatus(persistedYear.getStatus());
+				persistedYear.addPeriod(period);
+			}
+			persistedYear.setUpdatedBy(Context.getAuthenticatedUser().getId());
+			persistedYear.setUpdatedDate(Calendar.getInstance().getTime());
+			
+			accountingService.saveFiscalYear(persistedYear);
+			 
 		}
 		
 		
-		 accountingService.saveFiscalYear(year);
+		
 		
 		
 		
@@ -123,8 +145,28 @@ public class FiscalYearFormController {
 		return "redirect:/module/accounting/fiscalyear.list";
 	}
 	
-	@ModelAttribute("statuses")
-	public GeneralStatus[] registerStatuses() {
-		return GeneralStatus.values();
+	
+	private GeneralStatus[] getStatues(GeneralStatus status){
+		if (status == null) {
+			GeneralStatus[] statues = new GeneralStatus[2];
+			statues[0] = GeneralStatus.INACTIVE;
+			statues[1] = GeneralStatus.ACTIVE;
+			return statues;
+		} else if (status.equals(GeneralStatus.ACTIVE)) {
+			GeneralStatus[] statues = new GeneralStatus[2];
+			statues[0] = GeneralStatus.ACTIVE;
+			statues[1] = GeneralStatus.INACTIVE;
+			return statues;
+		} else if (status.equals(GeneralStatus.DELETED)) {
+			GeneralStatus[] statues = new GeneralStatus[1];
+			statues[0] = GeneralStatus.DELETED;
+			return statues;
+		} else if (status.equals(GeneralStatus.CLOSED)) {
+			GeneralStatus[] statues = new GeneralStatus[2];
+			statues[1] = GeneralStatus.CLOSED;
+			statues[0] = GeneralStatus.ACTIVE;
+			return statues;
+		} else return null;
+		
 	}
 }

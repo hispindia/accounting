@@ -31,7 +31,7 @@ public class FiscalYear {
 	@Column(name = "year_id")
 	private Integer id;
 	
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "fiscalYear", targetEntity = FiscalPeriod.class)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true, mappedBy = "fiscalYear", targetEntity = FiscalPeriod.class)
 	@javax.persistence.OrderBy("startDate, endDate")
 	private List<FiscalPeriod> periods;
 	

@@ -83,6 +83,13 @@ public class FiscalYearValidator implements Validator {
 				error.reject("accounting.name.exisited");
 			}
 		
+		} else {
+			if (fiscalYear.getStatus().equals(GeneralStatus.ACTIVE)) {
+				FiscalYear year = accountingService.getActiveFiscalYear() ; 
+				if (year != null ) {
+					error.reject("accounting.active.exisited");
+				}
+			}
 		}
 	}
 }

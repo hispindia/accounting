@@ -252,13 +252,13 @@
 			</td>
 			<td><form:select path="fiscalYear.status">
 					<form:option value="" label="--Please Select--"/>
-					<form:options items="${listStatus}" itemLabel="name" />
+					<form:options items="${statuses}" itemLabel="name" />
 				</form:select> <form:errors path="fiscalYear.status"  cssClass="error" /></td>
 		</tr>
 		<tr>
 			<td valing="top" colspan="2"><input type="button" id="btnCreateQuarter" value="Create Quaterly Periods" onclick="createPeriods('quarterly');"/> <input type="button" id="btnCreateMonthly" value="Create Monthly Periods" onclick="createPeriods('monthly');"/></td>
 	</table>
-	<br /> <input type="submit"  <c:if test="${editable==false}"> disabled="disabled"</c:if>
+	<br /> <input type="submit"
 		value="<spring:message code="general.save"/>"> <input
 		type="button" value="<spring:message code="general.cancel"/>"
 		onclick="javascript:window.location.href='fiscalyear.list'">
