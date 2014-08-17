@@ -28,13 +28,53 @@
 <h2>
 	<spring:message code="accounting.fiscalyear.close" />
 </h2>
-<div class="box">
+<c:choose>
+<c:when test="${hasOpenPeriod}">
+	Please close all Fiscal Periods of this year before proceed.
+</c:when>
+<c:otherwise>
+<form class="box">
+<input type="hidden" name="closeYearId" value="${fiscalYear.id }"/>
 <table>
 	<tr>
 		<td>Start Date</td>
-		<td>End Date</td>
+		<td><openmrs:formatDate date="${fiscalYear.startDate}" type="textbox" /></td>
 	</tr>
+	<tr>
+		<td>End Date</td>
+		<td><openmrs:formatDate date="${fiscalYear.startDate}" type="textbox" /></td>
+	</tr>
+	<c:choose>
+	<c:when test="${hasNextYear}">
+	<tr>
+		<td>Next Fiscal Year</td>
+		<td>
+			<select name="nextFiscalYearId">
+				<option value="">--Select Next Year---</option>
+				<c:forEach items="${listFiscalYear}" var="y">
+					<option value="${y.id}" >${y.name}</option>
+				</c:forEach>
+			</select>
+		</td>
+	</tr>
+	</c:when>
+	<c:otherwise>
+		<tr>
+			<td>Auto create next year</td>
+			<td>Yes <input type="radio" name="createNextYear" value="y"> 
+				No  <input type="radio" name="createNextYear" value="n">
+			</td>
+		</tr>
+	</c:otherwise>
+	</c:choose>
+	<input type="submit" value="Submit"/>
 </table>
-</div>
+
+
+
+</form>
+
+</c:otherwise>
+</c:choose>
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

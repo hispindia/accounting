@@ -315,6 +315,7 @@ public class AccountingDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(FiscalYear.class);
 		if (status != null)
 			criteria.add(Restrictions.eq("status", status));
+		criteria.add(Restrictions.ne("status", GeneralStatus.DELETED));
 		criteria.addOrder(Order.desc("endDate"));
 		return criteria.list();
 	}

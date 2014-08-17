@@ -87,6 +87,7 @@
 							<td>${fiscalyear.status }</td>
 							<td><input type="checkbox" name="ids"
 								value="${fiscalyear.id}" />
+								<input type="button" value="Close" onclick="closeYear(${fiscalyear.id})"/>
 							</td>
 						</tr>
 					</c:forEach>
@@ -106,6 +107,11 @@ function checkValue()
 		alert("Please choose items for deleting");
 		return false;
 	}
+	
+}
+function closeYear(id){
+	document.location.href = "closeFiscalYear.htm?id="+id;
+
 }</script>
 	</c:when>
 	<c:otherwise>

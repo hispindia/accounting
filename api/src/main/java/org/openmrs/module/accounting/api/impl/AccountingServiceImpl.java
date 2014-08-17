@@ -69,15 +69,15 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	
 	public Account saveAccount(Account acc, Integer periodId) {
 		
-	
 		if (acc.getId() == null) {
 			FiscalPeriod period = dao.getFiscalPeriod(periodId);
 			
-			if (period == null) return null;
+			if (period == null)
+				return null;
 			log.info("Create new account: " + acc.getName());
 			acc.setCreatedDate(Calendar.getInstance().getTime());
 			acc.setCreatedBy(Context.getAuthenticatedUser().getId());
-		
+			
 			acc = dao.saveAccount(acc);
 			
 			if (acc.getAccountType().equals(AccountType.INCOME)) {
@@ -115,7 +115,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	}
 	
 	public void deleteAccount(Account acc) {
-//		dao.deleteAccount(acc);
+		//		dao.deleteAccount(acc);
 		if (acc != null) {
 			acc.setRetired(true);
 			acc.setRetiredDate(Calendar.getInstance().getTime());
@@ -241,12 +241,12 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		
 		for (IncomeReceiptItem item : incomeReceipt.getReceiptItems()) {
 			try {
-	            voidIncomeReceiptItem(item.getId());
-            }
-            catch (Exception e) {
-	            // TODO Auto-generated catch block
-	            e.printStackTrace();
-            }
+				voidIncomeReceiptItem(item.getId());
+			}
+			catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 	}
@@ -267,7 +267,6 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			
 			rIncomeReceiptItem = dao.saveIncomeReceiptItem(incomeReceiptItem);
 			
-			
 			/**
 			 * Update Account Balance
 			 */
@@ -279,9 +278,10 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			incomeReceiptItem.setUpdatedDate(Calendar.getInstance().getTime());
 			
 			/**
-			 * When updating receipt item, there are 2 cases: Voided or Update the amount
-			 * If Voided => cancelAccountTransaction for old receipt item
-			 * If update amount =>  cancelAccountTransaction for old receipt then addAccountTransaction for new receipt amount
+			 * When updating receipt item, there are 2 cases: Voided or Update the amount If Voided
+			 * => cancelAccountTransaction for old receipt item If update amount =>
+			 * cancelAccountTransaction for old receipt then addAccountTransaction for new receipt
+			 * amount
 			 */
 			
 			IncomeReceiptItem oldReceipt = dao.getIncomeReceiptItem(incomeReceiptItem.getId());
@@ -291,9 +291,9 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			if (incomeReceiptItem.isVoided()) {
 				
 				/** Cancel Account Transaction for old receipt **/
-				cancelAccountTransaction(oldReceipt.getTxnNumber(), Calendar.getInstance().getTime() );
+				cancelAccountTransaction(oldReceipt.getTxnNumber(), Calendar.getInstance().getTime());
 				
-			}else {
+			} else {
 				
 				/** Check if receipt amount were updated **/
 				if (!oldReceipt.getAccount().equals(incomeReceiptItem.getAccount())) {
@@ -301,12 +301,12 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 					/** Cancel Account Transaction for old receipt **/
 					cancelAccountTransaction(oldReceipt.getTxnNumber(), Calendar.getInstance().getTime());
 					
-					/** Add  transaction for new receipt amount value **/
-				
-					accTxn = addAccountTransaction(incomeReceiptItem); 
+					/** Add transaction for new receipt amount value **/
+					
+					accTxn = addAccountTransaction(incomeReceiptItem);
 					
 				}
-			} 
+			}
 			
 			incomeReceiptItem.setTxnNumber(accTxn.getBaseTxnNumber());
 			
@@ -320,12 +320,12 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		return rIncomeReceiptItem;
 	}
 	
-	private  void cancelAccountTransaction(String  txnNumber, Date transactedOn) {
+	private void cancelAccountTransaction(String txnNumber, Date transactedOn) {
 		AccountTransaction oldTxn = dao.getAccountTxn(txnNumber);
 		if (oldTxn == null) {
-			log.debug("Old Transaction = "+oldTxn);
+			log.debug("Old Transaction = " + oldTxn);
 			return;
-		} 
+		}
 		
 		BigDecimal newBalance = oldTxn.getBalance().subtract(oldTxn.getAmount());
 		AccountTransaction cancelTxn = new AccountTransaction();
@@ -403,18 +403,18 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	}
 	
 	public void updateAccountAvailableBalance(Account account, Date receiptDate, BigDecimal amount) throws Exception {
-//		AccountBalance accBalance = dao.getLatestAccountBalance(account);
-//		if (accBalance == null) {
-//			throw new Exception("Can not find Account Balance with Account:" + account.getName() + " and Receipt Date: "
-//			        + receiptDate.toString());
-
+		//		AccountBalance accBalance = dao.getLatestAccountBalance(account);
+		//		if (accBalance == null) {
+		//			throw new Exception("Can not find Account Balance with Account:" + account.getName() + " and Receipt Date: "
+		//			        + receiptDate.toString());
+		
 		/*
 		 * If Account Balance does not exist for this period, create new one
 		 */
 		FiscalPeriod period = getFiscalPeriodByDate(receiptDate);
 		IncomeBalance balance = dao.getAccountBalance(account, period);
 		if (balance == null) {
-		
+			
 			balance = new IncomeBalance();
 			balance.setAccount(account);
 			balance.setCreatedBy(account.getCreatedBy());
@@ -422,7 +422,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			balance.setStatus(BalanceStatus.ACTIVE);
 			balance.setStartDate(period.getStartDate());
 			balance.setPeriod(period);
-//			dao.saveAccountBalance(balance);
+			//			dao.saveAccountBalance(balance);
 		}
 		
 		balance.setAvailableBalance(balance.getAvailableBalance().add(amount));
@@ -452,13 +452,13 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		updateAccountAvailableBalance(receipt.getAccount(), receipt.getReceipt().getReceiptDate(), amount);
 	}
 	
-	
 	private void updateAccountBalance(BudgetItem budget) throws Exception {
 		updateAccountAvailableBalance(budget.getAccount(), budget.getCreatedDate(), budget.getAmount());
 		addAccountTransaction(budget);
 	}
 	
-	public void updateAccountBalance(Account account, Date receiptDate, BigDecimal amount,TransactionType type) throws Exception {
+	public void updateAccountBalance(Account account, Date receiptDate, BigDecimal amount, TransactionType type)
+	    throws Exception {
 		IncomeBalance accBalance = dao.getLatestAccountBalance(account);
 		if (accBalance == null) {
 			throw new Exception("Can not find Account Balance with Account:" + account.getName() + " and Receipt Date: "
@@ -474,19 +474,20 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		saveAccountBalance(accBalance);
 	}
 	
-	
-	
-	
 	private AccountTransaction addAccountTransaction(IncomeReceiptItem receipt) {
-		return addAccountTransaction(receipt.getAccount(), receipt.getAmount(), receipt.getCreatedBy(), receipt.getCreatedDate(), receipt.getTransactionDate());
+		return addAccountTransaction(receipt.getAccount(), receipt.getAmount(), receipt.getCreatedBy(),
+		    receipt.getCreatedDate(), receipt.getTransactionDate());
 	}
 	
 	private AccountTransaction addAccountTransaction(BudgetItem budget) {
-		return addAccountTransaction(budget.getAccount(), budget.getAmount(), budget.getCreatedBy(), budget.getCreatedDate(), budget.getCreatedDate());
+		return addAccountTransaction(budget.getAccount(), budget.getAmount(), budget.getCreatedBy(),
+		    budget.getCreatedDate(), budget.getCreatedDate());
 	}
 	
-	private AccountTransaction addAccountTransaction(Account account, BigDecimal amount, int createdBy, Date createdDate, Date transactionDate) {
-		if ( account == null) return null;
+	private AccountTransaction addAccountTransaction(Account account, BigDecimal amount, int createdBy, Date createdDate,
+	                                                 Date transactionDate) {
+		if (account == null)
+			return null;
 		
 		/*
 		if (amount.compareTo(new BigDecimal("0")) == 0 ) {
@@ -516,23 +517,21 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		newTxn.setTransactionDate(transactionDate);
 		newTxn.setTxnStatus(TransactionStatus.OPEN);
 		
-		return  dao.saveAccountTransaction(newTxn);
-		
-		
+		return dao.saveAccountTransaction(newTxn);
 		
 	}
-
+	
 	@Override
-    public void voidIncomeReceiptItem(Integer id) throws Exception { 
-		log.debug("Begin void IncomeReceiptItem id = "+id);
-		if ( id == null ) {
-			log.error("Can not find Income Receipt Item with id = "+id);
-			throw new Exception("Can not find Income Receipt Item with id = "+id);
+	public void voidIncomeReceiptItem(Integer id) throws Exception {
+		log.debug("Begin void IncomeReceiptItem id = " + id);
+		if (id == null) {
+			log.error("Can not find Income Receipt Item with id = " + id);
+			throw new Exception("Can not find Income Receipt Item with id = " + id);
 		}
 		IncomeReceiptItem item = dao.getIncomeReceiptItem(id);
-		if ( item == null ) {
-			log.error("Can not find Income Receipt Item with id = "+id);
-			throw new Exception("Can not find Income Receipt Item with id = "+id);
+		if (item == null) {
+			log.error("Can not find Income Receipt Item with id = " + id);
+			throw new Exception("Can not find Income Receipt Item with id = " + id);
 		}
 		Date curDate = Calendar.getInstance().getTime();
 		item.setVoided(true);
@@ -542,55 +541,54 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		
 		AccountTransaction acctxn = dao.getAccountTxn(item.getTxnNumber());
 		
-		if ( acctxn == null ) {
-			log.error("Can not find AccountTransaction of Income Receipt Item with id = "+id);
-			throw new Exception("Can not find AccountTransaction of Income Receipt Item with id = "+id);
+		if (acctxn == null) {
+			log.error("Can not find AccountTransaction of Income Receipt Item with id = " + id);
+			throw new Exception("Can not find AccountTransaction of Income Receipt Item with id = " + id);
 		}
 		
 		cancelAccountTransaction(item.getTxnNumber(), curDate);
 		
 		try {
-	        decreaseBalance(item);
-        }
-        catch (Exception e) {
-        	log.error(e);
-        	throw new Exception(e);
-        }
+			decreaseBalance(item);
+		}
+		catch (Exception e) {
+			log.error(e);
+			throw new Exception(e);
+		}
 		
-		
-    }
-
+	}
+	
 	@Override
-    public boolean isOverlapFiscalYear(Integer fiscalYearId, String from, String to) {
+	public boolean isOverlapFiscalYear(Integer fiscalYearId, String from, String to) {
 		Date dFrom = DateUtils.getDateFromStr(from);
 		Date dTo = DateUtils.getDateFromStr(to);
-		return isOverlapFiscalYear( fiscalYearId, dFrom, dTo);
-	    
-    }
-
+		return isOverlapFiscalYear(fiscalYearId, dFrom, dTo);
+		
+	}
+	
 	@Override
-    public boolean isOverlapFiscalYear(Integer fiscalYearId,  Date from, Date to) {
-	    List<FiscalYear> list = dao.getOverlapFiscalYears(fiscalYearId, from, to);
-	    if (list != null && !list.isEmpty()) {
-	    	for (FiscalYear year : list) {
-	    		if (year.getId().equals(fiscalYearId) && year.getStartDate().compareTo(from) == 0
-	    				&& year.getEndDate().compareTo(to) == 0 ) {
-	    				continue;
-	    		} else {
-	    			return true;
-	    		}
-	    	}
-	    }
-	    return false;
-    }
-
+	public boolean isOverlapFiscalYear(Integer fiscalYearId, Date from, Date to) {
+		List<FiscalYear> list = dao.getOverlapFiscalYears(fiscalYearId, from, to);
+		if (list != null && !list.isEmpty()) {
+			for (FiscalYear year : list) {
+				if (year.getId().equals(fiscalYearId) && year.getStartDate().compareTo(from) == 0
+				        && year.getEndDate().compareTo(to) == 0) {
+					continue;
+				} else {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	@Override
-    public FiscalYear getActiveFiscalYear() {
-	    return dao.getActiveFicalYear();
-    }
-
+	public FiscalYear getActiveFiscalYear() {
+		return dao.getActiveFicalYear();
+	}
+	
 	@Override
-    public Budget saveBudget(Budget budget) throws Exception {
+	public Budget saveBudget(Budget budget) throws Exception {
 		
 		if (budget.getId() == null) {
 			
@@ -599,118 +597,108 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			
 			budget = dao.saveBudget(budget);
 			/**
-			 * Add new Budget => need to update account balance for each Budget Item
-			 * Balance should be increased
-			 
-			if (budget.getBudgetItems() != null && !budget.getBudgetItems().isEmpty()) {
-				for (BudgetItem item : budget.getBudgetItems()) {
-
-					AccountTransaction acctxn = addAccountTransaction(item);
-					
-					item.setTxnNumber(acctxn.getTxnNumber());
-					
-					increaseBalance(item);
-					
-				}
-			}*/
+			 * Add new Budget => need to update account balance for each Budget Item Balance should
+			 * be increased if (budget.getBudgetItems() != null &&
+			 * !budget.getBudgetItems().isEmpty()) { for (BudgetItem item : budget.getBudgetItems())
+			 * { AccountTransaction acctxn = addAccountTransaction(item);
+			 * item.setTxnNumber(acctxn.getTxnNumber()); increaseBalance(item); } }
+			 */
 			
 		} else {
 			budget.setUpdatedBy(Context.getAuthenticatedUser().getId());
 			budget.setUpdatedDate(Calendar.getInstance().getTime());
 			budget = dao.saveBudget(budget);
 		}
-	    return budget;
-    }
-
+		return budget;
+	}
+	
 	@Override
-    public Budget getBudget(Integer id) {
+	public Budget getBudget(Integer id) {
 		if (id == null) {
 			return null;
 		}
 		return dao.getBudget(id);
-    }
-
+	}
+	
 	@Override
-    public List<Budget> getBudgets(Boolean includeRetired) {
-	    return dao.getBudgets(includeRetired);
-    }
-
+	public List<Budget> getBudgets(Boolean includeRetired) {
+		return dao.getBudgets(includeRetired);
+	}
+	
 	@Override
-    public void deleteBudget(Budget budget) {
+	public void deleteBudget(Budget budget) {
 		dao.deleteBudget(budget);
-    }
-
+	}
+	
 	@Override
-    public void retireBudget(Integer id) throws Exception {
-	    if (id == null) {
-	    	return;
-	    }
-	    
-	    
-	    Budget budget = dao.getBudget(id);
-	    if (budget != null) {
-	    	budget.setRetired(true);
-	    	budget.setRetiredBy(Context.getAuthenticatedUser().getId());
-	    	Date curDate = Calendar.getInstance().getTime();
-	    	budget.setRetiredDate(curDate);
-	    	
-	    	for(BudgetItem item : budget.getBudgetItems()) {
-	    		item.setRetired(true);
-	    		item.setRetiredBy(Context.getAuthenticatedUser().getId());
-	    		item.setRetiredDate(curDate);
-	    		dao.saveBudgetItem(item);
-	    		/*
-	    		cancelAccountTransaction(item.getTxnNumber(),curDate );
-	    		
-	    		increaseBalance(item);
-	    		*/
-	    	}
-	    	dao.saveBudget(budget);
-	    }
-    }
-
+	public void retireBudget(Integer id) throws Exception {
+		if (id == null) {
+			return;
+		}
+		
+		Budget budget = dao.getBudget(id);
+		if (budget != null) {
+			budget.setRetired(true);
+			budget.setRetiredBy(Context.getAuthenticatedUser().getId());
+			Date curDate = Calendar.getInstance().getTime();
+			budget.setRetiredDate(curDate);
+			
+			for (BudgetItem item : budget.getBudgetItems()) {
+				item.setRetired(true);
+				item.setRetiredBy(Context.getAuthenticatedUser().getId());
+				item.setRetiredDate(curDate);
+				dao.saveBudgetItem(item);
+				/*
+				cancelAccountTransaction(item.getTxnNumber(),curDate );
+				
+				increaseBalance(item);
+				*/
+			}
+			dao.saveBudget(budget);
+		}
+	}
+	
 	@Override
-    public void retireBudgetItem(Integer id) throws Exception {
-	    if (id == null) {
-	    	return;
-	    }
-	    
-	    BudgetItem item = dao.getBudgetItem(id);
-	    if (item == null) {
-	    	return;
-	    }
-	    
-	    Date curDate = Calendar.getInstance().getTime();
-	    item.setRetired(true);
+	public void retireBudgetItem(Integer id) throws Exception {
+		if (id == null) {
+			return;
+		}
+		
+		BudgetItem item = dao.getBudgetItem(id);
+		if (item == null) {
+			return;
+		}
+		
+		Date curDate = Calendar.getInstance().getTime();
+		item.setRetired(true);
 		item.setRetiredBy(Context.getAuthenticatedUser().getId());
 		item.setRetiredDate(curDate);
-		
 		
 		//cancelAccountTransaction(item.getTxnNumber(),curDate );
 		
 		//decreaseBalance(item);
 		saveBudgetItem(item);
-    }
-
+	}
+	
 	@Override
-    public BudgetItem saveBudgetItem(BudgetItem item) throws Exception {
+	public BudgetItem saveBudgetItem(BudgetItem item) throws Exception {
 		
 		if (item == null) {
 			return null;
 		}
-		 Date curDate = Calendar.getInstance().getTime();
-		 
-		 FiscalPeriod period = dao.getPeriodByDate(item.getStartDate());
-		 
-		 if (period == null) {
-			 throw new Exception("Can not find period for date "+item.getStartDate());
-		 }
-		 
-		 ExpenseBalance balance = dao.getExpenseBalanceByAccountAndPeriod(item.getAccount(), period);
-		 if (balance == null) {
-
+		Date curDate = Calendar.getInstance().getTime();
+		
+		FiscalPeriod period = dao.getPeriodByDate(item.getStartDate());
+		
+		if (period == null) {
+			throw new Exception("Can not find period for date " + item.getStartDate());
+		}
+		
+		ExpenseBalance balance = dao.getExpenseBalanceByAccountAndPeriod(item.getAccount(), period);
+		if (balance == null) {
+			
 			/** Create new Expense Balance record if it does not exist for selected period **/
-			 
+			
 			balance = new ExpenseBalance();
 			Account acc = item.getAccount();
 			balance.setAccount(acc);
@@ -719,9 +707,8 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			balance.setStatus(BalanceStatus.ACTIVE);
 			balance.setStartDate(period.getStartDate());
 			balance.setPeriod(period);
-		 }
-		 
-		 
+		}
+		
 		if (item.getId() != null) {
 			
 			/** Update Buget Item **/
@@ -741,8 +728,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 				// Retire
 				persitedItem.setRetired(true);
 				persitedItem.setRetiredBy(Context.getAuthenticatedUser().getId());
-				persitedItem.setRetiredDate( curDate);
-				
+				persitedItem.setRetiredDate(curDate);
 				
 				/* 
 				 * Subtract the AIE from cummulative AIE
@@ -774,7 +760,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			return dao.saveBudgetItem(persitedItem);
 		} else {
 			
-			/** Create new  Buget Item **/
+			/** Create new Buget Item **/
 			
 			item.setCreatedBy(Context.getAuthenticatedUser().getId());
 			item.setCreatedDate(curDate);
@@ -795,22 +781,21 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			return item;
 		}
 		
-		
-    }
-
+	}
+	
 	@Override
-    public List<FiscalPeriod> getCurrentYearPeriods() {
+	public List<FiscalPeriod> getCurrentYearPeriods() {
 		FiscalYear year = getActiveFiscalYear();
-		if ( year != null ) {
+		if (year != null) {
 			return year.getPeriods();
 		} else {
 			return null;
 		}
 	}
-
+	
 	@Override
-    public Payee savePayee(Payee payee) {
-		if (payee.getId() == null ) {
+	public Payee savePayee(Payee payee) {
+		if (payee.getId() == null) {
 			payee.setCreatedBy(Context.getAuthenticatedUser().getId());
 			payee.setCreatedDate(Calendar.getInstance().getTime());
 		} else {
@@ -819,32 +804,33 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		}
 		return dao.savePayee(payee);
 	}
-
+	
 	@Override
-    public void deletePayee(Integer id) {
+	public void deletePayee(Integer id) {
 		Payee payee = dao.getPayee(id);
 		if (payee != null) {
-			dao.deletePayee(payee);;
+			dao.deletePayee(payee);
+			;
 		}
-    }
-
+	}
+	
 	@Override
-    public Payee getPayee(Integer id) {
-	    return dao.getPayee(id);
-    }
-
+	public Payee getPayee(Integer id) {
+		return dao.getPayee(id);
+	}
+	
 	@Override
-    public List<Payee> listActivePayees() {
-	    return dao.listPayees(false);
-    }
-
+	public List<Payee> listActivePayees() {
+		return dao.listPayees(false);
+	}
+	
 	@Override
-    public List<Payee> listAllPayees() {
-	    return dao.listPayees(true);
-    }
-
+	public List<Payee> listAllPayees() {
+		return dao.listPayees(true);
+	}
+	
 	@Override
-    public Payment savePayment(Payment payment) {
+	public Payment savePayment(Payment payment) {
 		
 		if (payment.getId() == null) {
 			payment.setCreatedBy(Context.getAuthenticatedUser().getId());
@@ -855,15 +841,15 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		}
 		updateExpenseBalance(payment);
 		
-	    return dao.savePayment(payment);
-    }
+		return dao.savePayment(payment);
+	}
 	
 	/**
 	 * Update balance of expense account after add new payment
 	 * 
 	 * @param payment
 	 */
-
+	
 	private void updateExpenseBalance(Payment payment) {
 		
 		FiscalPeriod period = dao.getPeriodByDate(payment.getPaymentDate());
@@ -872,7 +858,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			balance = dao.getExpenseBalanceByAccountAndPeriod(payment.getAccount(), period);
 		} else {
 			//TODO
-//			balance = dao.getLatestExpenseBalance(payment.getAccount());
+			//			balance = dao.getLatestExpenseBalance(payment.getAccount());
 			Account acc = payment.getAccount();
 			ExpenseBalance accBalance = new ExpenseBalance();
 			accBalance.setAccount(acc);
@@ -886,7 +872,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		
 		if (balance == null) {
 			// There should always at least one account balance exist for an account!
-			log.error("Expense Balance is null for account id : "+payment.getAccount().getId());
+			log.error("Expense Balance is null for account id : " + payment.getAccount().getId());
 			return;
 		}
 		
@@ -898,13 +884,12 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			BigDecimal ledgerBalance = balance.getCummulativeAIE().subtract(balance.getTotalCommitted());
 			balance.setLedgerBalance(ledgerBalance);
 		} else if (payment.getStatus().equals(PaymentStatus.PAID)) {
-			/** add to payment made , then subtract available balance*/
+			/** add to payment made , then subtract available balance */
 			balance.setCurrentPayment(balance.getCurrentPayment().add(payment.getActualPayment()));
 			balance.setCummulativePayment(balance.getCummulativePayment().add(payment.getActualPayment()));
 			BigDecimal availableBalance = balance.getCummulativeAIE().subtract(balance.getCummulativePayment());
 			balance.setAvailableBalance(availableBalance);
 		}
-		
 		
 		balance.setUpdatedBy(Context.getAuthenticatedUser().getId());
 		
@@ -912,62 +897,59 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		
 		dao.saveExpenseBalance(balance);
 	}
-		
+	
 	@Override
-    public void deletePayment(Payment payment) {
+	public void deletePayment(Payment payment) {
 		dao.deletePayment(payment);
-    }
-
+	}
+	
 	@Override
-    public Payment getPayment(Integer id) {
-	    return dao.getPayment(id);
-    }
-
-
+	public Payment getPayment(Integer id) {
+		return dao.getPayment(id);
+	}
+	
 	@Override
-    public List<Account> listAccount(AccountType accType, boolean includeDisabled) {
-	    return dao.getAccounts(accType, includeDisabled);
-    }
-
+	public List<Account> listAccount(AccountType accType, boolean includeDisabled) {
+		return dao.getAccounts(accType, includeDisabled);
+	}
+	
 	@Override
-    public BudgetItem getBudgetItem(Integer accountId, Date date) {
+	public BudgetItem getBudgetItem(Integer accountId, Date date) {
 		Account account = dao.getAccount(accountId);
-		if( account != null ){
+		if (account != null) {
 			return dao.getBudgetItem(date, account);
 			
 		} else {
 			return null;
 		}
 		
-    }
-
+	}
+	
 	@Override
-    public boolean isBudgetItemOverlap(Integer accountId, Date startDate, Date endDate) {
+	public boolean isBudgetItemOverlap(Integer accountId, Date startDate, Date endDate) {
 		if (accountId != null) {
 			Account account = dao.getAccount(accountId);
 			if (account != null) {
 				return dao.isBudgetItemOverlap(account, startDate, endDate);
 			}
 		}
-	    return true;
-    }
-
+		return true;
+	}
+	
 	@Override
-    public Budget getBudgetByName(String name) {
-	    return dao.getBudgetByName(name);
-    }
+	public Budget getBudgetByName(String name) {
+		return dao.getBudgetByName(name);
+	}
 	
 	/**
 	 * Recursive function to get all Concepts for billing
-	 * 
 	 */
 	
 	private void getListConcepts(Set<Integer> conceptIds, Concept concept) {
 		if (concept != null) {
 			ConceptClass conceptClass = concept.getConceptClass();
-			if ( conceptClass.getName().equalsIgnoreCase("Test")
-					        || conceptClass.getName().equalsIgnoreCase("labset")
-					        || conceptClass.getName().equalsIgnoreCase("Procedure")){
+			if (conceptClass.getName().equalsIgnoreCase("Test") || conceptClass.getName().equalsIgnoreCase("labset")
+			        || conceptClass.getName().equalsIgnoreCase("Procedure")) {
 				conceptIds.add(concept.getId());
 			} else {
 				Collection<ConceptAnswer> answers = concept.getAnswers();
@@ -979,17 +961,18 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 				}
 			}
 			
-			
 		}
 	}
+	
 	@Override
-    public void aggregateIncomeReceipt(Date date) throws Exception {
+	public void aggregateIncomeReceipt(Date date) throws Exception {
 		Collection<Account> accounts = getAccounts(false);
 		if (accounts != null && accounts.size() > 0) {
 			
 			// Check if the receipt for the same existed
-			IncomeReceipt receipt = dao.getIncomeReceiptByReceiptNo(AccountingConstants.INCOME_RECEIPT_NO_PREFIX + DateUtils.getStringFromDate(date));
-			if ( receipt == null ) {
+			IncomeReceipt receipt = dao.getIncomeReceiptByReceiptNo(AccountingConstants.INCOME_RECEIPT_NO_PREFIX
+			        + DateUtils.getStringFromDate(date));
+			if (receipt == null) {
 				receipt = new IncomeReceipt();
 				receipt.setCreatedBy(1);
 				receipt.setCreatedDate(date);
@@ -1019,10 +1002,10 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 					Concept concept = Context.getService(ConceptService.class).getConcept(acc.getConceptId());
 					Set<Integer> conceptIds = new HashSet<Integer>();
 					getListConcepts(conceptIds, concept);
-					System.out.println("****************************************** get bill for account : "+acc.getName());
+					System.out.println("****************************************** get bill for account : " + acc.getName());
 					System.out.println(conceptIds);
 					BigDecimal amount = dao.getAggregateBill(conceptIds, date);
-					System.out.println(amount);		
+					System.out.println(amount);
 					
 					/*
 					 * Create Income Receipt (CASH) for each account 
@@ -1031,7 +1014,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 					
 					item.setVoided(false);
 					item.setAccount(acc);
-					item.setAmount(amount == null ? new BigDecimal("0"): amount);
+					item.setAmount(amount == null ? new BigDecimal("0") : amount);
 					item.setType(IncomeReceiptType.CASH);
 					item.setCreatedDate(receipt.getCreatedDate());
 					item.setCreatedBy(receipt.getCreatedBy());
@@ -1050,10 +1033,10 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 				receipt = saveIncomeReceipt(receipt);
 			}
 		}
-    }
-
+	}
+	
 	@Override
-    public FiscalYear closeFiscalYear(Integer id) {
+	public FiscalYear closeFiscalYear(Integer id) {
 		FiscalYear year = dao.getFiscalYear(id);
 		if (year == null) {
 			return null;
@@ -1064,13 +1047,48 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		year.setUpdatedDate(Calendar.getInstance().getTime());
 		return dao.saveFiscalYear(year);
 	}
-
-	@Override
-	public FiscalPeriod closePeriod(Integer curPeriodId, Integer nextPeriodId, boolean resetBalance){
+	
+	public FiscalYear closeFiscalYear(Integer closeYearId, Integer nextYearId, boolean createNewYear) {
+		FiscalYear closeYear = null;
+		
+		if (closeYearId == null) return null;
+		
+		closeYear = closeFiscalYear(closeYearId);
 		Date curDate = Calendar.getInstance().getTime();
-		FiscalPeriod period = dao.getFiscalPeriod(curPeriodId);
-		FiscalPeriod nextPeriod = dao.getFiscalPeriod(nextPeriodId);
-		if (period == null || nextPeriod == null) {
+		
+		int countPeriods = closeYear.getPeriods().size();
+		
+		if (createNewYear) {
+			//TODO create new fiscal year
+			FiscalYear newYear = new FiscalYear();
+			newYear.setCreatedBy(Context.getAuthenticatedUser().getId());
+			newYear.setCreatedDate(curDate);
+			
+		//	newYear = generatePeriods(newYear, countPeriods);
+			
+			dao.saveFiscalYear(newYear);
+			
+		} else {
+			// TODO set next year active
+			FiscalYear nextYear = dao.getFiscalYear(nextYearId);
+			if (nextYear != null) {
+				nextYear.setStatus(GeneralStatus.ACTIVE);
+			}
+		}
+		
+		return null;
+	}
+	
+	
+	@Override
+	public FiscalPeriod closePeriod(Integer curPeriodId, Integer nextPeriodId, boolean resetBalance) {
+		Date curDate = Calendar.getInstance().getTime();
+		FiscalPeriod curPeriod = dao.getFiscalPeriod(curPeriodId);
+		FiscalPeriod nextPeriod = null;
+		if (nextPeriodId != null) {
+			nextPeriod = dao.getFiscalPeriod(nextPeriodId);
+		}
+		if (curPeriod == null) {
 			return null;
 		}
 		
@@ -1078,34 +1096,39 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		 * Close old account balance and create new one
 		 */
 		
-		List<IncomeBalance> balances = dao.listAccountBalance(BalanceStatus.ACTIVE, period);
+		List<IncomeBalance> balances = dao.listAccountBalance(BalanceStatus.ACTIVE, curPeriod);
 		if (balances != null && balances.size() > 0) {
 			for (IncomeBalance balance : balances) {
 				balance.setStatus(BalanceStatus.CLOSED);
-				balance.setStartDate(period.getStartDate());
-				balance.setEndDate(period.getEndDate());
+				balance.setStartDate(curPeriod.getStartDate());
+				balance.setEndDate(curPeriod.getEndDate());
 				balance.setUpdatedBy(Context.getAuthenticatedUser().getId());
 				balance.setUpdatedDate(curDate);
 				balance.setClosingBalance(balance.getAvailableBalance());
-				balance.setPeriod(period);
+				balance.setPeriod(curPeriod);
 				balance = dao.saveAccountBalance(balance);
-				IncomeBalance newBalance = new IncomeBalance();
-				newBalance.setPeriod(nextPeriod);
-				newBalance.setCreatedBy(Context.getAuthenticatedUser().getId());
-				newBalance.setCreatedDate(curDate);
-				newBalance.setStartDate(nextPeriod.getStartDate());
-				newBalance.setAccount(balance.getAccount());
-				newBalance.setStatus(BalanceStatus.ACTIVE);
-				if (!resetBalance) {
-					newBalance.setAvailableBalance(balance.getClosingBalance());
-					newBalance.setLedgerBalance(balance.getClosingBalance());
-					newBalance.setOpeningBalance(balance.getClosingBalance());
+				if (nextPeriod != null) {
+					/*
+					 * This is not the last period 
+					 */
+					IncomeBalance newBalance = new IncomeBalance();
+					newBalance.setPeriod(nextPeriod);
+					newBalance.setCreatedBy(Context.getAuthenticatedUser().getId());
+					newBalance.setCreatedDate(curDate);
+					newBalance.setStartDate(nextPeriod.getStartDate());
+					newBalance.setAccount(balance.getAccount());
+					newBalance.setStatus(BalanceStatus.ACTIVE);
+					if (!resetBalance) {
+						newBalance.setAvailableBalance(balance.getClosingBalance());
+						newBalance.setLedgerBalance(balance.getClosingBalance());
+						newBalance.setOpeningBalance(balance.getClosingBalance());
+					}
+					dao.saveAccountBalance(newBalance);
 				}
-				dao.saveAccountBalance(newBalance);
 			}
 		}
 		
-		List<ExpenseBalance> expBalances = listActiveExpenseBalance(period);
+		List<ExpenseBalance> expBalances = listActiveExpenseBalance(curPeriod);
 		if (expBalances != null && expBalances.size() > 0) {
 			for (ExpenseBalance balance : expBalances) {
 				balance.setStatus(BalanceStatus.CLOSED);
@@ -1113,47 +1136,52 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 				balance.setUpdatedDate(curDate);
 				dao.saveExpenseBalance(balance);
 				
-				ExpenseBalance newBalance = new ExpenseBalance();
-				newBalance.setCreatedBy(Context.getAuthenticatedUser().getId());
-				newBalance.setCreatedDate(curDate);
-				newBalance.setPeriod(nextPeriod);
-				newBalance.setStartDate(nextPeriod.getStartDate());
-				newBalance.setAvailableBalance(balance.getAvailableBalance());
-				newBalance.setCummulativeAIE(balance.getCummulativeAIE());
-				newBalance.setCummulativePayment(balance.getCummulativePayment());
-				newBalance.setAccount(balance.getAccount());
-				newBalance.setStatus(BalanceStatus.ACTIVE);
-				
-				dao.saveExpenseBalance(newBalance);
+				if (nextPeriod != null) {
+					/*
+					 * This is not the last period 
+					 */
+					ExpenseBalance newBalance = new ExpenseBalance();
+					newBalance.setCreatedBy(Context.getAuthenticatedUser().getId());
+					newBalance.setCreatedDate(curDate);
+					newBalance.setPeriod(nextPeriod);
+					newBalance.setStartDate(nextPeriod.getStartDate());
+					newBalance.setAvailableBalance(balance.getAvailableBalance());
+					newBalance.setCummulativeAIE(balance.getCummulativeAIE());
+					newBalance.setCummulativePayment(balance.getCummulativePayment());
+					newBalance.setAccount(balance.getAccount());
+					newBalance.setStatus(BalanceStatus.ACTIVE);
+					
+					dao.saveExpenseBalance(newBalance);
+				}
 				
 			}
 		}
-		period.setStatus(GeneralStatus.CLOSED);
-		period.setUpdatedBy(Context.getAuthenticatedUser().getId());
-		period.setUpdatedDate(curDate);
-		return dao.saveFiscalPeriod(period);
-    }
-
-	@Override
-    public List<IncomeBalance> listActiveAccountBalance() {
-	    return dao.listAccountBalance(BalanceStatus.ACTIVE);
-    }
+		curPeriod.setStatus(GeneralStatus.CLOSED);
+		curPeriod.setUpdatedBy(Context.getAuthenticatedUser().getId());
+		curPeriod.setUpdatedDate(curDate);
+		return dao.saveFiscalPeriod(curPeriod);
+	}
 	
 	@Override
-    public List<ExpenseBalance> listActiveExpenseBalance() {
-	    return dao.listExpenseBalance(BalanceStatus.ACTIVE, null);
-    }
-
+	public List<IncomeBalance> listActiveAccountBalance() {
+		return dao.listAccountBalance(BalanceStatus.ACTIVE);
+	}
+	
 	@Override
-    public List<IncomeBalance> listActiveAccountBalance(FiscalPeriod period) {
-	    return dao.listAccountBalance(BalanceStatus.ACTIVE, period);
-    }
-
+	public List<ExpenseBalance> listActiveExpenseBalance() {
+		return dao.listExpenseBalance(BalanceStatus.ACTIVE, null);
+	}
+	
 	@Override
-    public List<ExpenseBalance> listActiveExpenseBalance(FiscalPeriod period) {
-	    return dao.listExpenseBalance(BalanceStatus.ACTIVE, period);
-    }
-
+	public List<IncomeBalance> listActiveAccountBalance(FiscalPeriod period) {
+		return dao.listAccountBalance(BalanceStatus.ACTIVE, period);
+	}
+	
+	@Override
+	public List<ExpenseBalance> listActiveExpenseBalance(FiscalPeriod period) {
+		return dao.listExpenseBalance(BalanceStatus.ACTIVE, period);
+	}
+	
 	@Override
 	public int countListPaymentsByAccount(Account account) {
 		if (account != null) {
@@ -1161,79 +1189,95 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		} else {
 			return 0;
 		}
-	    
-    }
-
+		
+	}
+	
 	@Override
-    public List<Payment> listPaymentsByAccount(Account account, Integer min, Integer max) {
+	public List<Payment> listPaymentsByAccount(Account account, Integer min, Integer max) {
 		if (account != null) {
-			return dao.listPaymentsByAccount(account,min,max);
+			return dao.listPaymentsByAccount(account, min, max);
 		} else {
 			return null;
 		}
-    }
-
+	}
+	
 	@Override
-    public int countAllPayments() {
-	    return dao.countListPayments();
-    }
-
+	public int countAllPayments() {
+		return dao.countListPayments();
+	}
+	
 	@Override
-    public List<Payment> listAllPayments(int min, int max) {
-	    return dao.listPayments(min, max);
-    }
-
+	public List<Payment> listAllPayments(int min, int max) {
+		return dao.listPayments(min, max);
+	}
+	
 	@Override
-    public Account getAccountByAccountNumber(String accNo) {
+	public Account getAccountByAccountNumber(String accNo) {
 		if (StringUtils.isNotBlank(accNo)) {
 			return dao.getAccountByAccountNumber(accNo);
 		} else {
 			return null;
 		}
-    }
-
+	}
+	
 	@Override
-    public Account getAccountByNameAndType(String name, AccountType type) {
-	    return dao.getAccountByNameAndType(name, type);
-    }
-
+	public Account getAccountByNameAndType(String name, AccountType type) {
+		return dao.getAccountByNameAndType(name, type);
+	}
+	
 	@Override
-    public FiscalPeriod getFiscalPeriodByDate(Date date) {
-	    return dao.getPeriodByDate(date);
-    }
-
+	public FiscalPeriod getFiscalPeriodByDate(Date date) {
+		return dao.getPeriodByDate(date);
+	}
+	
 	@Override
-    public FiscalPeriod getFiscalPeriodByDate(String date) {
+	public FiscalPeriod getFiscalPeriodByDate(String date) {
 		Date d = DateUtils.getDateFromStr(date);
 		return dao.getPeriodByDate(d);
 	}
-
+	
 	@Override
-    public IncomeReceipt getIncomeReceiptByReceiptNo(String receiptNo) {
-	    if (StringUtils.isNotBlank(receiptNo)) {
-	    	return dao.getIncomeReceiptByReceiptNo(receiptNo);
-	    } else return null;
-    }
-
+	public IncomeReceipt getIncomeReceiptByReceiptNo(String receiptNo) {
+		if (StringUtils.isNotBlank(receiptNo)) {
+			return dao.getIncomeReceiptByReceiptNo(receiptNo);
+		} else
+			return null;
+	}
+	
 	@Override
-    public List<IncomeBalance> listActiveAccountBalanceByPeriodId(Integer periodId) {
+	public List<IncomeBalance> listActiveAccountBalanceByPeriodId(Integer periodId) {
 		if (periodId == null) {
 			return null;
 		} else {
 			FiscalPeriod period = dao.getFiscalPeriod(periodId);
 			return listActiveAccountBalance(period);
 		}
-    }
-
+	}
+	
 	@Override
-    public List<ExpenseBalance> listActiveExpenseBalanceByPeriodId(Integer periodId) {
+	public List<ExpenseBalance> listActiveExpenseBalanceByPeriodId(Integer periodId) {
 		if (periodId == null) {
 			return null;
 		} else {
 			FiscalPeriod period = dao.getFiscalPeriod(periodId);
 			return listActiveExpenseBalance(period);
 		}
-    }
-
+	}
 	
+	@Override
+    public Boolean isAllPeriodClosed(Integer fiscalYearId) {
+		FiscalYear year = getFiscalYear(fiscalYearId);
+		if (year == null) return null;
+		
+		List<FiscalPeriod> periods = year.getPeriods();
+		if (periods != null) {
+			for (FiscalPeriod period : periods) {
+				if (!period.isClosed()) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return null;
+    }
 }

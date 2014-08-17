@@ -38,13 +38,20 @@ public class PeriodController {
 	@RequestMapping(value="/module/accounting/closePeriod.htm",method=RequestMethod.POST)
 	public String closePeriodSave(@RequestParam("periodId") Integer periodId, 
 	                              @RequestParam("nextPeriodId") Integer nextPeriodId, 
-	                              @RequestParam("resetBalance") Boolean resetBalance) {
+	                              @RequestParam("resetBalance") Boolean resetBalance,
+	                              Model model) {
 		
 		AccountingService  service = Context.getService(AccountingService.class);
-		service.closePeriod(periodId, nextPeriodId, resetBalance);
 		
+		FiscalPeriod period = service.closePeriod(periodId, nextPeriodId, resetBalance);
+		FiscalYear year = period.getFiscalYear();
+		Boolean isAllPeriodClosed = service.isAllPeriodClosed(year.getId());
 		
-		return "redirect:/module/accounting/period.list";
+		if (isAllPeriodClosed) {
+			return "redirect:/module/accounting/closeFiscalYear.htm?id="+year.getId();
+		} else {
+			return "redirect:/module/accounting/period.list";
+		}
 	}
 	
 	@RequestMapping(value="/module/accounting/closePeriod.htm",method=RequestMethod.GET)

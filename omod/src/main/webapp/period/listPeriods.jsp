@@ -95,10 +95,14 @@
 							<td><openmrs:formatDate date="${period.startDate}" type="textbox" /></td>
 							<td><openmrs:formatDate date="${period.endDate}" type="textbox" /></td>
 							<td>${period.status }</td>
-							<td><input type="button" value="Close" onclick="closePeriod(${period.id})">
+							
+							<td>
+								<c:if test="${!period.closed }">
+								<input type="button" value="Close" onclick="closePeriod(${period.id})">
 								<!--<input type="checkbox" name="ids"
 								value="${period.id}" />
 								-->
+								</c:if>
 							</td>
 						</tr>
 					</c:forEach>

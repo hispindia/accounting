@@ -108,7 +108,7 @@ public class IncomeBalance {
 	}
 	
 	public BigDecimal getOpeningBalance() {
-		return openingBalance;
+		return   openingBalance  == null ? new BigDecimal("0") : openingBalance;
 	}
 	
 	public void setOpeningBalance(BigDecimal openingBalance) {
@@ -116,7 +116,7 @@ public class IncomeBalance {
 	}
 	
 	public BigDecimal getClosingBalance() {
-		return closingBalance;
+		return  closingBalance  == null ? new BigDecimal("0") : closingBalance;
 	}
 	
 	public void setClosingBalance(BigDecimal closingBalance) {
@@ -124,7 +124,7 @@ public class IncomeBalance {
 	}
 	
 	public BigDecimal getLedgerBalance() {
-		return ledgerBalance;
+		return ledgerBalance  == null ? new BigDecimal("0") : ledgerBalance;
 	}
 	
 	public void setLedgerBalance(BigDecimal ledgerBalance) {
@@ -132,7 +132,7 @@ public class IncomeBalance {
 	}
 	
 	public BigDecimal getAvailableBalance() {
-		return availableBalance;
+		return availableBalance == null ? new BigDecimal("0") : availableBalance;
 	}
 	
 	public void setAvailableBalance(BigDecimal availableBalance) {
