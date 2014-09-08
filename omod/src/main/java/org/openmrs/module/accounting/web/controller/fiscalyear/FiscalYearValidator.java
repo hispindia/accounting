@@ -46,9 +46,9 @@ public class FiscalYearValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 */
 	public void validate(Object obj, Errors error) {
-		 FiscalYearCommand command = (FiscalYearCommand) obj;
-		 FiscalYear fiscalYear = command.getFiscalYear();
+		FiscalYear fiscalYear = (FiscalYear) obj;
 		AccountingService accountingService = (AccountingService) Context.getService(AccountingService.class);
+		
 		if (StringUtils.isBlank(fiscalYear.getName())) {
 			error.reject("accounting.name.required");
 		} 
@@ -70,10 +70,11 @@ public class FiscalYearValidator implements Validator {
 		}
 		
 		if (fiscalYear.getId() != null) {
-		
+			// UPDATE
 			if (fiscalYear.getStatus().equals(GeneralStatus.ACTIVE)) {
 				FiscalYear year = accountingService.getActiveFiscalYear() ; 
 				if (year != null && !fiscalYear.getId().equals(year.getId())) {
+					// Only one active fiscal year allow
 					error.reject("accounting.active.exisited");
 				}
 			}
@@ -84,9 +85,12 @@ public class FiscalYearValidator implements Validator {
 			}
 		
 		} else {
+			// ADD NEW
+			
 			if (fiscalYear.getStatus().equals(GeneralStatus.ACTIVE)) {
 				FiscalYear year = accountingService.getActiveFiscalYear() ; 
 				if (year != null ) {
+					// Only one active fiscal year allow
 					error.reject("accounting.active.exisited");
 				}
 			}

@@ -112,6 +112,9 @@ public interface AccountingService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	public Collection<FiscalYear> getListFiscalYear(GeneralStatus status);
 	
+	@Transactional(readOnly = true)
+	public Collection<FiscalYear> getListFutureYear(Date startDate);
+	
 	public void deleteFiscalYear(FiscalYear fiscalYear);
 	
 	@Transactional(readOnly = true)

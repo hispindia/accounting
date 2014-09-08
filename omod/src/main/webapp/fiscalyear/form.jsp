@@ -210,6 +210,9 @@
 </spring:bind>
 <form:form commandName="command"  method="post" cssClass="box" id="mainForm">
 <input type="hidden" id="jsonPeriods" name="jsonPeriods" />
+<spring:bind path="fiscalYear.id">
+<input type="hidden" name="${status.expression}" value="${status.value}"/>
+</spring:bind>
 	<table>
 		<tr>
 			<td><spring:message code="general.name" /></td>
@@ -271,11 +274,11 @@
 		<thead><td>Period Name</td><td>Start Date</td>	<td>End Date</td></thead>
 		<tbody>
 			<c:if test="${ not empty command.fiscalYear.periods  }">
-				<c:forEach items="${command.fiscalYear.periods }" var="p">
+				<c:forEach items="${command.fiscalYear.periods }" var="p" varStatus="varStatus">
 					<tr>
-						<td>${p.name }</td>
-						<td><openmrs:formatDate date="${p.startDate}" type="textbox" /></td>
-						<td><openmrs:formatDate date="${p.endDate}" type="textbox" /></td>
+						<td><input type='hidden' name='periods[${varStatus.index}].name' value='${p.name}'/>${p.name }</td>
+						<td><input type='hidden' name='periods[${varStatus.index}].startDate' value='<openmrs:formatDate date="${p.startDate}" type="textbox" />'/><openmrs:formatDate date="${p.startDate}" type="textbox" /></td>
+						<td><input type='hidden' name='periods[${varStatus.index}].endDate' value='<openmrs:formatDate date="${p.endDate}" type="textbox" />'/><openmrs:formatDate date="${p.endDate}" type="textbox" /></td>
 					</tr>
 				</c:forEach>
 			</c:if>

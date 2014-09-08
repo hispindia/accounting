@@ -1074,6 +1074,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			if (nextYear != null) {
 				nextYear.setStatus(GeneralStatus.ACTIVE);
 			}
+			dao.saveFiscalYear(nextYear);
 		}
 		
 		return null;
@@ -1279,5 +1280,10 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			return true;
 		}
 		return null;
+    }
+
+	@Override
+    public Collection<FiscalYear> getListFutureYear(Date startDate) {
+	    return dao.getListFutureYear(startDate);
     }
 }

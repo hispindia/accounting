@@ -42,7 +42,7 @@
 	</tr>
 	<tr>
 		<td>End Date</td>
-		<td><openmrs:formatDate date="${fiscalYear.startDate}" type="textbox" /></td>
+		<td><openmrs:formatDate date="${fiscalYear.endDate}" type="textbox" /></td>
 	</tr>
 	<c:choose>
 	<c:when test="${hasNextYear}">
@@ -57,24 +57,73 @@
 			</select>
 		</td>
 	</tr>
+		<input type="submit" value="Submit"/>
 	</c:when>
 	<c:otherwise>
-		<tr>
-			<td>Auto create next year</td>
-			<td>Yes <input type="radio" name="createNextYear" value="y"> 
-				No  <input type="radio" name="createNextYear" value="n">
-			</td>
-		</tr>
+	<tr><td colspan="2">	<span class="error">Please create next Fiscal Year.</span></td></tr>
 	</c:otherwise>
 	</c:choose>
-	<input type="submit" value="Submit"/>
+
 </table>
 
 
 
 </form>
 
+
+
 </c:otherwise>
 </c:choose>
+<br/>
+<span class="boxHeader">List Periods</span>
+<div class="box">
+<table cellpadding="5" cellspacing="0">
+	<tr>
+		<th>#</th>
+		<th><spring:message code="general.name" />
+		</th>
+		<th><spring:message code="accounting.startDate" />
+		</th>
+		<th><spring:message code="accounting.endDate" />
+		</th>
+		<th>Status</th>
+		<th></th>
+	</tr>
+	<c:forEach items="${fiscalYear.periods}" var="period"
+		varStatus="varStatus">
+		<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" } '>
+			<td><c:out
+					value="${(( pagingUtil.currentPage - 1  ) * pagingUtil.pageSize ) + varStatus.count }" />
+			</td>
+			<td>${period.name}</td>
+			<td><openmrs:formatDate date="${period.startDate}" type="textbox" /></td>
+			<td><openmrs:formatDate date="${period.endDate}" type="textbox" /></td>
+			<td>${period.status }</td>
+			
+			<td>
+				<c:if test="${!period.closed }">
+				<input type="button" value="Close" onclick="closePeriod(${period.id})">
+				<!--<input type="checkbox" name="ids"
+				value="${period.id}" />
+				-->
+				</c:if>
+			</td>
+		</tr>
+	</c:forEach>
+	</form>
+	<tr class="paging-container">
+		<td colspan="7"><%@ include file="../paging.jsp"%></td>
+	</tr>
+</table>
+</div>
 
+
+<script>
+			
+function closePeriod(id) {
+	if (confirm("Are you sure to close this period? You will not be able to add or edit any transaction within a closed period.")) {
+		window.location.href = "closePeriod.htm?periodId="+id;
+	}
+}
+</script>
 <%@ include file="/WEB-INF/template/footer.jsp"%>

@@ -28,22 +28,44 @@
 <h2>
 	<spring:message code="accounting.fiscalperiod.close" />
 </h2>
+
+<script>
+	function selectYear(this_) {
+		var year  = jQuery(this_).val();
+		jQuery("#periodContainer").load("getPeriods.htm?yearId="+year);
+	}
+</script>
 <form method="post" class="box">
 <table>
 	<tr>
 		<td>Close Period</td>
 		<td>  ${period.name }</td>		
 	</tr>
+	
+	
 	<tr>
 		<td>Next Period</td>
+		<c:choose>
+		<c:when test="${isLastPeriod}">
+		Year: <select onclick="selectYear(this)">
+				<c:forEach items="${listYears }" var="y">
+						<option value="${y.id}" >${y.name }</option>
+				</c:forEach>
+				</select>
+		Period: <div id="periodContainer"></div>
+		</c:when>
+		<c:otherwise>
 		<td>
-			<select name="nextPeriodId">
+			
+			 <select name="nextPeriodId">
 				<option value="">--Select Next Period---</option>
 				<c:forEach items="${listPeriods}" var="p">
 					<option value="${p.id}" >${p.name }</option>
 				</c:forEach>
 			</select>
 		</td>
+		</c:otherwise>
+		</c:choose>
 	</tr>
 	<tr>
 		<td>Reset Balance to zero?</td>

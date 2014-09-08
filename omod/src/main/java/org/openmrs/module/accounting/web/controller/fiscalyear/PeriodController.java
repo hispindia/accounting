@@ -54,6 +54,25 @@ public class PeriodController {
 		}
 	}
 	
+	@RequestMapping(value="/module/accounting/getPeriods.htm",method=RequestMethod.GET)
+	public String getPeriods(@RequestParam("yearId") Integer yearId, Model model) {
+		
+		if (yearId == null) {
+			return null;
+		}
+		
+		AccountingService  service = Context.getService(AccountingService.class);
+		FiscalYear year = service.getFiscalYear(yearId);
+		if (year != null) {
+			List<FiscalPeriod> periods = year.getPeriods();
+			if (periods != null && periods.size() > 0) {
+				model.addAttribute("listPeriods",periods);
+			}
+		}
+		
+		return "/module/accounting/period/ajaxListPeriod";
+	}
+	
 	@RequestMapping(value="/module/accounting/closePeriod.htm",method=RequestMethod.GET)
 	public String closePeriodView(@RequestParam("periodId") Integer periodId ,Model model) {
 		if (periodId == null) {
@@ -64,6 +83,7 @@ public class PeriodController {
 			List<IncomeBalance> accBalances = service.listActiveAccountBalance(period);
 			List<ExpenseBalance> expBalances = service.listActiveExpenseBalance(period);
 			
+			boolean isLastPeriod = true;
 			List<FiscalPeriod> periods = period.getFiscalYear().getPeriods();
 			Iterator<FiscalPeriod> itr = periods.iterator();
 			while (itr.hasNext()) {
@@ -71,8 +91,17 @@ public class PeriodController {
 				if (p.getStatus().equals(GeneralStatus.CLOSED)) {
 					itr.remove();
 				}
+				
+				if (p.getStatus().equals(GeneralStatus.ACTIVE)) {
+					isLastPeriod = false;
+				}
+				
 			}
 			periods.remove(period);
+			
+			if (isLastPeriod) {
+				model.addAttribute("isLastPeriod",true);
+			}
 			
 			model.addAttribute("period",period);
 			model.addAttribute("listPeriods",periods);

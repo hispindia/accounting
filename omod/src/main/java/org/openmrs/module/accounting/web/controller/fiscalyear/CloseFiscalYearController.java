@@ -27,6 +27,7 @@ public class CloseFiscalYearController {
 		AccountingService service = Context.getService(AccountingService.class);
 		if(id != null) {
 			FiscalYear fiscalYear = service.getFiscalYear(id);
+			model.addAttribute("fiscalYear",fiscalYear);
 			// get all open periods of this fiscalYear
 			List<FiscalPeriod> periods = fiscalYear.getPeriods();
 			for( FiscalPeriod period : periods) {
@@ -37,9 +38,9 @@ public class CloseFiscalYearController {
 			}
 			
 			// All Periods are closed, can proceed to close this FiscalYear
-			model.addAttribute("fiscalYear",fiscalYear);
+		
 			
-			Collection<FiscalYear> years = Context.getService(AccountingService.class).getListFiscalYear(GeneralStatus.INACTIVE);
+			Collection<FiscalYear> years = service.getListFutureYear(fiscalYear.getEndDate());
 			years.remove(fiscalYear);
 			
 			if (years.isEmpty()) {
@@ -50,7 +51,7 @@ public class CloseFiscalYearController {
 			
 			return "/module/accounting/fiscalyear/closeFiscalYear";
 		} else {
-			
+		
 			return "/module/accounting/fiscalyear/closeFiscalYear";
 		}
 	}
@@ -60,6 +61,8 @@ public class CloseFiscalYearController {
 	                   @RequestParam(value = "nextYearId", required = false) Integer nextYearId,
 	                   @RequestParam(value = "closeYearId", required = false) Integer closeYearId) {
 	
+		
+		
 		AccountingService service = Context.getService(AccountingService.class);
 		
 		service.closeFiscalYear(closeYearId,nextYearId,createNextYear);

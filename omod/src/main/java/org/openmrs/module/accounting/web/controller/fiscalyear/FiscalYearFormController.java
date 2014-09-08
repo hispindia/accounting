@@ -2,7 +2,6 @@ package org.openmrs.module.accounting.web.controller.fiscalyear;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -23,12 +22,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 
 @Controller
 @RequestMapping("/module/accounting/fiscalyear.form")
-@SessionAttributes("command")
+//@SessionAttributes("command")
 public class FiscalYearFormController {
 	
 	Log log = LogFactory.getLog(getClass());
@@ -64,7 +62,7 @@ public class FiscalYearFormController {
 	public String onSubmit(@ModelAttribute("command") FiscalYearCommand fiscalYearCommand, BindingResult bindingResult,
 	                      HttpServletRequest request, SessionStatus status) {
 		
-		new FiscalYearValidator().validate(fiscalYearCommand, bindingResult);
+		new FiscalYearValidator().validate(fiscalYearCommand.getFiscalYear(), bindingResult);
 		if (bindingResult.hasErrors()) {
 			return "/module/accounting/fiscalyear/form";
 		}
@@ -72,6 +70,7 @@ public class FiscalYearFormController {
 		AccountingService accountingService = Context.getService(AccountingService.class);
 		FiscalYear year = fiscalYearCommand.getFiscalYear();
 		if (year.getId() == null ) {
+			// Add new FiscalYear
 			Date curDate = Calendar.getInstance().getTime();
 			year.setCreatedDate(curDate);
 			year.setCreatedBy(Context.getAuthenticatedUser().getId());
@@ -84,8 +83,12 @@ public class FiscalYearFormController {
 			}
 			 accountingService.saveFiscalYear(year);
 		} else {
+			// Update Fiscal Year
 			FiscalYear persistedYear = accountingService.getFiscalYear(year.getId());
-		
+			persistedYear.setName(year.getName());
+			persistedYear.setStartDate(year.getStartDate());
+			persistedYear.setEndDate(year.getEndDate());
+			persistedYear.setStatus(year.getStatus());
 			persistedYear.getPeriods().clear();
 			for (FiscalPeriod period : fiscalYearCommand.getPeriods()) {
 				period.setFiscalYear(persistedYear);
@@ -96,9 +99,7 @@ public class FiscalYearFormController {
 			}
 			persistedYear.setUpdatedBy(Context.getAuthenticatedUser().getId());
 			persistedYear.setUpdatedDate(Calendar.getInstance().getTime());
-			
 			accountingService.saveFiscalYear(persistedYear);
-			 
 		}
 		
 		
