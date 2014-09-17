@@ -33,7 +33,7 @@
 	Please close all Fiscal Periods of this year before proceed.
 </c:when>
 <c:otherwise>
-<form class="box">
+<form class="box" method="post">
 <input type="hidden" name="closeYearId" value="${fiscalYear.id }"/>
 <table>
 	<tr>
@@ -49,7 +49,7 @@
 	<tr>
 		<td>Next Fiscal Year</td>
 		<td>
-			<select name="nextFiscalYearId">
+			<select name="nextYearId">
 				<option value="">--Select Next Year---</option>
 				<c:forEach items="${listFiscalYear}" var="y">
 					<option value="${y.id}" >${y.name}</option>

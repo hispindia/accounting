@@ -97,7 +97,7 @@
 				
 				//quarterNo = (Math.floor((pStartDate.getMonth() + 3) / 3)) ;
 				
-				name = "Quarter " + quarterNo + " - " + nextStartDate.getFullYear();
+				name = "Quarter " + quarterNo + " - " + pStartDate.getFullYear();
 				
 				if (pEndDate >= yearEndDate){
 					pEndDate = new Date(yearEndDate.getTime());

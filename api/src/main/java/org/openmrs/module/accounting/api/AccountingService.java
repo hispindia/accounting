@@ -131,7 +131,7 @@ public interface AccountingService extends OpenmrsService {
 	
 	public FiscalYear closeFiscalYear(Integer id);
 	
-	public FiscalYear closeFiscalYear(Integer closeYear, Integer nextYear, boolean createNewYear) ;
+	public FiscalYear closeFiscalYear(Integer closeYear, Integer nextYear) ;
 	
 	@Transactional(readOnly = true)
 	public FiscalPeriod getFiscalPeriodByDate(Date date);

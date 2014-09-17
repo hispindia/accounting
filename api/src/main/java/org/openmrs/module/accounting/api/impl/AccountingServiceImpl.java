@@ -1041,14 +1041,14 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		if (year == null) {
 			return null;
 		}
-		
+		log.debug("close fiscal year: "+year);
 		year.setStatus(GeneralStatus.CLOSED);
 		year.setUpdatedBy(Context.getAuthenticatedUser().getId());
 		year.setUpdatedDate(Calendar.getInstance().getTime());
 		return dao.saveFiscalYear(year);
 	}
 	
-	public FiscalYear closeFiscalYear(Integer closeYearId, Integer nextYearId, boolean createNewYear) {
+	public FiscalYear closeFiscalYear(Integer closeYearId, Integer nextYearId) {
 		FiscalYear closeYear = null;
 		
 		if (closeYearId == null) return null;
@@ -1056,26 +1056,26 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		closeYear = closeFiscalYear(closeYearId);
 		Date curDate = Calendar.getInstance().getTime();
 		
-		int countPeriods = closeYear.getPeriods().size();
+//		int countPeriods = closeYear.getPeriods().size();
 		
-		if (createNewYear) {
-			//TODO create new fiscal year
-			FiscalYear newYear = new FiscalYear();
-			newYear.setCreatedBy(Context.getAuthenticatedUser().getId());
-			newYear.setCreatedDate(curDate);
-			
-		//	newYear = generatePeriods(newYear, countPeriods);
-			
-			dao.saveFiscalYear(newYear);
-			
-		} else {
+//		if (createNewYear) {
+//			//TODO create new fiscal year
+//			FiscalYear newYear = new FiscalYear();
+//			newYear.setCreatedBy(Context.getAuthenticatedUser().getId());
+//			newYear.setCreatedDate(curDate);
+//			
+//		//	newYear = generatePeriods(newYear, countPeriods);
+//			
+//			dao.saveFiscalYear(newYear);
+//			
+//		} else {
 			// TODO set next year active
 			FiscalYear nextYear = dao.getFiscalYear(nextYearId);
 			if (nextYear != null) {
 				nextYear.setStatus(GeneralStatus.ACTIVE);
 			}
 			dao.saveFiscalYear(nextYear);
-		}
+//		}
 		
 		return null;
 	}

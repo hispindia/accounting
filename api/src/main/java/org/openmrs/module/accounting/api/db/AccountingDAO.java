@@ -324,7 +324,7 @@ public class AccountingDAO {
 	public List<FiscalYear> getListFutureYear(Date startDate) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(FiscalYear.class);
 		criteria.add(Restrictions.eq("status", GeneralStatus.INACTIVE))
-		.add(Restrictions.ne("status", GeneralStatus.DELETED))
+//		.add(Restrictions.ne("status", GeneralStatus.DELETED))
 		.add(Restrictions.gt("startDate", startDate));
 		criteria.addOrder(Order.desc("endDate"));
 		return criteria.list();

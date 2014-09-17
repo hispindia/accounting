@@ -3,6 +3,8 @@ package org.openmrs.module.accounting.web.controller.fiscalyear;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
@@ -18,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/module/accounting/closeFiscalYear.htm")
 public class CloseFiscalYearController {
 	
-	
+	Log log = LogFactory.getLog(getClass());
 	
 	@RequestMapping(method=RequestMethod.GET)
 	public String view(@RequestParam(value = "id", required = false) Integer id,
@@ -41,33 +43,34 @@ public class CloseFiscalYearController {
 		
 			
 			Collection<FiscalYear> years = service.getListFutureYear(fiscalYear.getEndDate());
-			years.remove(fiscalYear);
 			
 			if (years.isEmpty()) {
-				model.addAttribute("noNextYear",true);
+				model.addAttribute("hasNextYear",false);
+			} else {
+				model.addAttribute("hasNextYear",true);
+				model.addAttribute("listFiscalYear",years);
 			}
 			
-			model.addAttribute("listFiscalYear",years);
 			
 			return "/module/accounting/fiscalyear/closeFiscalYear";
 		} else {
-		
-			return "/module/accounting/fiscalyear/closeFiscalYear";
+			return "/module/accounting/fiscalyear/closeFiscalYear"; 
 		}
 	}
 	
 	@RequestMapping(method=RequestMethod.POST)
-	public String post(@RequestParam(value = "createNextYear", required = false) Boolean createNextYear,
+	public String post(
 	                   @RequestParam(value = "nextYearId", required = false) Integer nextYearId,
 	                   @RequestParam(value = "closeYearId", required = false) Integer closeYearId) {
 	
-		
+		log.debug("nextYearId: "+nextYearId);
+		log.debug("closeYearId: "+closeYearId);
 		
 		AccountingService service = Context.getService(AccountingService.class);
 		
-		service.closeFiscalYear(closeYearId,nextYearId,createNextYear);
+		service.closeFiscalYear(closeYearId,nextYearId);
 		
-		return "/module/accounting/fiscalyear/list";
+		return "redirect:/module/accounting/fiscalyear.list";
 	
 	}
 }
