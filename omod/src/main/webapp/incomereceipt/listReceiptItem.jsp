@@ -7,7 +7,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
-
+7
  *  Billing module is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -40,7 +40,7 @@
 </h2>
 
 <br /><br />
-Filter by Account: <select onselect="selectAccount(this)">
+Filter by Account: <select onchange="selectAccount(this)">
  <option>--Select Account--</option>
  <c:forEach items="${accounts }" var="account">
  	<option value="${account.id }" <c:if test="${selectedAccount == account.id }">selected="selected"</c:if> >${account.name }</option>
