@@ -12,7 +12,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.AccountingService;
+import org.openmrs.module.accounting.api.model.Account;
+import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.IncomeReceipt;
+import org.openmrs.module.accounting.api.model.IncomeReceiptItem;
 import org.openmrs.web.WebConstants;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,23 +30,36 @@ public class IncomeReceiptListController {
 	@RequestMapping(method=RequestMethod.GET)
 	public String fistView(@RequestParam(value="pageSize",required=false)  Integer pageSize, 
 	                         @RequestParam(value="currentPage",required=false)  Integer currentPage,
+	                         @RequestParam(value="accountId",required=false)  Integer accountId,
 	                         Map<String, Object> model, HttpServletRequest request){
-		
-    	List<IncomeReceipt> incomeReceipts = Context.getService(AccountingService.class).getListIncomeReceipt(true);
-    	Collections.sort(incomeReceipts, new Comparator<IncomeReceipt>() {
-            public int compare(IncomeReceipt o1, IncomeReceipt o2) {
-	            return o1.getReceiptDate().compareTo(o2.getReceiptDate());
-            }});
+		AccountingService accountingService = Context.getService(AccountingService.class);
+    	List<IncomeReceipt> incomeReceipts  =  accountingService.getListIncomeReceipt(true);
+    	if ( incomeReceipts != null ) {
+    		Collections.sort(incomeReceipts, new Comparator<IncomeReceipt>() {
+                public int compare(IncomeReceipt o1, IncomeReceipt o2) {
+    	            return o1.getReceiptDate().compareTo(o2.getReceiptDate());
+                }});
+    		model.put("incomeReceipts", incomeReceipts );
+    	}
+    	List<Account> accounts = accountingService.listAccount(AccountType.INCOME, false);
+		model.put("accounts", accounts);
+    	
+    	
+    	
 //		int total = accountingService.countListAmbulance();
 //		
 //		PagingUtil pagingUtil = new PagingUtil( RequestUtil.getCurrentLink(request) , pageSize, currentPage, total );
 //		
 //		List<Ambulance> ambulances = accountingService.listAmbulance(pagingUtil.getStartPos(), pagingUtil.getPageSize());
 //		
-		model.put("incomeReceipts", incomeReceipts );
+		
 //		
 //		model.put("pagingUtil", pagingUtil);
 //		
+    	
+		
+		
+		
 		return "/module/accounting/incomereceipt/list";
 	}
 	

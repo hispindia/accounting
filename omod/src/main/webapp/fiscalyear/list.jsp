@@ -85,9 +85,12 @@
 							<td><openmrs:formatDate date="${fiscalyear.startDate}" type="textbox" /></td>
 							<td><openmrs:formatDate date="${fiscalyear.endDate}" type="textbox" /></td>
 							<td>${fiscalyear.status }</td>
-							<td><input type="checkbox" name="ids"
+							<td>	<input type="checkbox" name="ids"
 								value="${fiscalyear.id}" />
+							<c:if test="${!fiscalyear.closed }">
+						
 								<input type="button" value="Close" onclick="closeYear(${fiscalyear.id})"/>
+							</c:if>
 							</td>
 						</tr>
 					</c:forEach>

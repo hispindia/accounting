@@ -390,6 +390,15 @@ public class AccountingDAO {
 	}
 	
 	@SuppressWarnings("unchecked")
+	public List<IncomeReceipt> getListIncomeReceiptByAccount(Account account, boolean includeVoided) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(IncomeReceipt.class);
+		if (!includeVoided)
+			criteria.add(Restrictions.eq("voided", false));
+		criteria.add(Restrictions.eq("account", account));
+		return criteria.list();
+	}
+	
+	@SuppressWarnings("unchecked")
 	public List<IncomeReceipt> getListIncomeReceiptByDate(String startDate, String endDate, boolean includeVoided) {
 		Date dStartDate = DateUtils.getDateFromStr(startDate);
 		Date dEndDate = DateUtils.getDateFromStr(endDate);

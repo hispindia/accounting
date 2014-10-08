@@ -40,10 +40,10 @@
 </h2>
 
 <br /><br />
-List by Account: <select onchange="selectAccount(this)">
+Filter by Account: <select onselect="selectAccount(this)">
  <option>--Select Account--</option>
  <c:forEach items="${accounts }" var="account">
- 	<option value="${account.id }">${account.name }</option>
+ 	<option value="${account.id }" <c:if test="${selectedAccount == account.id }">selected="selected"</c:if> >${account.name }</option>
  </c:forEach>
 </select>
 
@@ -62,11 +62,7 @@ List by Account: <select onchange="selectAccount(this)">
 <c:choose>
 	<c:when test="${not empty incomeReceipts}">
 		<form method="post" onsubmit="return false" id="form">
-			<input type="button"
-	value="<spring:message code='accounting.incomereceipt.add'/>"
-	onclick="javascript:window.location.href='incomereceipt.form'" />
-			<input type="button" onclick="checkValue()"
-				value="<spring:message code='accounting.account.deleteselected'/>" />
+			
 			<span class="boxHeader"><spring:message
 					code="accounting.incomeReceipt.list" />
 			</span>
@@ -84,10 +80,9 @@ List by Account: <select onchange="selectAccount(this)">
 							<td><c:out
 									value="${(( pagingUtil.currentPage - 1  ) * pagingUtil.pageSize ) + varStatus.count }" />
 							</td>
-							<td><a href="javascript:window.location.href='incomereceipt.form?id=${incomeReceipt.id}'"> ${incomeReceipt.receiptNo }</a></td>
-							<td><openmrs:formatDate date="${incomeReceipt.receiptDate}" type="textbox" /></td>
-							<td><input type="checkbox" name="ids"
-								value="${incomeReceipt.id}" />
+							<td><a href="javascript:window.location.href='incomereceipt.form?id=${incomeReceipt.receipt.id}'"> ${incomeReceipt.receipt.receiptNo }</a></td>
+							<td><openmrs:formatDate date="${incomeReceipt.transactionDate}" type="textbox" /></td>
+							<td>
 							</td>
 						</tr>
 					</c:forEach>
@@ -97,17 +92,7 @@ List by Account: <select onchange="selectAccount(this)">
 					</tr>
 				</table>
 			</div>
-			<script>
-function checkValue()
-{
-	var form = jQuery("#form");
-	if( jQuery("input[type='checkbox']:checked",form).length > 0 ) 
-		form.submit();
-	else{
-		alert("Please choose items for deleting");
-		return false;
-	}
-}</script>
+			
 	</c:when>
 	<c:otherwise>
 No Account found.

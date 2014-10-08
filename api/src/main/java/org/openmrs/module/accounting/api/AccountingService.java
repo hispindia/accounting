@@ -195,6 +195,8 @@ public interface AccountingService extends OpenmrsService {
 	
 	public List<IncomeReceiptItem> getListIncomeReceiptItemByAccount(Account acc);
 	
+	public List<IncomeReceiptItem> getListIncomeReceiptItemByAccount(int  accId);
+	
 	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
 	public void voidIncomeReceiptItem(Integer id) throws Exception;
 	

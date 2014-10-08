@@ -232,4 +232,9 @@ public class FiscalYear {
     	} 
     	periods.add(period);
     }
+    
+    public boolean getClosed(){
+    	return GeneralStatus.CLOSED.equals(this.status);
+    }
+    
 }

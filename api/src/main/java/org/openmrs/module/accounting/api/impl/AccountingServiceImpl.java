@@ -260,6 +260,9 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			incomeReceiptItem.setCreatedBy(Context.getAuthenticatedUser().getId());
 			incomeReceiptItem.setCreatedDate(Calendar.getInstance().getTime());
 			
+			/** TransactionDate = receiptDate */
+			incomeReceiptItem.setTransactionDate(incomeReceiptItem.getReceipt().getReceiptDate());
+			
 			/** Add Account Transaction **/
 			AccountTransaction accTxn = addAccountTransaction(incomeReceiptItem);
 			
@@ -1286,4 +1289,14 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
     public Collection<FiscalYear> getListFutureYear(Date startDate) {
 	    return dao.getListFutureYear(startDate);
     }
+
+	@Override
+    public List<IncomeReceiptItem> getListIncomeReceiptItemByAccount(int accountId) {
+	    Account account = dao.getAccount(accountId);
+	    if ( account != null ) {
+	    	return dao.getListIncomeReceiptItemByAccount(account);
+	    } 
+		return null;
+    }
+
 }
