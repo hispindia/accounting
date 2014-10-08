@@ -28,6 +28,22 @@
 		<url>https://svn.openmrs.org/openmrs-modules/accounting/trunk/</url>
 	</scm>
 
+	<distributionManagement>
+        <!-- use the following if you're not using a snapshot version. -->
+            <repository>
+                <id>shimla-nexus</id>
+                <name>Shimla nexus repo</name>
+                <url>http://hospdev.hispindia.org/nexus/content/repositories/releases/</url>
+            </repository>
+        <!-- use the following if you ARE using a snapshot version. -->
+            <snapshotRepository>
+                <id>shimla-nexus</id>
+                <name>Shimla nexus repo</name>
+                <url>http://hospdev.hispindia.org/nexus/content/repositories/snapshots/</url>
+                <uniqueVersion>false</uniqueVersion>
+             </snapshotRepository>
+        </distributionManagement>
+	
 	<modules>
 		<module>api</module>
 		<module>omod</module>
