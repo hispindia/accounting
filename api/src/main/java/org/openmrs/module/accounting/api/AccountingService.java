@@ -172,6 +172,10 @@ public interface AccountingService extends OpenmrsService {
 	
 	public List<IncomeReceipt> getListIncomeReceipt(boolean includeVoided);
 	
+	public List<IncomeReceipt> getListIncomeReceipt(boolean includeVoided, int start, int end);
+	
+	public int countListIncomeReceipt(boolean includeVoided);
+	
 	public List<IncomeReceipt> getListIncomeReceiptByDate(String startDate, String endDate, boolean includeVoided);
 	
 	public void delete(IncomeReceipt incomeReceipt);

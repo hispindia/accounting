@@ -1299,4 +1299,14 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		return null;
     }
 
+	@Override
+    public int countListIncomeReceipt(boolean includeVoided) {
+	    return dao.countListIncomeReceipt(includeVoided);
+    }
+
+	@Override
+    public List<IncomeReceipt> getListIncomeReceipt(boolean includeVoided, int start, int end) {
+	    return dao.getListIncomeReceipt(includeVoided, start, end);
+    }
+
 }

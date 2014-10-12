@@ -15,7 +15,8 @@ import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.IncomeReceipt;
-import org.openmrs.module.accounting.api.model.IncomeReceiptItem;
+import org.openmrs.module.hospitalcore.util.PagingUtil;
+import org.openmrs.module.hospitalcore.util.RequestUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,33 +34,24 @@ public class IncomeReceiptListController {
 	                         @RequestParam(value="accountId",required=false)  Integer accountId,
 	                         Map<String, Object> model, HttpServletRequest request){
 		AccountingService accountingService = Context.getService(AccountingService.class);
-    	List<IncomeReceipt> incomeReceipts  =  accountingService.getListIncomeReceipt(true);
+		
+
+		int total = accountingService.countListIncomeReceipt(true);
+		
+		PagingUtil pagingUtil = new PagingUtil( RequestUtil.getCurrentLink(request) , pageSize, currentPage, total );
+		
+    	List<IncomeReceipt> incomeReceipts  =  accountingService.getListIncomeReceipt(true,pagingUtil.getStartPos(), pagingUtil.getPageSize());
     	if ( incomeReceipts != null ) {
     		Collections.sort(incomeReceipts, new Comparator<IncomeReceipt>() {
                 public int compare(IncomeReceipt o1, IncomeReceipt o2) {
     	            return o1.getReceiptDate().compareTo(o2.getReceiptDate());
                 }});
     		model.put("incomeReceipts", incomeReceipts );
+    		model.put("pagingUtil", pagingUtil);
     	}
+
     	List<Account> accounts = accountingService.listAccount(AccountType.INCOME, false);
 		model.put("accounts", accounts);
-    	
-    	
-    	
-//		int total = accountingService.countListAmbulance();
-//		
-//		PagingUtil pagingUtil = new PagingUtil( RequestUtil.getCurrentLink(request) , pageSize, currentPage, total );
-//		
-//		List<Ambulance> ambulances = accountingService.listAmbulance(pagingUtil.getStartPos(), pagingUtil.getPageSize());
-//		
-		
-//		
-//		model.put("pagingUtil", pagingUtil);
-//		
-    	
-		
-		
-		
 		return "/module/accounting/incomereceipt/list";
 	}
 	

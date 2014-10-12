@@ -28,6 +28,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projection;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.db.DAOException;
@@ -387,6 +388,26 @@ public class AccountingDAO {
 		if (!includeVoided)
 			criteria.add(Restrictions.eq("voided", false));
 		return criteria.list();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<IncomeReceipt> getListIncomeReceipt(boolean includeVoided, int start, int end) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(IncomeReceipt.class);
+		if (!includeVoided)
+			criteria.add(Restrictions.eq("voided", false));
+		
+		criteria.setFirstResult(start).setMaxResults(end);
+		return criteria.list();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public int countListIncomeReceipt(boolean includeVoided) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(IncomeReceipt.class);
+		if (!includeVoided)
+			criteria.add(Restrictions.eq("voided", false));
+		Number rs = (Number) criteria.setProjection(Projections.rowCount())
+				.uniqueResult();
+		return rs != null ? rs.intValue() : 0;
 	}
 	
 	@SuppressWarnings("unchecked")

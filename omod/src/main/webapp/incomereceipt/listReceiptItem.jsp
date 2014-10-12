@@ -7,7 +7,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
-7
+
  *  Billing module is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -62,7 +62,9 @@ Filter by Account: <select onchange="selectAccount(this)">
 <c:choose>
 	<c:when test="${not empty incomeReceipts}">
 		<form method="post" onsubmit="return false" id="form">
-			
+					<input type="button"
+	value="<spring:message code='accounting.incomereceipt.add'/>"
+	onclick="javascript:window.location.href='incomereceipt.form'" />
 			<span class="boxHeader"><spring:message
 					code="accounting.incomeReceipt.list" />
 			</span>
