@@ -1075,7 +1075,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			// TODO set next year active
 			FiscalYear nextYear = dao.getFiscalYear(nextYearId);
 			if (nextYear != null) {
-				nextYear.setStatus(GeneralStatus.ACTIVE);
+				nextYear.setStatus(GeneralStatus.OPEN);
 			}
 			dao.saveFiscalYear(nextYear);
 //		}

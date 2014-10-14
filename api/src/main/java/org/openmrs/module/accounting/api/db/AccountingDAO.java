@@ -14,6 +14,7 @@
 package org.openmrs.module.accounting.api.db;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -324,7 +325,7 @@ public class AccountingDAO {
 	
 	public List<FiscalYear> getListFutureYear(Date startDate) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(FiscalYear.class);
-		criteria.add(Restrictions.eq("status", GeneralStatus.INACTIVE))
+		criteria.add(Restrictions.eq("status", GeneralStatus.OPEN))
 //		.add(Restrictions.ne("status", GeneralStatus.DELETED))
 		.add(Restrictions.gt("startDate", startDate));
 		criteria.addOrder(Order.desc("endDate"));
@@ -505,7 +506,8 @@ public class AccountingDAO {
 	
 	public FiscalYear getActiveFicalYear() {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(FiscalYear.class);
-		criteria.add(Restrictions.eq("status", GeneralStatus.ACTIVE));
+		Date curDate = Calendar.getInstance().getTime();
+		criteria.add(Restrictions.and(Restrictions.le("startDate", curDate), Restrictions.ge("endDate",curDate)));
 		return (FiscalYear) criteria.uniqueResult();
 	}
 	

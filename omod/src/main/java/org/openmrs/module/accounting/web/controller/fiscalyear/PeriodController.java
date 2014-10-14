@@ -92,7 +92,7 @@ public class PeriodController {
 					itr.remove();
 				}
 				
-				if (p.getStatus().equals(GeneralStatus.ACTIVE)) {
+				if (p.getStatus().equals(GeneralStatus.OPEN)) {
 					isLastPeriod = false;
 				}
 				

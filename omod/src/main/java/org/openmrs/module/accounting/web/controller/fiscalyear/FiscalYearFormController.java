@@ -149,14 +149,13 @@ public class FiscalYearFormController {
 	
 	private GeneralStatus[] getStatues(GeneralStatus status){
 		if (status == null) {
-			GeneralStatus[] statues = new GeneralStatus[2];
-			statues[0] = GeneralStatus.INACTIVE;
-			statues[1] = GeneralStatus.ACTIVE;
+			// Create new
+			GeneralStatus[] statues = new GeneralStatus[1];
+			statues[0] = GeneralStatus.OPEN;
 			return statues;
-		} else if (status.equals(GeneralStatus.ACTIVE)) {
-			GeneralStatus[] statues = new GeneralStatus[2];
-			statues[0] = GeneralStatus.ACTIVE;
-			statues[1] = GeneralStatus.INACTIVE;
+		} else if (status.equals(GeneralStatus.OPEN)) {
+			GeneralStatus[] statues = new GeneralStatus[1];
+			statues[0] = GeneralStatus.CLOSED;
 			return statues;
 		} else if (status.equals(GeneralStatus.DELETED)) {
 			GeneralStatus[] statues = new GeneralStatus[1];
@@ -165,7 +164,7 @@ public class FiscalYearFormController {
 		} else if (status.equals(GeneralStatus.CLOSED)) {
 			GeneralStatus[] statues = new GeneralStatus[2];
 			statues[1] = GeneralStatus.CLOSED;
-			statues[0] = GeneralStatus.ACTIVE;
+			statues[0] = GeneralStatus.OPEN;
 			return statues;
 		} else return null;
 		

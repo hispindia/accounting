@@ -5,8 +5,8 @@ public enum GeneralStatus {
 	ACTIVE("ACTIVE"),
 	INACTIVE("INACTIVE"),
 	DELETED("DELETED"),
-	CLOSED("CLOSED");
-	
+	CLOSED("CLOSED"),
+	OPEN("OPEN");
 	private String name;
 	
 	GeneralStatus(String name) {

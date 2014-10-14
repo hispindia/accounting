@@ -71,6 +71,7 @@ public class FiscalYearValidator implements Validator {
 		
 		if (fiscalYear.getId() != null) {
 			// UPDATE
+		/* remove this because I removed ACTIVE, there will be only OPEN,CLOSED and DELETED
 			if (fiscalYear.getStatus().equals(GeneralStatus.ACTIVE)) {
 				FiscalYear year = accountingService.getActiveFiscalYear() ; 
 				if (year != null && !fiscalYear.getId().equals(year.getId())) {
@@ -78,7 +79,7 @@ public class FiscalYearValidator implements Validator {
 					error.reject("accounting.active.exisited");
 				}
 			}
-			
+			*/
 			FiscalYear year = accountingService.getFiscalYearByName(fiscalYear.getName());
 			if (year != null && !year.getId().equals(fiscalYear.getId())){
 				error.reject("accounting.name.exisited");
@@ -86,14 +87,14 @@ public class FiscalYearValidator implements Validator {
 		
 		} else {
 			// ADD NEW
-			
+			/* as above
 			if (fiscalYear.getStatus().equals(GeneralStatus.ACTIVE)) {
 				FiscalYear year = accountingService.getActiveFiscalYear() ; 
 				if (year != null ) {
 					// Only one active fiscal year allow
 					error.reject("accounting.active.exisited");
 				}
-			}
+			}*/
 		}
 	}
 }
