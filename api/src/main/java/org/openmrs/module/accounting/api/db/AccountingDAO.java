@@ -99,6 +99,24 @@ public class AccountingDAO {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<Budget> getListBudgets(boolean includeRetired, int min, int max) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Budget.class);
+		if (!includeRetired)
+			criteria.add(Restrictions.eq("retired", false));
+		
+		criteria.setFirstResult(min).setMaxResults(max);
+		criteria.addOrder(Order.desc("endDate"));
+		return criteria.list();
+	}
+
+	public int countListBudgets(boolean includeRetired) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Budget.class);
+		Number rs = (Number) criteria.setProjection(Projections.rowCount())
+				.uniqueResult();
+		return rs != null ? rs.intValue() : 0;
+	}
+	
 	public Budget getBudget(int id) {
 		return (Budget) sessionFactory.getCurrentSession().get(Budget.class, id);
 	}

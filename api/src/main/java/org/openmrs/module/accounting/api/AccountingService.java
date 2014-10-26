@@ -222,6 +222,10 @@ public interface AccountingService extends OpenmrsService {
 	
 	public List<Budget> getBudgets(Boolean includeRetired);
 	
+	public List<Budget> getListBudgets(boolean includeRetired, int min, int max);
+	
+	public int countListBudgets(boolean includeRetired);
+	
 	public void deleteBudget(Budget budget);
 	
 	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)

@@ -1052,11 +1052,10 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	}
 	
 	public FiscalYear closeFiscalYear(Integer closeYearId, Integer nextYearId) {
-		FiscalYear closeYear = null;
 		
 		if (closeYearId == null) return null;
 		
-		closeYear = closeFiscalYear(closeYearId);
+		FiscalYear closeYear = closeFiscalYear(closeYearId);
 		Date curDate = Calendar.getInstance().getTime();
 		
 //		int countPeriods = closeYear.getPeriods().size();
@@ -1307,6 +1306,16 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	@Override
     public List<IncomeReceipt> getListIncomeReceipt(boolean includeVoided, int start, int end) {
 	    return dao.getListIncomeReceipt(includeVoided, start, end);
+    }
+
+	@Override
+    public List<Budget> getListBudgets(boolean includeRetired, int min, int max) {
+	    return dao.getListBudgets(includeRetired, min, max);
+    }
+
+	@Override
+    public int countListBudgets(boolean includeRetired) {
+	    return dao.countListBudgets(includeRetired);
     }
 
 }
