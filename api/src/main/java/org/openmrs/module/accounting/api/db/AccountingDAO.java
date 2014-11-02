@@ -32,8 +32,10 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projection;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.accounting.api.model.Account;
+import org.openmrs.module.accounting.api.model.BankStatement;
 import org.openmrs.module.accounting.api.model.IncomeBalance;
 import org.openmrs.module.accounting.api.model.AccountTransaction;
 import org.openmrs.module.accounting.api.model.AccountType;
@@ -728,4 +730,28 @@ public class AccountingDAO {
 		return mapResult;
 	}
 	
+	public BankStatement saveBankStatement(BankStatement bs) {
+	    return (BankStatement) sessionFactory.getCurrentSession().merge(bs);
+    }
+
+    public void deleteBankStatement(Integer id) {
+		BankStatement bs = getBankStatement(id);
+		if (bs != null) {
+			bs.setVoided(true);
+			bs.setVoidedBy(Context.getAuthenticatedUser().getId());
+			bs.setVoideddDate(Calendar.getInstance().getTime());
+		}
+    }
+
+	public BankStatement getBankStatement(Integer id) {
+		return (BankStatement) sessionFactory.getCurrentSession().load(BankStatement.class, id);
+	}
+
+    public List<BankStatement> getListBankStatements() {
+		Criteria criteria =  sessionFactory.getCurrentSession().createCriteria(BankStatement.class);
+		criteria.add(Restrictions.eq("voided", false))
+		.addOrder(Order.desc("date"));
+		return criteria.list();
+	}
 }
+

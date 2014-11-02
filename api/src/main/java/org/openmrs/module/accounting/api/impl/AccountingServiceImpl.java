@@ -21,6 +21,7 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.db.AccountingDAO;
 import org.openmrs.module.accounting.api.model.Account;
+import org.openmrs.module.accounting.api.model.BankStatement;
 import org.openmrs.module.accounting.api.model.IncomeBalance;
 import org.openmrs.module.accounting.api.model.AccountTransaction;
 import org.openmrs.module.accounting.api.model.AccountType;
@@ -1316,6 +1317,28 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	@Override
     public int countListBudgets(boolean includeRetired) {
 	    return dao.countListBudgets(includeRetired);
+    }
+
+	@Override
+    public BankStatement saveBankStatement(BankStatement bs) {
+		bs.setCreatedBy(Context.getAuthenticatedUser().getId());
+		bs.setCreatedDate(Calendar.getInstance().getTime());
+	    return dao.saveBankStatement(bs);
+    }
+
+	@Override
+    public void deleteBankStatement(Integer id) {
+	    dao.deleteBankStatement(id);
+    }
+
+	@Override
+    public BankStatement getBankStatement(Integer id) {
+	    return dao.getBankStatement(id);
+    }
+
+	@Override
+    public List<BankStatement> getListBankStatements() {
+	    return dao.getListBankStatements();
     }
 
 }

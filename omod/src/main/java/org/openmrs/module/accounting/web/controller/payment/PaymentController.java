@@ -114,12 +114,12 @@ public class PaymentController {
 		} else {
 			payment = Context.getService(AccountingService.class).getPayment(id);
 			if (payment.getStatus().equals(PaymentStatus.COMMITTED)) {
-				PaymentStatus[] statues = {PaymentStatus.PAID, PaymentStatus.DELETED};
+				PaymentStatus[] statues = {PaymentStatus.COMMITTED,PaymentStatus.PAID, PaymentStatus.DELETED};
 				model.addAttribute("paymentStatuses",statues);
 			}
 			
 			if (payment.getStatus().equals(PaymentStatus.PAID)) {
-				PaymentStatus[] statues = {PaymentStatus.DELETED};
+				PaymentStatus[] statues = {PaymentStatus.PAID,PaymentStatus.DELETED};
 				model.addAttribute("paymentStatuses",statues);
 			} 
 		}

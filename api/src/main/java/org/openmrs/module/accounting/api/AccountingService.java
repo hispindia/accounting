@@ -7,14 +7,15 @@ import java.util.List;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.accounting.api.model.Account;
-import org.openmrs.module.accounting.api.model.IncomeBalance;
 import org.openmrs.module.accounting.api.model.AccountType;
+import org.openmrs.module.accounting.api.model.BankStatement;
 import org.openmrs.module.accounting.api.model.Budget;
 import org.openmrs.module.accounting.api.model.BudgetItem;
 import org.openmrs.module.accounting.api.model.ExpenseBalance;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.openmrs.module.accounting.api.model.FiscalYear;
 import org.openmrs.module.accounting.api.model.GeneralStatus;
+import org.openmrs.module.accounting.api.model.IncomeBalance;
 import org.openmrs.module.accounting.api.model.IncomeReceipt;
 import org.openmrs.module.accounting.api.model.IncomeReceiptItem;
 import org.openmrs.module.accounting.api.model.Payee;
@@ -276,5 +277,17 @@ public interface AccountingService extends OpenmrsService {
 	
 	public List<ExpenseBalance> listActiveExpenseBalanceByPeriodId(Integer periodId);
 	
+
+	/**
+	 * Bank Statement
+	 * 
+	 */
 	
+	public BankStatement saveBankStatement(BankStatement payee);
+	
+	public void deleteBankStatement(Integer id);
+	
+	public BankStatement getBankStatement(Integer id) ;
+	
+	public List<BankStatement> getListBankStatements(); 
 }
