@@ -5,8 +5,11 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -29,9 +32,13 @@ public class BankStatement {
 	@Column(name="amount", precision = 9, scale = 2)
 	private BigDecimal amount;
 	
-	@Column(name = "date")
+	@Column(name = "date_from")
 	@Temporal(TemporalType.DATE)
-	private Date date;
+	private Date dateFrom;
+	
+	@Column(name = "date_to")
+	@Temporal(TemporalType.DATE)
+	private Date dateTo;
 	
 	@Column(name = "created_date")
 	@Type(type = "timestamp")
@@ -57,6 +64,9 @@ public class BankStatement {
 	@Type(type="timestamp")
 	private Date updatedDate;
 
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name="bank_account_id")
+	private BankAccount bankAccount;
 	
 	public BankStatement(){
 		this.voided = false;
@@ -79,16 +89,6 @@ public class BankStatement {
 	
     public void setAmount(BigDecimal amount) {
     	this.amount = amount;
-    }
-
-	
-    public Date getDate() {
-    	return date;
-    }
-
-	
-    public void setDate(Date date) {
-    	this.date = date;
     }
 
 	
@@ -171,6 +171,36 @@ public class BankStatement {
 	
     public void setDescription(String description) {
     	this.description = description;
+    }
+
+	
+    public Date getDateFrom() {
+    	return dateFrom;
+    }
+
+	
+    public void setDateFrom(Date dateFrom) {
+    	this.dateFrom = dateFrom;
+    }
+
+	
+    public Date getDateTo() {
+    	return dateTo;
+    }
+
+	
+    public void setDateTo(Date dateTo) {
+    	this.dateTo = dateTo;
+    }
+
+	
+    public BankAccount getBankAccount() {
+    	return bankAccount;
+    }
+
+	
+    public void setBankAccount(BankAccount bankAccount) {
+    	this.bankAccount = bankAccount;
     }
 	
 	

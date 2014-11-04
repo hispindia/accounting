@@ -65,7 +65,8 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="amount" type="DECIMAL(9, 2)"/>
-            <column name="date" type="datetime"/>
+            <column name="date_from" type="datetime"/>
+            <column name="date_to" type="datetime"/>
             <column name="updated_date" type="datetime"/>
             <column name="created_date" type="datetime">
                 <constraints nullable="false"/>
@@ -80,8 +81,34 @@
             <column defaultValueNumeric="0" name="voided" type="BIT(1)">
                 <constraints nullable="false"/>
             </column>
+             <column name="bank_account_id" type="INT(10)"/>
         </createTable>
     </changeSet>
+     <changeSet author="viet (generated)" id="1424957707041-3">
+        <createTable tableName="accounting_bank_account">
+            <column autoIncrement="true" name="bank_account_id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+             <column name="updated_date" type="datetime"/>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_by" type="INT(10)"/>
+            <column name="description" type="VARCHAR(1000)"/>
+            <column name="account_name" type="VARCHAR(255)"/>
+            <column name="account_number" type="VARCHAR(255)"/>
+            <column name="bank_name" type="VARCHAR(255)"/>
+            <column name="bank_branch" type="VARCHAR(255)"/>
+            <column name="bank_code" type="VARCHAR(255)"/>
+            <column defaultValueNumeric="0" name="deleted" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
     <changeSet author="viet (generated)" id="1414957707040-4">
         <createTable tableName="accounting_budget">
             <column autoIncrement="true" name="budget_id" type="INT(10)">

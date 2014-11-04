@@ -8,6 +8,7 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.AccountType;
+import org.openmrs.module.accounting.api.model.BankAccount;
 import org.openmrs.module.accounting.api.model.BankStatement;
 import org.openmrs.module.accounting.api.model.Budget;
 import org.openmrs.module.accounting.api.model.BudgetItem;
@@ -283,11 +284,23 @@ public interface AccountingService extends OpenmrsService {
 	 * 
 	 */
 	
-	public BankStatement saveBankStatement(BankStatement payee);
+	public BankStatement saveBankStatement(BankStatement bankStatement);
 	
 	public void deleteBankStatement(Integer id);
 	
 	public BankStatement getBankStatement(Integer id) ;
 	
 	public List<BankStatement> getListBankStatements(); 
+	
+	/**
+	 * Bank Account
+	 */
+	
+	public BankAccount saveBankAccount(BankAccount bankAccount);
+	
+	public void deleteBankAccount(Integer id);
+	
+	public BankAccount getBankAccount(Integer id) ;
+	
+	public List<BankAccount> getListBankAccounts(); 
 }

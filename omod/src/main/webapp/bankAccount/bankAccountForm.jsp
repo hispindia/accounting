@@ -18,23 +18,27 @@
  *
 --%>
 <%@ include file="/WEB-INF/template/include.jsp"%>
-<openmrs:require privilege="Add/Edit BankStatement" otherwise="/login.htm"
-	redirect="/module/accounting/bankStatement.list" />
+<openmrs:require privilege="Add/Edit BankAccount" otherwise="/login.htm"
+	redirect="/module/accounting/bankAccount.list" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="../includes/nav.jsp"%>
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 
+
+
 <p>
-<b><a href="bankAccount.list">List Bank Account</a></b>&nbsp; | &nbsp;
-<b><a href="bankAccount.form">Add Bank Account</a></b>
+<b><a href="bankStatement.list">List Bank Statement</a></b>&nbsp; | &nbsp;
+<b><a href="bankStatement.form">Add Bank Statement</a></b>
 </p>
 
 <h2>
-	<spring:message code="accounting.bankStatement.addedit" />
+	<spring:message code="accounting.bankAccount.addedit" />
 </h2>
+
 <c:forEach items="${errors.allErrors}" var="error">
-	<span class="error"><spring:message	code="${error.defaultMessage}" text="${error.defaultMessage}" /> </span>
+	<span class="error"><spring:message
+			code="${error.defaultMessage}" text="${error.defaultMessage}" /> </span>
 </c:forEach>
 <spring:bind path="command">
 	<c:if test="${not empty  status.errorMessages}">
@@ -49,6 +53,68 @@
 </spring:bind>
 <form:form commandName="command" method="post" cssClass="box">
 	<table>
+		
+			<tr>
+			<td valign="top"><spring:message code="accounting.accountName" />
+			</td>
+			<td><spring:bind path="accountName">
+					<input type="text" name="${status.expression}"
+						value="${status.value}" size="35" />
+					<c:if test="${status.errorMessage != ''}">
+						<span class="error">${status.errorMessage}</span>
+					</c:if>
+				</spring:bind></td>
+		</tr>
+		
+		
+			<tr>
+			<td valign="top"><spring:message code="accounting.accountNumber" />
+			</td>
+			<td><spring:bind path="accountNumber">
+					<input type="text" name="${status.expression}"
+						value="${status.value}" size="35" />
+					<c:if test="${status.errorMessage != ''}">
+						<span class="error">${status.errorMessage}</span>
+					</c:if>
+				</spring:bind></td>
+		</tr>
+		
+		<tr>
+			<td valign="top"><spring:message code="accounting.bankName" />
+			</td>
+			<td><spring:bind path="bankName">
+					<input type="text" name="${status.expression}"
+						value="${status.value}" size="35" />
+					<c:if test="${status.errorMessage != ''}">
+						<span class="error">${status.errorMessage}</span>
+					</c:if>
+				</spring:bind></td>
+		</tr>
+		
+		<tr>
+			<td valign="top"><spring:message code="accounting.bankCode" />
+			</td>
+			<td><spring:bind path="bankCode">
+					<input type="text" name="${status.expression}"
+						value="${status.value}" size="35" />
+					<c:if test="${status.errorMessage != ''}">
+						<span class="error">${status.errorMessage}</span>
+					</c:if>
+				</spring:bind></td>
+		</tr>
+		
+		<tr>
+			<td valign="top"><spring:message code="accounting.bankBranch" />
+			</td>
+			<td><spring:bind path="bankBranch">
+					<input type="text" name="${status.expression}"
+						value="${status.value}" size="35" />
+					<c:if test="${status.errorMessage != ''}">
+						<span class="error">${status.errorMessage}</span>
+					</c:if>
+				</spring:bind></td>
+		</tr>
+		
 		<tr>
 			<td valign="top"><spring:message code="general.description" />
 			</td>
@@ -61,58 +127,12 @@
 				</spring:bind></td>
 		</tr>
 
-		<tr>
-			<td valign="top"><spring:message code="accounting.dateFrom" />
-			</td>
-			<td><spring:bind path="dateFrom">
-				<input type="text" name="${status.expression}"
-						value="${status.value}" size="35" onfocus="showCalendar(this)" id="dateFrom"/>
-					<c:if test="${status.errorMessage != ''}">
-						<span class="error">${status.errorMessage}</span>
-					</c:if>
-				</spring:bind></td>
-		</tr>
 		
-		<tr>
-			<td valign="top"><spring:message code="accounting.dateTo" />
-			</td>
-			<td><spring:bind path="dateTo">
-				<input type="text" name="${status.expression}"
-						value="${status.value}" size="35" onfocus="showCalendar(this)" id="dateTo"/>
-					<c:if test="${status.errorMessage != ''}">
-						<span class="error">${status.errorMessage}</span>
-					</c:if>
-				</spring:bind></td>
-		</tr>
-		
-		<tr>
-			<td valign="top"><spring:message code="accounting.bankAccount" />
-			</td>
-			<td>
-				<form:select path="bankAccount">
-							<form:option value="" label="--Please Select--" />
-							<form:options items="${bankAccounts}" itemLabel="accountName" itemValue="id"/>
-						</form:select>
-						<form:errors path="bankAccount" cssClass="error" />
-				</td>
-		</tr>
-		
-		<tr>
-			<td valign="top"><spring:message code="accounting.amount" />
-			</td>
-			<td><spring:bind path="amount">
-					<input type="text" name="${status.expression}"
-						value="${status.value}" size="35" />
-					<c:if test="${status.errorMessage != ''}">
-						<span class="error">${status.errorMessage}</span>
-					</c:if>
-				</spring:bind></td>
-		</tr>
 
 	</table>
 	<br />
 	<input type="submit" value="<spring:message code="general.save"/>">
 	<input type="button" value="<spring:message code="general.cancel"/>"
-		onclick="javascript:window.location.href='bankStatement.list'">
+		onclick="javascript:window.location.href='bankAccount.list'">
 </form:form>
 <%@ include file="/WEB-INF/template/footer.jsp"%>

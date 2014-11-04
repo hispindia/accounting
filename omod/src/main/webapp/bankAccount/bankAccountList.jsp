@@ -20,10 +20,10 @@
 
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:require privilege="View BankStatement" otherwise="/login.htm"
+<openmrs:require privilege="View BankAccount" otherwise="/login.htm"
 	redirect="/module/account/main.form" />
 
-<spring:message var="pageTitle" code="accounting.bankStatement.manage"
+<spring:message var="pageTitle" code="accounting.bankAccount.manage"
 	scope="page" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
@@ -34,15 +34,17 @@
 	src="${pageContext.request.contextPath}/moduleResources/account/scripts/paging.js"></script>
 <script type="text/javascript"
 	src="${pageContext.request.contextPath}/moduleResources/account/scripts/jquery/jquery-1.4.2.min.js"></script>
-
-<p>
-<b><a href="bankAccount.list">List Bank Account</a></b>&nbsp; | &nbsp;
-<b><a href="bankAccount.form">Add Bank Account</a></b>
+	
+	<p>
+<b><a href="bankStatement.list">List Bank Statement</a></b>&nbsp; | &nbsp;
+<b><a href="bankStatement.form">Add Bank Statement</a></b>
 </p>
-
+	
+	
 <h2>
-	<spring:message code="accounting.bankStatement.manage" />
+	<spring:message code="accounting.bankAccount.manage" />
 </h2>
+
 <br />
 <c:forEach items="${errors.allErrors}" var="error">
 	<span class="error"><spring:message
@@ -50,46 +52,38 @@
 	</span><
 </c:forEach>
 <input type="button"
-	value="<spring:message code='accounting.bankStatement.add'/>"
-	onclick="javascript:window.location.href='bankStatement.form'" />
+	value="<spring:message code='accounting.bankAccount.add'/>"
+	onclick="javascript:window.location.href='bankAccount.form'" />
 
 <br />
 <br />
 <c:choose>
-	<c:when test="${not empty listStatements}">
+	<c:when test="${not empty listAccounts}">
 		<form method="post" onsubmit="return false" id="form">
 			<span class="boxHeader"><spring:message
-					code="accounting.bankStatement.list" />
+					code="accounting.bankAccount.list" />
 			</span>
 			<div class="box">
 				<table cellpadding="5" cellspacing="0">
 					<tr>
 						<th>#</th>
-						<th><spring:message code="accounting.dateFrom" />
-						</th>
-							<th><spring:message code="accounting.dateTo" />
-						</th>
-						<th><spring:message code="accounting.amount" />
-						</th>
-						<th><spring:message code="accounting.description" />
-						</th>
+						<th><spring:message code="accounting.accountName" /></th>
+						<th><spring:message code="accounting.accountNumber" /></th>
+						<th><spring:message code="accounting.bankName" /></th>
 						<th></th>
 					</tr>
-					<c:forEach items="${listStatements}" var="statement"
+					<c:forEach items="${listAccounts}" var="account"
 						varStatus="varStatus">
-						<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" } ' <c:if test="${statement.voided}"> style="text-decoration:line-through;"</c:if>>
+						<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" } ' <c:if test="${account.deleted}"> style="text-decoration:line-through;"</c:if>>
 							<td><c:out
 									value="${(( pagingUtil.currentPage - 1  ) * pagingUtil.pageSize ) + varStatus.count }" />
 							</td>
 							<td><a
-								href="javascript:window.location.href='bankStatement.form?id=${statement.id}'"><openmrs:formatDate date="${statement.dateFrom}"
-									type="textbox" /></a>
+								href="javascript:window.location.href='bankAccount.form?id=${account.id}'">${account.accountName}
+								</a>
 							</td>
-							<td><openmrs:formatDate date="${statement.dateTo}"
-									type="textbox" /></a>
-							</td>
-							<td align="right">${statement.amount}</td>
-							<td>${statement.description}</td>
+							<td>${account.accountNumber}</td>
+							<td>${account.bankName}</td>
 							<td></td>
 						</tr>
 					</c:forEach>
@@ -101,7 +95,7 @@
 			</div>
 	</c:when>
 	<c:otherwise>
-No Bank Statement found.
+No Account found.
 </c:otherwise>
 </c:choose>
 

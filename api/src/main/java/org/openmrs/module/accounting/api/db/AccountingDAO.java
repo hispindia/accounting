@@ -29,23 +29,23 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projection;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.accounting.api.model.Account;
-import org.openmrs.module.accounting.api.model.BankStatement;
-import org.openmrs.module.accounting.api.model.IncomeBalance;
 import org.openmrs.module.accounting.api.model.AccountTransaction;
 import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.BalanceStatus;
+import org.openmrs.module.accounting.api.model.BankAccount;
+import org.openmrs.module.accounting.api.model.BankStatement;
 import org.openmrs.module.accounting.api.model.Budget;
 import org.openmrs.module.accounting.api.model.BudgetItem;
 import org.openmrs.module.accounting.api.model.ExpenseBalance;
 import org.openmrs.module.accounting.api.model.FiscalPeriod;
 import org.openmrs.module.accounting.api.model.FiscalYear;
 import org.openmrs.module.accounting.api.model.GeneralStatus;
+import org.openmrs.module.accounting.api.model.IncomeBalance;
 import org.openmrs.module.accounting.api.model.IncomeReceipt;
 import org.openmrs.module.accounting.api.model.IncomeReceiptItem;
 import org.openmrs.module.accounting.api.model.Payee;
@@ -750,7 +750,32 @@ public class AccountingDAO {
     public List<BankStatement> getListBankStatements() {
 		Criteria criteria =  sessionFactory.getCurrentSession().createCriteria(BankStatement.class);
 		criteria.add(Restrictions.eq("voided", false))
-		.addOrder(Order.desc("date"));
+		.addOrder(Order.desc("dateFrom"));
+		return criteria.list();
+	}
+    
+    public BankAccount saveBankAccount(BankAccount bs) {
+	    return (BankAccount) sessionFactory.getCurrentSession().merge(bs);
+    }
+
+    public void deleteBankAccount(Integer id) {
+		BankAccount bs = getBankAccount(id);
+		if (bs != null) {
+			bs.setDeleted(true);
+			bs.setUpdatedBy(Context.getAuthenticatedUser().getId());
+			bs.setUpdatedDate(Calendar.getInstance().getTime());
+			sessionFactory.getCurrentSession().merge(bs);
+		}
+    }
+
+	public BankAccount getBankAccount(Integer id) {
+		return (BankAccount) sessionFactory.getCurrentSession().load(BankAccount.class, id);
+	}
+
+    public List<BankAccount> getListBankAccounts() {
+		Criteria criteria =  sessionFactory.getCurrentSession().createCriteria(BankAccount.class);
+		criteria.add(Restrictions.eq("deleted", false))
+		.addOrder(Order.asc("bankName"));
 		return criteria.list();
 	}
 }

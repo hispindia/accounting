@@ -8,7 +8,7 @@
 	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Accounting Module</name>
-	<description>Accounting/Fianance Module, has integration with Billing and Inventory modules</description>
+	<description>Accounting/Fianance Module</description>
 	<url>https://wiki.openmrs.org/display/docs/Accounting+Module+Module</url>
 
 	<developers>
