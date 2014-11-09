@@ -136,11 +136,13 @@ Fiscal Period:</td><td><select id="comboPeriod">
 					<th><spring:message code="accounting.accountType" /></th>
 					<th><spring:message code="accounting.newAIE" /></th>
 					<th><spring:message code="accounting.cummulativeAIE" /></th>
+					<th><spring:message code="accounting.committed" /></th>
 					<th><spring:message code="accounting.currentPayment" /></th>
 					<th><spring:message code="accounting.cummulativePayment" /></th>
+					<th><spring:message code="accounting.ledgerBalance" /></th>
 					<th><spring:message code="accounting.availableBalance" /></th>
-					<th><spring:message code="accounting.status" /></th>
-					<th><spring:message code="accounting.updatedDate" /></th>
+				<!-- 	<th><spring:message code="accounting.status" /></th> -->
+				<!--	<th><spring:message code="accounting.updatedDate" /></th>-->
 					<th></th>
 				</tr>
 				<c:forEach items="${accounts}" var="account" varStatus="varStatus">
@@ -154,12 +156,14 @@ Fiscal Period:</td><td><select id="comboPeriod">
 						<td>${account.account.accountType }</td>
 						<td>${account.newAIE}</td>
 						<td>${account.cummulativeAIE}</td>
+						<td>${account.totalCommitted}</td>
 						<td>${account.currentPayment}</td>
 						<td>${account.cummulativePayment}</td>
+						<td>${account.ledgerBalance}</td>
 						<td>${account.availableBalance}</td>
-						<td>${account.status}</td>
-						<td><openmrs:formatDate date="${account.updatedDate}"
-								type="textbox" format="dd/mm/yyyy hh:mm" /></td>
+					<!--	<td>${account.status}</td>-->
+					<!--	<td><openmrs:formatDate date="${account.updatedDate}"
+								type="textbox" format="dd/mm/yyyy hh:mm" /></td>-->
 						<td></td>
 					</tr>
 				</c:forEach>

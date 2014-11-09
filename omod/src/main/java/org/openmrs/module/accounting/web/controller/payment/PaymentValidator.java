@@ -1,6 +1,9 @@
 package org.openmrs.module.accounting.web.controller.payment;
 
+import java.math.BigDecimal;
+
 import org.openmrs.module.accounting.api.model.Payment;
+import org.openmrs.module.accounting.api.model.PaymentStatus;
 import org.openmrs.module.accounting.api.utils.DateUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -35,7 +38,11 @@ public class PaymentValidator implements Validator {
 	    if (payment.getPayee() == null) {
 	    	error.reject("accounting.payee.required");
 	    }
-	    
+	    if (payment.getStatus().equals(PaymentStatus.PAID)) {
+	    	if( payment.getActualPayment() == null || payment.getActualPayment().compareTo(new BigDecimal("0") ) == 0  ) {
+	    		error.reject("accounting.payment.actualPayment.required");
+	    	}
+	    }
     }
 	
 	

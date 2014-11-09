@@ -609,6 +609,8 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			 * item.setTxnNumber(acctxn.getTxnNumber()); increaseBalance(item); } }
 			 */
 			
+			
+			
 		} else {
 			budget.setUpdatedBy(Context.getAuthenticatedUser().getId());
 			budget.setUpdatedDate(Calendar.getInstance().getTime());
@@ -774,6 +776,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			
 			balance.setNewAIE(item.getAmount());
 			balance.setCummulativeAIE(balance.getCummulativeAIE().add(item.getAmount()));
+			balance.setAvailableBalance(item.getAmount());
 			
 			/*
 			// add account_txn and update balance
@@ -844,6 +847,8 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			payment.setUpdatedBy(Context.getAuthenticatedUser().getId());
 			payment.setUpdatedDate(Calendar.getInstance().getTime());
 		}
+		
+		
 		updateExpenseBalance(payment);
 		
 		return dao.savePayment(payment);
@@ -881,15 +886,38 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			return;
 		}
 		
-		// update amount
+		Payment persitedPayment = dao.getPayment(payment.getId());
 		
-		if (payment.getStatus().equals(PaymentStatus.COMMITTED)) {
-			/** add to total committted, then subtract the ledger balance */
+		// update amount
+		if (payment.getStatus().equals(PaymentStatus.NEW)) {
+			//TODO
+		}
+		else if (payment.getStatus().equals(PaymentStatus.COMMITTED)) {
+			// add to total committted, then subtract the ledger balance 
+			if (persitedPayment.getStatus().equals(payment.getStatus())) {
+				// change commited amount
+				// revert previous committed amount
+				balance.setTotalCommitted(balance.getTotalCommitted().subtract(persitedPayment.getCommitmentAmount()));
+				BigDecimal ledgerBalance = balance.getLedgerBalance().add(persitedPayment.getCommitmentAmount());
+				balance.setLedgerBalance(ledgerBalance);
+			}
+
+			// update new committed amount
 			balance.setTotalCommitted(balance.getTotalCommitted().add(payment.getCommitmentAmount()));
 			BigDecimal ledgerBalance = balance.getCummulativeAIE().subtract(balance.getTotalCommitted());
 			balance.setLedgerBalance(ledgerBalance);
+			
 		} else if (payment.getStatus().equals(PaymentStatus.PAID)) {
-			/** add to payment made , then subtract available balance */
+			
+			if (persitedPayment.getStatus().equals(payment.getStatus())) {
+				// revert change
+				balance.setCurrentPayment(balance.getCurrentPayment().subtract(persitedPayment.getActualPayment()));
+				balance.setCummulativePayment(balance.getCummulativePayment().subtract(persitedPayment.getActualPayment()));
+				BigDecimal availableBalance = balance.getAvailableBalance().add(persitedPayment.getActualPayment());
+				balance.setAvailableBalance(availableBalance);
+			}
+			
+			// add to payment made , then subtract available balance 
 			balance.setCurrentPayment(balance.getCurrentPayment().add(payment.getActualPayment()));
 			balance.setCummulativePayment(balance.getCummulativePayment().add(payment.getActualPayment()));
 			BigDecimal availableBalance = balance.getCummulativeAIE().subtract(balance.getCummulativePayment());
@@ -902,6 +930,9 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		
 		dao.saveExpenseBalance(balance);
 	}
+	
+	
+	
 	
 	@Override
 	public void deletePayment(Payment payment) {
