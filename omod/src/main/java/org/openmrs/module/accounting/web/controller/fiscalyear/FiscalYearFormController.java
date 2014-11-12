@@ -154,7 +154,7 @@ public class FiscalYearFormController {
 			statues[0] = GeneralStatus.OPEN;
 			return statues;
 		} else if (status.equals(GeneralStatus.OPEN)) {
-			GeneralStatus[] statues = new GeneralStatus[1];
+			GeneralStatus[] statues = new GeneralStatus[2];
 			statues[0] = GeneralStatus.OPEN;
 			statues[1] = GeneralStatus.CLOSED;
 			return statues;
