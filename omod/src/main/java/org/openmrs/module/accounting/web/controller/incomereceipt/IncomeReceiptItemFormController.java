@@ -121,7 +121,7 @@ public class IncomeReceiptItemFormController {
 	}
 	
 	private String buildJSONAccounts(List<Account> accounts) {
-		if (accounts == null)  return null;
+		if (accounts == null || accounts.size() == 0)  return null;
 		StringBuffer s = new StringBuffer();
 		for (Account acc : accounts) {
 			s.append(acc.getName()+",");

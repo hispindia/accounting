@@ -164,6 +164,10 @@ public class FiscalPeriod {
 	public boolean isActive() {
 		return status != null && status.equals(GeneralStatus.ACTIVE) ? true : false;
 	}
+	
+	public boolean isOpen() {
+		return status != null && status.equals(GeneralStatus.OPEN) ? true : false;
+	}
 
 	
     public GeneralStatus getStatus() {

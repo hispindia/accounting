@@ -16,9 +16,9 @@ public class IncomeReceiptItemValidator implements Validator{
 	@Override
     public void validate(Object obj, Errors e) {
 		IncomeReceiptItem item = (IncomeReceiptItem) obj;
-		if (StringUtils.isBlank(item.getAccountName())) {
+		if (StringUtils.isBlank(item.getAccountName()) || item.getAccount() == null) {
 			e.reject("accounting.incomeReceiptItem.account.required");
-		}
+		} 
 		
     }
 	

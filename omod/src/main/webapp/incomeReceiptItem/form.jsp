@@ -2,6 +2,9 @@
 <openmrs:require privilege="Add/Edit Account" otherwise="/login.htm"
 	redirect="/module/accounting/main.htm" />
 <link href="<openmrs:contextPath/>/scripts/jquery-ui/css/<spring:theme code='jqueryui.theme.name' />/jquery-ui.custom.css" type="text/css" rel="stylesheet" />
+<link href="/openmrs/openmrs.css?v=1.9.7.60bd9b" type="text/css" rel="stylesheet" />
+		<link href="/openmrs/openmrs_green.css" type="text/css" rel="stylesheet" />
+		<link href="/openmrs/style.css?v=1.9.7.60bd9b" type="text/css" rel="stylesheet" />
 
 <openmrs:htmlInclude file="/scripts/jquery/jquery.min.js" />
 <openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui.custom.min.js" />

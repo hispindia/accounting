@@ -1215,7 +1215,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	
 	@Override
 	public List<ExpenseBalance> listActiveExpenseBalance(FiscalPeriod period) {
-		return dao.listExpenseBalance(BalanceStatus.ACTIVE, period);
+		return dao.listExpenseBalance( period);
 	}
 	
 	@Override

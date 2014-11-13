@@ -255,6 +255,7 @@ public class AccountingDAO {
 	@SuppressWarnings("unchecked")
 	public List<ExpenseBalance> listExpenseBalance(BalanceStatus status, FiscalPeriod period) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ExpenseBalance.class);
+	
 		if (status != null) {
 			criteria.add(Restrictions.eq("status", status));
 		}
@@ -265,6 +266,18 @@ public class AccountingDAO {
 		
 		return criteria.list();
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<ExpenseBalance> listExpenseBalance(FiscalPeriod period) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ExpenseBalance.class);
+	
+		if (period != null) {
+			criteria.add(Restrictions.eq("period", period));
+		}
+		
+		return criteria.list();
+	}
+	
 	
 	public AccountTransaction getAccountTxn(String transactionNo) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(AccountTransaction.class);
