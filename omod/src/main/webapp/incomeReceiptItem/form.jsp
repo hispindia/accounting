@@ -40,8 +40,8 @@
 	<table id="tableItemForm">
 		<tr>
 			<td>Account</td>
-			<td><form:input path="incomeReceiptItem.accountName" id="itemSelectAccount" /></td>
-			<td><form:errors path="incomeReceiptItem.accountName"  cssClass="error" /></td>
+			<td><form:input path="incomeReceiptItem.account" id="itemSelectAccount" /></td>
+			<td><form:errors path="incomeReceiptItem.account"  cssClass="error" /></td>
 		</tr>
 		<tr>
 			<td>Description</td>

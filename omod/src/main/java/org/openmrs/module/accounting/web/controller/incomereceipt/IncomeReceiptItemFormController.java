@@ -19,6 +19,8 @@ import org.openmrs.web.WebConstants;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,6 +34,11 @@ import org.springframework.web.bind.support.SessionStatus;
 @SessionAttributes("incomeReceiptItem")
 public class IncomeReceiptItemFormController {
 	Log log = LogFactory.getLog(getClass());
+	
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+		binder.registerCustomEditor(Account.class, new AccountNamePropertySupport());
+	}
 	
 	@ModelAttribute("itemTypes")
 	public IncomeReceiptType[] registerAccountTypes() {
@@ -103,7 +110,7 @@ public class IncomeReceiptItemFormController {
 		}
 		
 		
-		receiptItem.setAccount(Context.getService(AccountingService.class).getAccountByName(receiptItem.getAccountName()));
+//		receiptItem.setAccount(Context.getService(AccountingService.class).getAccountByName(receiptItem.getAccount().getName()));
 		IncomeReceipt receipt = Context.getService(AccountingService.class).getIncomeReceipt(incomeReceiptId);
 		receiptItem.setReceipt(receipt);
 		try {
