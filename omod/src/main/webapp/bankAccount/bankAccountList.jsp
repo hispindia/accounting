@@ -37,7 +37,9 @@
 	
 	<p>
 <b><a href="bankStatement.list">List Bank Statement</a></b>&nbsp; | &nbsp;
-<b><a href="bankStatement.form">Add Bank Statement</a></b>
+<b><a href="bankStatement.form">Add Bank Statement</a></b>&nbsp; | &nbsp;
+<b><a href="bankAccount.list">List Bank Account</a></b>&nbsp; | &nbsp;
+<b><a href="bankAccount.form">Add Bank Account</a></b>
 </p>
 	
 	

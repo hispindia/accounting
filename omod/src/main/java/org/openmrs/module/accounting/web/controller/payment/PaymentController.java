@@ -16,6 +16,7 @@ import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.model.Account;
 import org.openmrs.module.accounting.api.model.AccountType;
 import org.openmrs.module.accounting.api.model.BudgetItem;
+import org.openmrs.module.accounting.api.model.ExpenseBalance;
 import org.openmrs.module.accounting.api.model.Payee;
 import org.openmrs.module.accounting.api.model.Payment;
 import org.openmrs.module.accounting.api.model.PaymentStatus;
@@ -147,9 +148,10 @@ public class PaymentController {
 	@ResponseBody
 	public String getPaymentAIE(@RequestParam("accountId") Integer accountId, @RequestParam("paymentDate") String paymentDate) {
 		Date date = DateUtils.getDateFromStr(paymentDate);
-		BudgetItem item = Context.getService(AccountingService.class).getBudgetItem(accountId, date);
-		if (item != null) {
-			return item.getAmount().toString();
+//		BudgetItem item = Context.getService(AccountingService.class).getBudgetItem(accountId, date);
+		ExpenseBalance balance = Context.getService(AccountingService.class).findExpenseBalance(accountId, date);
+		if (balance != null) {
+			return balance.getAvailableBalance().toString();
 		} else {
 			return "NA";
 		}

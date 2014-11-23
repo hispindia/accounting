@@ -153,7 +153,7 @@
 					<td id="item_${item.id}_description">${item.description}</td>
 					<td id="item_${item.id}_startDate"><openmrs:formatDate date="${item.startDate}" type="textbox" /></td>
 					<td id="item_${item.id}_endDate"><openmrs:formatDate date="${item.endDate}" type="textbox" /></td>
-					<td id="item_${item.id}_amount">${item.amount}</td>
+					<td id="item_${item.id}_amount" align="right" >${item.amount}</td>
 					<td > <c:if test="${!item.retired}"> <input type="button" value="Delete" onclick="deleteItem(this,${item.id})" /></c:if></td>
 				</tr>
 				</c:forEach>

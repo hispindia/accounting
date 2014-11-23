@@ -93,6 +93,9 @@ public class Payment {
 	@Column(name = "retired")
 	private Boolean retired;
 	
+	@Column(name = "txn_number")
+	private String txnNumber;
+	
 	public Payment(){
 		this.retired = false;
 		this.status = PaymentStatus.NEW;
@@ -354,6 +357,16 @@ public class Payment {
 	
     public void setPayableAmount(BigDecimal payableAmount) {
     	this.payableAmount = payableAmount;
+    }
+
+	
+    public String getTxnNumber() {
+    	return txnNumber;
+    }
+
+	
+    public void setTxnNumber(String txnNumber) {
+    	this.txnNumber = txnNumber;
     }
 
 	

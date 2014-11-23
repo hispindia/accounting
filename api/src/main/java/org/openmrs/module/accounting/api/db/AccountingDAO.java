@@ -182,6 +182,7 @@ public class AccountingDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Account.class);
 		criteria.add(Restrictions.eq("name", name));
 		criteria.add(Restrictions.eq("accountType", type));
+		criteria.add(Restrictions.eq("retired", false));
 		return (Account) criteria.uniqueResult();
 	}
 	
@@ -196,8 +197,15 @@ public class AccountingDAO {
 	public IncomeBalance findAccountPeriod(Account account, Date date) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(IncomeBalance.class);
 		criteria.add(Restrictions.eq("account", account));
-		criteria.add(Restrictions.and(Restrictions.ge("startDate", date), Restrictions.le("endDate", date)));
+		criteria.add(Restrictions.and(Restrictions.le("startDate", date), Restrictions.ge("endDate", date)));
 		return (IncomeBalance) criteria.uniqueResult();
+	}
+	
+	public ExpenseBalance findExpenseBalance(Account account, Date date) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ExpenseBalance.class);
+		criteria.add(Restrictions.eq("account", account));
+		criteria.add(Restrictions.and(Restrictions.le("startDate", date), Restrictions.ge("endDate", date)));
+		return (ExpenseBalance) criteria.uniqueResult();
 	}
 	
 	/**

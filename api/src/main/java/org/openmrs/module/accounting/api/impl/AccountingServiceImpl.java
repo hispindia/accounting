@@ -89,6 +89,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 				accBalance.setCreatedDate(acc.getCreatedDate());
 				accBalance.setStatus(BalanceStatus.ACTIVE);
 				accBalance.setStartDate(period.getStartDate());
+				accBalance.setEndDate(period.getEndDate());
 				accBalance.setPeriod(period);
 				dao.saveAccountBalance(accBalance);
 			} else if (acc.getAccountType().equals(AccountType.EXPENSE)) {
@@ -98,6 +99,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 				accBalance.setCreatedDate(acc.getCreatedDate());
 				accBalance.setStatus(BalanceStatus.ACTIVE);
 				accBalance.setStartDate(period.getStartDate());
+				accBalance.setEndDate(period.getEndDate());
 				accBalance.setPeriod(period);
 				dao.saveExpenseBalance(accBalance);
 			}
@@ -426,6 +428,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			balance.setCreatedDate(account.getCreatedDate());
 			balance.setStatus(BalanceStatus.ACTIVE);
 			balance.setStartDate(period.getStartDate());
+			balance.setEndDate(period.getEndDate());
 			balance.setPeriod(period);
 			//			dao.saveAccountBalance(balance);
 		}
@@ -480,8 +483,22 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	}
 	
 	private AccountTransaction addAccountTransaction(IncomeReceiptItem receipt) {
+		if (receipt == null) return null;
 		return addAccountTransaction(receipt.getAccount(), receipt.getAmount(), receipt.getCreatedBy(),
 		    receipt.getCreatedDate(), receipt.getTransactionDate());
+	}
+	
+	private AccountTransaction addAccountTransaction(Payment payment){
+		if (payment == null) return null;
+		// since this is payment, the amount should be negative
+		BigDecimal amount = payment.getActualPayment() != null ? payment.getActualPayment().negate() : new BigDecimal("0");
+		return addAccountTransaction(payment.getAccount(), amount, payment.getCreatedBy(), payment.getCreatedDate(), payment.getPaymentDate());
+	}
+	
+	private AccountTransaction cancelAccountTransaction(Payment payment){
+		if (payment == null) return null;
+		// since this is cancel payment, the amount should be positive
+		return addAccountTransaction(payment.getAccount(), payment.getActualPayment(), payment.getCreatedBy(), payment.getCreatedDate(), payment.getPaymentDate());
 	}
 	
 	private AccountTransaction addAccountTransaction(BudgetItem budget) {
@@ -713,6 +730,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			balance.setCreatedDate(curDate);
 			balance.setStatus(BalanceStatus.ACTIVE);
 			balance.setStartDate(period.getStartDate());
+			balance.setEndDate(period.getEndDate());
 			balance.setPeriod(period);
 		}
 		
@@ -778,12 +796,12 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			balance.setCummulativeAIE(balance.getCummulativeAIE().add(item.getAmount()));
 			balance.setAvailableBalance(item.getAmount());
 			
-			/*
-			// add account_txn and update balance
+			
+			/** add account_txn and update balance **/
 			AccountTransaction acctxn = addAccountTransaction(item);
 			item.setTxnNumber(acctxn.getTxnNumber());;
 			increaseBalance(item);
-			*/
+			
 			dao.saveExpenseBalance(balance);
 			
 			return item;
@@ -866,18 +884,19 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		ExpenseBalance balance = null;
 		if (period != null) {
 			balance = dao.getExpenseBalanceByAccountAndPeriod(payment.getAccount(), period);
-		} else {
-			//TODO
-			//			balance = dao.getLatestExpenseBalance(payment.getAccount());
-			Account acc = payment.getAccount();
-			ExpenseBalance accBalance = new ExpenseBalance();
-			accBalance.setAccount(acc);
-			accBalance.setCreatedBy(acc.getCreatedBy());
-			accBalance.setCreatedDate(acc.getCreatedDate());
-			accBalance.setStatus(BalanceStatus.ACTIVE);
-			accBalance.setStartDate(period.getStartDate());
-			accBalance.setPeriod(period);
-			dao.saveExpenseBalance(accBalance);
+			if (balance == null) {
+				//			balance = dao.getLatestExpenseBalance(payment.getAccount());
+				Account acc = payment.getAccount();
+				ExpenseBalance accBalance = new ExpenseBalance();
+				accBalance.setAccount(acc);
+				accBalance.setCreatedBy(acc.getCreatedBy());
+				accBalance.setCreatedDate(acc.getCreatedDate());
+				accBalance.setStatus(BalanceStatus.ACTIVE);
+				accBalance.setStartDate(period.getStartDate());
+				accBalance.setEndDate(period.getEndDate());
+				accBalance.setPeriod(period);
+				dao.saveExpenseBalance(accBalance);
+			}
 		}
 		
 		if (balance == null) {
@@ -890,38 +909,66 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		
 		// update amount
 		if (payment.getStatus().equals(PaymentStatus.NEW)) {
-			//TODO
+			// no thing to do here because status = new / pending 
 		}
 		else if (payment.getStatus().equals(PaymentStatus.COMMITTED)) {
 			// add to total committted, then subtract the ledger balance 
-			if (persitedPayment.getStatus().equals(payment.getStatus())) {
+			if (persitedPayment != null && persitedPayment.getStatus().equals(payment.getStatus()) 
+					&& persitedPayment.getCommitmentAmount().compareTo(payment.getCommitmentAmount()) != 0) {
 				// change commited amount
 				// revert previous committed amount
 				balance.setTotalCommitted(balance.getTotalCommitted().subtract(persitedPayment.getCommitmentAmount()));
 				BigDecimal ledgerBalance = balance.getLedgerBalance().add(persitedPayment.getCommitmentAmount());
 				balance.setLedgerBalance(ledgerBalance);
+				addAccountTransaction(payment);
+				
 			}
-
-			// update new committed amount
-			balance.setTotalCommitted(balance.getTotalCommitted().add(payment.getCommitmentAmount()));
-			BigDecimal ledgerBalance = balance.getCummulativeAIE().subtract(balance.getTotalCommitted());
-			balance.setLedgerBalance(ledgerBalance);
+			
+			if ( persitedPayment == null || persitedPayment.getStatus().equals(payment.getStatus()) 
+					&& persitedPayment.getCommitmentAmount().compareTo(payment.getCommitmentAmount()) != 0 
+					|| !persitedPayment.getStatus().equals(payment.getStatus()) ) {
+				// update new committed amount
+				balance.setTotalCommitted(balance.getTotalCommitted().add(payment.getCommitmentAmount()));
+				BigDecimal ledgerBalance = balance.getCummulativeAIE().subtract(balance.getTotalCommitted());
+				balance.setLedgerBalance(ledgerBalance);
+			} 
 			
 		} else if (payment.getStatus().equals(PaymentStatus.PAID)) {
 			
-			if (persitedPayment.getStatus().equals(payment.getStatus())) {
+			if (persitedPayment != null && persitedPayment.getStatus().equals(payment.getStatus()) 
+					&& persitedPayment.getActualPayment().compareTo(payment.getActualPayment()) != 0) {
 				// revert change
 				balance.setCurrentPayment(balance.getCurrentPayment().subtract(persitedPayment.getActualPayment()));
 				balance.setCummulativePayment(balance.getCummulativePayment().subtract(persitedPayment.getActualPayment()));
 				BigDecimal availableBalance = balance.getAvailableBalance().add(persitedPayment.getActualPayment());
 				balance.setAvailableBalance(availableBalance);
+				
+				//cancel account transaction
+				AccountTransaction atxn = dao.getAccountTxn(persitedPayment.getTxnNumber());
+				if ( atxn != null) {
+					cancelAccountTransaction(atxn.getTxnNumber(), payment.getCreatedDate());
+				}
 			}
 			
-			// add to payment made , then subtract available balance 
-			balance.setCurrentPayment(balance.getCurrentPayment().add(payment.getActualPayment()));
-			balance.setCummulativePayment(balance.getCummulativePayment().add(payment.getActualPayment()));
-			BigDecimal availableBalance = balance.getCummulativeAIE().subtract(balance.getCummulativePayment());
-			balance.setAvailableBalance(availableBalance);
+			
+			if ( persitedPayment == null || persitedPayment.getStatus().equals(payment.getStatus()) 
+					&& persitedPayment.getActualPayment().compareTo(payment.getActualPayment()) != 0 
+					|| !persitedPayment.getStatus().equals(payment.getStatus())) {
+			
+				// add to payment made , then subtract available balance 
+				balance.setCurrentPayment(balance.getCurrentPayment().add(payment.getActualPayment()));
+				balance.setCummulativePayment(balance.getCummulativePayment().add(payment.getActualPayment()));
+				BigDecimal availableBalance = balance.getCummulativeAIE().subtract(balance.getCummulativePayment());
+				balance.setAvailableBalance(availableBalance);
+				
+				// add account transaction
+				AccountTransaction atxn = addAccountTransaction(payment);
+				if (atxn != null) {
+					payment.setTxnNumber(atxn.getTxnNumber());
+					dao.savePayment(payment);
+				}
+			}
+			
 		}
 		
 		balance.setUpdatedBy(Context.getAuthenticatedUser().getId());
@@ -1152,6 +1199,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 					newBalance.setCreatedBy(Context.getAuthenticatedUser().getId());
 					newBalance.setCreatedDate(curDate);
 					newBalance.setStartDate(nextPeriod.getStartDate());
+					newBalance.setEndDate(nextPeriod.getEndDate());
 					newBalance.setAccount(balance.getAccount());
 					newBalance.setStatus(BalanceStatus.ACTIVE);
 					if (!resetBalance) {
@@ -1181,6 +1229,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 					newBalance.setCreatedDate(curDate);
 					newBalance.setPeriod(nextPeriod);
 					newBalance.setStartDate(nextPeriod.getStartDate());
+					newBalance.setEndDate(nextPeriod.getEndDate());
 					newBalance.setAvailableBalance(balance.getAvailableBalance());
 					newBalance.setCummulativeAIE(balance.getCummulativeAIE());
 					newBalance.setCummulativePayment(balance.getCummulativePayment());
@@ -1393,6 +1442,15 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	@Override
     public List<BankAccount> getListBankAccounts() {
 	    return dao.getListBankAccounts();
+    }
+
+	@Override
+    public ExpenseBalance findExpenseBalance(Integer accountId, Date date) {
+		Account acc = dao.getAccount(accountId);
+		if (acc != null) {
+			return dao.findExpenseBalance(acc, date);
+		}
+	    return null;
     }
 
 }

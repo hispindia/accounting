@@ -278,6 +278,8 @@ public interface AccountingService extends OpenmrsService {
 	
 	public List<ExpenseBalance> listActiveExpenseBalanceByPeriodId(Integer periodId);
 	
+	public ExpenseBalance findExpenseBalance(Integer accountId, Date date);
+	
 
 	/**
 	 * Bank Statement

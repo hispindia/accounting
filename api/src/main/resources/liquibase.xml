@@ -378,7 +378,11 @@
         </createTable>
     </changeSet>
     
-    
+    <changeSet author="viet" id="201411231147">
+    <addColumn tableName="accounting_payment"> 
+        <column name="txn_number" type="VARCHAR(50)"/>
+    </addColumn>
+</changeSet>
 
 	
 	
