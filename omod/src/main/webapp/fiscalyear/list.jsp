@@ -20,7 +20,7 @@
 
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:require privilege="View Account" otherwise="/login.htm"
+<openmrs:require privilege="View Fiscal Year" otherwise="/login.htm"
 	redirect="/module/account/main.form" />
 
 <spring:message var="pageTitle" code="accounting.account.manage"
@@ -118,7 +118,7 @@ function closeYear(id){
 }</script>
 	</c:when>
 	<c:otherwise>
-No Account found.
+No Fiscal Year found.
 </c:otherwise>
 </c:choose>
 

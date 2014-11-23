@@ -20,7 +20,7 @@
 
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:require privilege="View Account" otherwise="/login.htm"
+<openmrs:require privilege="View Budget" otherwise="/login.htm"
 	redirect="/module/account/accountBalance.htm" />
 
 <spring:message var="pageTitle" code="accounting.account.balance"
@@ -99,7 +99,7 @@ function checkValue()
 }</script>
 	</c:when>
 	<c:otherwise>
-No Account found.
+No Budget found.
 </c:otherwise>
 </c:choose>
 

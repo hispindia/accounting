@@ -72,5 +72,80 @@
 		<description>Allows user to view Account</description>
 	</privilege>
 
+	<privilege>
+		<name>View Account Balance</name>
+		<description>Allows user to  View Account Balance</description>
+	</privilege>
+	
+	<privilege>
+		<name>Add/Edit BankAccount</name>
+		<description>Allows user to  Add/Edit BankAccount</description>
+	</privilege>
+	
+	<privilege>
+		<name>View BankAccount</name>
+		<description>Allows user to  View BankAccount</description>
+	</privilege>
+
+	<privilege>
+		<name>Add/Edit BankStatement</name>
+		<description>Allows user to Add/Edit BankStatement</description>
+	</privilege>
+
+	<privilege>
+		<name>View BankStatement</name>
+		<description>Allows user to View BankStatement</description>
+	</privilege>
+	
+	<privilege>
+		<name>Add/Edit Budget</name>
+		<description>Allows user to Add/Edit Budget</description>
+	</privilege>
+
+	<privilege>
+		<name>View Budget</name>
+		<description>Allows user to View Budget</description>
+	</privilege>
+	
+	<privilege>
+		<name>Add/Edit Fiscal Year</name>
+		<description>Allows user to Add/Edit Fiscal Year</description>
+	</privilege>
+
+	<privilege>
+		<name>View Fiscal Year</name>
+		<description>Allows user to View Fiscal Year</description>
+	</privilege>
+
+	<privilege>
+		<name>Add/Edit Income Receipt</name>
+		<description>Allows user to Add/Edit Income Receipt</description>
+	</privilege>
+
+	<privilege>
+		<name>View Income Receipt</name>
+		<description>Allows user to View Income Receipt</description>
+	</privilege>
+
+	<privilege>
+		<name>View Payment</name>
+		<description>Allows user to View Payment</description>
+	</privilege>
+
+	<privilege>
+		<name>Add/Edit Payee</name>
+		<description>Allows user to Add/Edit Payee</description>
+	</privilege>
+
+	<privilege>
+		<name>Add/Edit Payment</name>
+		<description>Allows user to Add/Edit Payment</description>
+	</privilege>
+
+	<privilege>
+		<name>View Period</name>
+		<description>Allows user to View Period</description>
+	</privilege>
+
 </module>
 

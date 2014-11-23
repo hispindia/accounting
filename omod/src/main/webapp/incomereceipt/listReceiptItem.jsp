@@ -20,7 +20,7 @@
 
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:require privilege="View Account" otherwise="/login.htm"
+<openmrs:require privilege="View Income Receipt" otherwise="/login.htm"
 	redirect="/module/account/main.form" />
 
 <spring:message var="pageTitle" code="accounting.account.manage"
@@ -97,7 +97,7 @@ Filter by Account: <select onchange="selectAccount(this)">
 			
 	</c:when>
 	<c:otherwise>
-No Account found.
+No Income Receipt found.
 </c:otherwise>
 </c:choose>
 

@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
-<openmrs:require privilege="Add/Edit Account" otherwise="/login.htm"
+<openmrs:require privilege="Add/Edit Income Receipt" otherwise="/login.htm"
 	redirect="/module/accounting/main.htm" />
 <link href="<openmrs:contextPath/>/scripts/jquery-ui/css/<spring:theme code='jqueryui.theme.name' />/jquery-ui.custom.css" type="text/css" rel="stylesheet" />
 <link href="/openmrs/openmrs.css?v=1.9.7.60bd9b" type="text/css" rel="stylesheet" />

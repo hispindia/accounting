@@ -20,7 +20,7 @@
 
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:require privilege="View Account" otherwise="/login.htm"
+<openmrs:require privilege="View Period" otherwise="/login.htm"
 	redirect="/module/account/period.list" />
 
 <spring:message var="pageTitle" code="accounting.account.manage"

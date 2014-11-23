@@ -20,7 +20,7 @@
 
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:require privilege="View Account" otherwise="/login.htm"
+<openmrs:require privilege="View Account Balance" otherwise="/login.htm"
 	redirect="/module/account/accountBalance.htm" />
 
 <spring:message var="pageTitle" code="accounting.account.balance"
@@ -189,7 +189,7 @@ Fiscal Period:</td><td><select id="comboPeriod">
 </script>
 </c:when>
 <c:otherwise>
-No Account found.
+No Account  found.
 </c:otherwise>
 </c:choose>
 

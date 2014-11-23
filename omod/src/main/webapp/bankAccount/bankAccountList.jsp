@@ -97,7 +97,7 @@
 			</div>
 	</c:when>
 	<c:otherwise>
-No Account found.
+No Bank Account found.
 </c:otherwise>
 </c:choose>
 

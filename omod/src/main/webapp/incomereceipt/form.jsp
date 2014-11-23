@@ -18,7 +18,7 @@
  *
 --%>
 <%@ include file="/WEB-INF/template/include.jsp"%>
-<openmrs:require privilege="Add/Edit Account" otherwise="/login.htm"
+<openmrs:require privilege="Add/Edit Income Receipt" otherwise="/login.htm"
 	redirect="/module/accounting/main.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
