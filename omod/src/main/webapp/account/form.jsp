@@ -95,14 +95,14 @@
 				</c:choose></td>
 		</tr>
 
-
+<!--
 		<c:choose>
 			<c:when test="${disableEdit}">
 				<input type='hidden' value="${accountCommand.period}"/>
-		<!-- 		<tr>
+		 		<tr>
 					<td>Start Period</td>
 					<td>${accountCommand.period}</td>
-				</tr> -->
+				</tr> 
 			</c:when>
 			<c:otherwise>
 				<tr>
@@ -117,7 +117,7 @@
 			</c:otherwise>
 		</c:choose>
 
-
+-->
 		<tr>
 			<td valign="top"><spring:message code="accounting.parentAccount" />
 			</td>

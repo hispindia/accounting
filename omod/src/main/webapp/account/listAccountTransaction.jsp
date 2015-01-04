@@ -20,7 +20,7 @@
 
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:require privilege="View Income Receipt" otherwise="/login.htm"
+<openmrs:require privilege="View Account Transaction" otherwise="/login.htm"
 	redirect="/module/account/main.form" />
 
 <spring:message var="pageTitle" code="accounting.account.manage"
@@ -28,68 +28,50 @@
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="../includes/nav.jsp" %>
-
 <link type="text/css" rel="stylesheet"
-	href="${pageContext.request.contextPath}/moduleResources/accounting/styles/paging.css" />
+	href="${pageContext.request.contextPath}/moduleResources/account/styles/paging.css" />
 <script type="text/javascript"
-	src="${pageContext.request.contextPath}/moduleResources/accounting/scripts/paging.js"></script>
+	src="${pageContext.request.contextPath}/moduleResources/account/scripts/paging.js"></script>
 <script type="text/javascript"
-	src="${pageContext.request.contextPath}/moduleResources/accounting/scripts/jquery/jquery-1.4.2.min.js"></script>
+	src="${pageContext.request.contextPath}/moduleResources/account/scripts/jquery/jquery-1.4.2.min.js"></script>
 <h2>
-	<spring:message code="accounting.incomeReceipt.manage" />
+	<spring:message code="accounting.account.accountTransaction" />
 </h2>
 
-<br /><br />
-List by Account: <select onchange="selectAccount(this)">
- <option>--Select Account--</option>
- <c:forEach items="${accounts }" var="account">
- 	<option value="${account.id }">${account.name }</option>
- </c:forEach>
-</select>
-
-<script type="text/javascript">
-	function selectAccount(this_) {
-		window.location.href = "incomeReceiptItem.list?accountId="+jQuery(this_).val();
-	}
-</script>
-<br /><br />
+<br />
 <c:forEach items="${errors.allErrors}" var="error">
 	<span class="error"><spring:message
 			code="${error.defaultMessage}" text="${error.defaultMessage}" />
-	</span>
+	</span><
 </c:forEach>
-<br />
-	<input type="button"
-	value="<spring:message code='accounting.incomereceipt.add'/>"
-	onclick="javascript:window.location.href='incomereceipt.form'" />
-<br />
 <c:choose>
-	<c:when test="${not empty incomeReceipts}">
+	<c:when test="${not empty accounts}">
 		<form method="post" onsubmit="return false" id="form">
-		
-			<input type="button" onclick="checkValue()"
-				value="<spring:message code='accounting.account.deleteselected'/>" />
 			<span class="boxHeader"><spring:message
-					code="accounting.incomeReceipt.list" />
+					code="accounting.accountTransaction.list" />
 			</span>
 			<div class="box">
 				<table cellpadding="5" cellspacing="0">
 					<tr>
 						<th>#</th>
-						<th>Receipt No</th>
-						<th><spring:message code="accounting.receipt.receiptDate" /></th>
+						<th><spring:message code="general.date" />
+						</th>
+						<th><spring:message code="accounting.amount"/></th>
+						</th>
 						<th></th>
 					</tr>
-					<c:forEach items="${incomeReceipts}" var="incomeReceipt"
+					<c:forEach items="${accounts}" var="account"
 						varStatus="varStatus">
-						<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" } '>
+						<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" } ' <c:if test="${account.retired}"> style="text-decoration:line-through;"</c:if>>
 							<td><c:out
 									value="${(( pagingUtil.currentPage - 1  ) * pagingUtil.pageSize ) + varStatus.count }" />
 							</td>
-							<td><a href="javascript:window.location.href='incomereceipt.form?id=${incomeReceipt.id}'"> ${incomeReceipt.receiptNo }</a></td>
-							<td><openmrs:formatDate date="${incomeReceipt.receiptDate}" type="textbox" /></td>
-							<td><input type="checkbox" name="ids"
-								value="${incomeReceipt.id}" />
+							<td><a
+								href="javascript:window.location.href='account.form?id=${account.id}'">${account.name}</a>
+							</td>
+							<td>${account.transactionDate }</td>
+							<td>${account.amount}</td>
+							<td>
 							</td>
 						</tr>
 					</c:forEach>
@@ -99,20 +81,9 @@ List by Account: <select onchange="selectAccount(this)">
 					</tr>
 				</table>
 			</div>
-			<script>
-function checkValue()
-{
-	var form = jQuery("#form");
-	if( jQuery("input[type='checkbox']:checked",form).length > 0 ) 
-		form.submit();
-	else{
-		alert("Please choose items for deleting");
-		return false;
-	}
-}</script>
 	</c:when>
 	<c:otherwise>
-No Income Receipt found.
+No Account Transaction found.
 </c:otherwise>
 </c:choose>
 

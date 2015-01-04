@@ -132,16 +132,16 @@ function submitForm() {
 </script>
 	
 	
-	<div clcass="box" id="receiptItemBox">
-	<br><p><b>Receipt Item</b></p>
-	<br><input type="button" value="Add New Item" onclick="addItem()"/><br>
-<table id="tableReceiptItem">
+	<div  id="receiptItemBox">
+	<br><p><span class="boxHeader"><b>Receipt Item</b></span></p>
+	<input style="margin:5px" type="button" value="Add New Item" onclick="addItem()"/>
+<table class="box" id="tableReceiptItem">
 	<thead>
 		<th>Account</th>
 		<th>Description</th>
 		<th>Type</th>
 		<th>Cheuqe number</th>
-		<th>Amount</th>
+		<th style="text-align:right">Amount</th>
 		<th></th>
 	</thead>
 	<tbody>
@@ -152,8 +152,8 @@ function submitForm() {
 					<td>${item.description}</td>
 					<td>${item.type}</td>
 					<td>${item.chequeNumber}</td>
-					<td>${item.amount}</td>
-					<td>
+					<td align="right">${item.amount}</td>
+					<td align="center">
 						<c:if test="${!item.voided}"><input type='button' value='Delete' onclick='deleteItem(this,${item.id})'/>&nbsp;</c:if>
 					</td>
 				</tr>

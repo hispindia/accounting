@@ -129,20 +129,21 @@
 		value="<spring:message code="general.save"/>" onclick="submitForm()"> <input
 		type="button" value="<spring:message code="general.cancel"/>"
 		onclick="javascript:window.location.href='budget.list'">
-		<br>
+		<br/><br/>
 		<div  <c:if test="${empty budgetCommand.budget.id }"> style="display: none"</c:if>>
-		<span ><strong>Budget Items</strong></span>
-		<table id="itemTable">
+		<span class="boxHeader"><strong>Budget Items</strong></span>
+		<input type="button" onclick="addItem();" value="Add Budget Item" style="margin:5px"/>
+		<table id="itemTable" class="box">
 			<thead>
 				<th>Account </th>
 				<th>Description</th>
 				<th>Start Date</th>
 				<th>End Date</th>
-				<th>Amount</th>
+				<th align="right" style="text-align:right">Amount</th>
 				<th></th>
 			</thead>
 			<tbody>
-				<tr><td  colspan="5"><a href="#" onclick="addItem();">Add Item</a></td></tr>
+				<tr><td  colspan="5"></td></tr>
 			
 				<c:forEach items="${budgetCommand.budget.budgetItems}" var="item">
 				<tr <c:if test="${item.retired}"> style="text-decoration:line-through;"</c:if>>
@@ -153,8 +154,8 @@
 					<td id="item_${item.id}_description">${item.description}</td>
 					<td id="item_${item.id}_startDate"><openmrs:formatDate date="${item.startDate}" type="textbox" /></td>
 					<td id="item_${item.id}_endDate"><openmrs:formatDate date="${item.endDate}" type="textbox" /></td>
-					<td id="item_${item.id}_amount" align="right" >${item.amount}</td>
-					<td > <c:if test="${!item.retired}"> <input type="button" value="Delete" onclick="deleteItem(this,${item.id})" /></c:if></td>
+					<td id="item_${item.id}_amount" style="text-align:right" align="right" >${item.amount}</td>
+					<td align="center"> <c:if test="${!item.retired}"> <input type="button" value="Delete" onclick="deleteItem(this,${item.id})" /></c:if></td>
 				</tr>
 				</c:forEach>
 			

@@ -75,11 +75,12 @@ public class AccountValidator implements Validator {
     		}
     		
     	} else {
-    		
+    		// ADD NEW
+    		/* Dont need this
     		if (command.getPeriod() == null){
         		error.reject("accounting.period.required");
         	}
-    		
+    		*/
     		// CREATE NEW
     		Account acc = accountingService.getAccountByNameAndType(account.getName(),account.getAccountType());
     		if (acc != null){

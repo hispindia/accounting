@@ -33,7 +33,7 @@ public class BudgetItem {
 	@Column(name="description", length=1000)
 	private String description;
 	
-	@Column(name = "amount", precision = 9, scale = 2)
+	@Column(name = "amount", precision = 19, scale = 2)
 	private BigDecimal amount;
 	
 	@Type(type="timestamp")

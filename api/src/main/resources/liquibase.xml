@@ -42,9 +42,9 @@
             <column name="account_id" type="INT(10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="balance" type="DECIMAL(9, 2)"/>
-            <column name="credit" type="DECIMAL(9, 2)"/>
-            <column name="debit" type="DECIMAL(9, 2)"/>
+            <column name="balance" type="DECIMAL(19, 2)"/>
+            <column name="credit" type="DECIMAL(19, 2)"/>
+            <column name="debit" type="DECIMAL(19, 2)"/>
             <column name="txn_type" type="VARCHAR(20)"/>
             <column name="txn_date" type="datetime"/>
             <column name="created_date" type="datetime"/>
@@ -56,7 +56,7 @@
             <column name="reference_txn" type="VARCHAR(50)"/>
             <column name="cancel_for_txn" type="VARCHAR(50)"/>
             <column name="txn_status" type="VARCHAR(10)"/>
-            <column name="amount" type="DECIMAL(9, 2)"/>
+            <column name="amount" type="DECIMAL(19, 2)"/>
         </createTable>
     </changeSet>
     <changeSet author="viet (generated)" id="1414957707040-3">
@@ -64,7 +64,8 @@
             <column autoIncrement="true" name="bank_statement_id" type="INT(10)">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="amount" type="DECIMAL(9, 2)"/>
+            <column name="amount" type="DECIMAL(19, 2)"/>
+            <column name="check_number" type="VARCHAR(100)"/>
             <column name="date_from" type="datetime"/>
             <column name="date_to" type="datetime"/>
             <column name="updated_date" type="datetime"/>
@@ -78,6 +79,7 @@
             <column name="voided_date" type="datetime"/>
             <column name="voided_by" type="INT(10)"/>
             <column name="description" type="VARCHAR(1000)"/>
+            <column name="type" type="VARCHAR(50)"/>
             <column defaultValueNumeric="0" name="voided" type="BIT(1)">
                 <constraints nullable="false"/>
             </column>
@@ -154,7 +156,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="updated_by" type="INT(10)"/>
-            <column name="amount" type="DECIMAL(9, 2)"/>
+            <column name="amount" type="DECIMAL(19, 2)"/>
             <column name="retired_date" type="datetime"/>
             <column name="retired_by" type="INT(10)"/>
             <column defaultValueNumeric="0" name="retired" type="BIT(1)">
@@ -171,11 +173,11 @@
             </column>
             <column name="account_id" type="INT(10)"/>
             <column name="fiscal_period_id" type="INT(10)"/>
-            <column name="new_aie" type="DECIMAL(9, 2)"/>
-            <column name="cummulative_aie" type="DECIMAL(9, 2)"/>
-            <column name="current_payment" type="DECIMAL(9, 2)"/>
-            <column name="cummulative_payment" type="DECIMAL(9, 2)"/>
-            <column name="available_balance" type="DECIMAL(9, 2)"/>
+            <column name="new_aie" type="DECIMAL(19, 2)"/>
+            <column name="cummulative_aie" type="DECIMAL(19, 2)"/>
+            <column name="current_payment" type="DECIMAL(19, 2)"/>
+            <column name="cummulative_payment" type="DECIMAL(19, 2)"/>
+            <column name="available_balance" type="DECIMAL(19, 2)"/>
             <column name="start_date" type="datetime"/>
             <column name="end_date" type="datetime"/>
             <column name="updated_date" type="datetime"/>
@@ -187,8 +189,8 @@
             </column>
             <column name="updated_by" type="INT(10)"/>
             <column name="status" type="VARCHAR(50)"/>
-            <column name="total_committed" type="DECIMAL(9, 2)"/>
-            <column name="ledger_balance" type="DECIMAL(9, 2)"/>
+            <column name="total_committed" type="DECIMAL(19, 2)"/>
+            <column name="ledger_balance" type="DECIMAL(19, 2)"/>
         </createTable>
     </changeSet>
     <changeSet author="viet (generated)" id="1414957707040-7">
@@ -234,8 +236,8 @@
             </column>
             <column name="updated_by" type="INT(10)"/>
             <column name="status" type="VARCHAR(10)"/>
-            <column name="opening_balance" type="DECIMAL(9, 2)"/>
-            <column name="closing_balance" type="DECIMAL(9, 2)"/>
+            <column name="opening_balance" type="DECIMAL(19, 2)"/>
+            <column name="closing_balance" type="DECIMAL(19, 2)"/>
         </createTable>
     </changeSet>
     <changeSet author="viet (generated)" id="1414957707040-9">
@@ -257,10 +259,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="updated_by" type="INT(10)"/>
-            <column name="opening_balance" type="DECIMAL(9, 2)"/>
-            <column name="closing_balance" type="DECIMAL(9, 2)"/>
-            <column name="ledger_balance" type="DECIMAL(9, 2)"/>
-            <column name="available_balance" type="DECIMAL(9, 2)"/>
+            <column name="opening_balance" type="DECIMAL(19, 2)"/>
+            <column name="closing_balance" type="DECIMAL(19, 2)"/>
+            <column name="ledger_balance" type="DECIMAL(19, 2)"/>
+            <column name="available_balance" type="DECIMAL(19, 2)"/>
             <column name="status" type="VARCHAR(10)"/>
         </createTable>
     </changeSet>
@@ -302,7 +304,7 @@
             <column name="income_receipt_id" type="INT(10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="amount" type="DECIMAL(9, 2)"/>
+            <column name="amount" type="DECIMAL(19, 2)"/>
             <column name="cheque_number" type="VARCHAR(255)"/>
             <column name="type" type="VARCHAR(20)"/>
             <column name="transaction_date" type="datetime"/>
@@ -354,10 +356,11 @@
             <column name="ref_order_no" type="VARCHAR(255)"/>
             <column name="commitment_no" type="INT(10)"/>
             <column name="voucher_no" type="VARCHAR(255)"/>
-            <column name="cost" type="DECIMAL(9, 2)"/>
-            <column name="commitment_amount" type="DECIMAL(9, 2)"/>
-            <column name="payable_amount" type="DECIMAL(9, 2)"/>
-            <column name="actual_payment" type="DECIMAL(9, 2)"/>
+            <column name="cost" type="DECIMAL(19, 2)"/>
+            <column name="commitment_amount" type="DECIMAL(19, 2)"/>
+            <column name="payable_amount" type="DECIMAL(19, 2)"/>
+            <column name="actual_payment" type="DECIMAL(19, 2)"/>
+            <column name="check_number" type="VARCHAR(100)"/>
             <column name="payment_date" type="datetime"/>
             <column name="updated_date" type="datetime"/>
             <column name="created_date" type="datetime">
@@ -374,7 +377,7 @@
             </column>
             <column name="status" type="VARCHAR(50)"/>
             <column name="note" type="VARCHAR(1000)"/>
-            <column name="total_aie" type="DECIMAL(9, 2)"/>
+            <column name="total_aie" type="DECIMAL(19, 2)"/>
         </createTable>
     </changeSet>
     

@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -29,8 +31,11 @@ public class BankStatement {
 	private String description;
 	
 	
-	@Column(name="amount", precision = 9, scale = 2)
+	@Column(name="amount", precision = 19, scale = 2)
 	private BigDecimal amount;
+	
+	@Column(name="check_number", length=100)
+	private String checkNumber;
 	
 	@Column(name = "date_from")
 	@Temporal(TemporalType.DATE)
@@ -67,6 +72,11 @@ public class BankStatement {
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="bank_account_id")
 	private BankAccount bankAccount;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "type")
+	private BankStatementType type;
+	
 	
 	public BankStatement(){
 		this.voided = false;
@@ -201,6 +211,26 @@ public class BankStatement {
 	
     public void setBankAccount(BankAccount bankAccount) {
     	this.bankAccount = bankAccount;
+    }
+
+	
+    public BankStatementType getType() {
+    	return type;
+    }
+
+	
+    public void setType(BankStatementType type) {
+    	this.type = type;
+    }
+
+	
+    public String getCheckNumber() {
+    	return checkNumber;
+    }
+
+	
+    public void setCheckNumber(String checkNumber) {
+    	this.checkNumber = checkNumber;
     }
 	
 	

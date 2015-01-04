@@ -31,18 +31,25 @@ public class ReportFormController {
 		return "module/accounting/report/reportForm";
 	}
 	
-	@RequestMapping(value = "/module/accounting/downloadReport.form ", method = RequestMethod.GET)
-	public void getFile(@RequestParam(value="periodId", required=false) Integer periodId, HttpServletResponse response) throws IOException {
+	@RequestMapping(value = "/module/accounting/downloadPaymentReport.form ", method = RequestMethod.GET)
+	public void downloadPaymentReport(@RequestParam(value="periodId", required=false) Integer periodId, HttpServletResponse response) throws IOException {
 		if (periodId == null) {
 			List<ExpenseBalance> balances = Context.getService(AccountingService.class).listActiveExpenseBalance();
-			ExcelReportHelper.generateExcel(balances, response.getOutputStream());
+			ExcelReportHelper.generatePaymentReport(balances, response.getOutputStream());
 		} else {
 			FiscalPeriod period = Context.getService(AccountingService.class).getFiscalPeriod(periodId);
 			if (period != null) {
 				List<ExpenseBalance> balances = Context.getService(AccountingService.class).listActiveExpenseBalance(period);
-				ExcelReportHelper.generateExcel(balances, response.getOutputStream());
+				ExcelReportHelper.generatePaymentReport(balances, response.getOutputStream());
 			}
 		}
-		
+	}
+	
+	@RequestMapping(value = "/module/accounting/downloadCashReport.form ", method = RequestMethod.GET)
+	public void downloadCashReport(@RequestParam(value="periodId", required=false) Integer periodId, HttpServletResponse response) throws IOException {
+		FiscalPeriod period = Context.getService(AccountingService.class).getFiscalPeriod(periodId);
+		if (period != null) {
+			ExcelReportHelper.generateCashReport(period, response.getOutputStream());
+		}
 	}
 }

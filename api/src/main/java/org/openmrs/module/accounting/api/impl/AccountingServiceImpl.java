@@ -72,38 +72,41 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 	public Account saveAccount(Account acc, Integer periodId) {
 		
 		if (acc.getId() == null) {
-			FiscalPeriod period = dao.getFiscalPeriod(periodId);
 			
-			if (period == null)
-				return null;
 			log.info("Create new account: " + acc.getName());
 			acc.setCreatedDate(Calendar.getInstance().getTime());
 			acc.setCreatedBy(Context.getAuthenticatedUser().getId());
 			
 			acc = dao.saveAccount(acc);
 			
-			if (acc.getAccountType().equals(AccountType.INCOME)) {
-				IncomeBalance accBalance = new IncomeBalance();
-				accBalance.setAccount(acc);
-				accBalance.setCreatedBy(acc.getCreatedBy());
-				accBalance.setCreatedDate(acc.getCreatedDate());
-				accBalance.setStatus(BalanceStatus.ACTIVE);
-				accBalance.setStartDate(period.getStartDate());
-				accBalance.setEndDate(period.getEndDate());
-				accBalance.setPeriod(period);
-				dao.saveAccountBalance(accBalance);
-			} else if (acc.getAccountType().equals(AccountType.EXPENSE)) {
-				ExpenseBalance accBalance = new ExpenseBalance();
-				accBalance.setAccount(acc);
-				accBalance.setCreatedBy(acc.getCreatedBy());
-				accBalance.setCreatedDate(acc.getCreatedDate());
-				accBalance.setStatus(BalanceStatus.ACTIVE);
-				accBalance.setStartDate(period.getStartDate());
-				accBalance.setEndDate(period.getEndDate());
-				accBalance.setPeriod(period);
-				dao.saveExpenseBalance(accBalance);
+			if (periodId != null) {
+				FiscalPeriod period = dao.getFiscalPeriod(periodId);
+				
+				if (period != null) {
+				
+					if (acc.getAccountType().equals(AccountType.INCOME)) {
+						IncomeBalance accBalance = new IncomeBalance();
+						accBalance.setAccount(acc);
+						accBalance.setCreatedBy(acc.getCreatedBy());
+						accBalance.setCreatedDate(acc.getCreatedDate());
+						accBalance.setStatus(BalanceStatus.ACTIVE);
+						accBalance.setStartDate(period.getStartDate());
+						accBalance.setEndDate(period.getEndDate());
+						accBalance.setPeriod(period);
+						dao.saveAccountBalance(accBalance);
+					} else if (acc.getAccountType().equals(AccountType.EXPENSE)) {
+						ExpenseBalance accBalance = new ExpenseBalance();
+						accBalance.setAccount(acc);
+						accBalance.setCreatedBy(acc.getCreatedBy());
+						accBalance.setCreatedDate(acc.getCreatedDate());
+						accBalance.setStatus(BalanceStatus.ACTIVE);
+						accBalance.setStartDate(period.getStartDate());
+						accBalance.setEndDate(period.getEndDate());
+						accBalance.setPeriod(period);
+						dao.saveExpenseBalance(accBalance);
+					}
+				}
 			}
-			
 			return acc;
 		} else {
 			log.info("update  account: " + acc.getName());

@@ -146,6 +146,11 @@
 		<name>View Period</name>
 		<description>Allows user to View Period</description>
 	</privilege>
+	
+	<privilege>
+		<name>View Accounting Report</name>
+		<description>Allows user to View Accounting Report</description>
+	</privilege>
 
 </module>
 

@@ -27,7 +27,7 @@
 
 
 
-<span class="boxHeader">Monthly Payment and Commitment Report</span>
+<span class="boxHeader">Daily Cash Analysis Report</span>
 <div class="box">
 <table>
 <tr> <td>Select Period:</td>
@@ -39,38 +39,12 @@
 	</c:forEach>
 </select></td>
 </tr>
-<tr>
-	<td></td>
-	<td><input type="button" value="Download Payment Report" onclick="downloadPayment()"/></td>
-</tr>
-<tr>
-	<td></td>
-	<td><input type="button" value="Download Cash Report" onclick="downloadCash()"/></td>
-</tr>
-
+<tr><td></td><td><input type="button" value="Download Report" onclick="download()"/>
+	</td>
+	</tr>
 </table>
 </div>
 <script>
-
-
-function downloadPayment() {
-	
-	var periodId = jQuery("#comboPeriods").val();
-	
-	var link = document.createElement('a');
-	
-	if (periodId) {
-		link.href ="downloadPaymentReport.form?periodId="+periodId
-	} else {
-		link.href ="downloadPaymentReport.form"
-	}
-	
-	link.setAttribute('download', "PaymentReport.xls");
-	link.innerHTML = "Report Test";
-    document.body.appendChild(link);
-	link.click();
-}
-
 
 
 function downloadCash() {

@@ -24,6 +24,7 @@
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="../includes/nav.jsp" %>
 
+
 <link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/moduleResources/accounting/scripts/jquery/css/thickbox.css" />
 <script type="text/javascript" src="${pageContext.request.contextPath}/moduleResources/accounting/scripts/jquery/jquery.ui.autocomplete.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/moduleResources/accounting/scripts/jquery/jquery.thickbox.js"></script>
@@ -94,6 +95,11 @@
 			<td><form:errors path="voucherNo"  cssClass="error" /></td>
 		</tr>
 		<tr>
+			<td><spring:message code="accounting.checkNumber"/></td>
+			<td><form:input path="checkNumber"/></td>
+			<td><form:errors path="checkNumber"  cssClass="error" /></td>
+		</tr>
+		<tr>
 			<td><spring:message code="accounting.payableAmount"/><em>*</em></td>
 			<td><form:input path="payableAmount"/></td>
 			<td><form:errors path="payableAmount"  cssClass="error" /></td>
@@ -136,6 +142,7 @@
 		value="<spring:message code="general.save"/>"> <input
 		type="button" value="<spring:message code="general.cancel"/>"
 		onclick="javascript:window.location.href='payment.list'">
+		<input type="button" value="Print Payment Form" onclick="printForm()"/>
 </form:form>
 <input type="hidden" value='${listPayees}' id="listPayees"/>
 <input type="hidden" value='${accounts}' id="accounts"/>
@@ -214,5 +221,93 @@
 		jQuery("#comboPayee").val(payeeName);
 		
 	});
+	
+	function printForm() {
+		var printer = window.open('', '', 'width=300,height=300');
+		printer.document.open("text/html");
+		printer.document.write(document.getElementById('printDiv').innerHTML);
+		printer.document.close();
+		printer.window.close();
+		printer.print();
+	}
 </script>
+
+
+<!-- PRINT DIV -->
+
+<div id="printDiv" class="hidden"	style="width: 1280px; font-size: 0.8em">
+<style>
+@media print {
+	.donotprint {
+		display: none;
+	}
+	.spacer {
+		margin-top: 100px;
+		font-family: "Dot Matrix Normal", Arial, Helvetica, sans-serif;
+		font-style: normal;
+		font-size: 14px;
+	}
+	.printfont {
+		font-family: "Dot Matrix Normal", Arial, Helvetica, sans-serif;
+		font-style: normal;
+		font-size: 14px;
+	}
+}
+</style>
+<center><h1>PAYMENT FORM</h1></center>
+<table class="printfont" style="margin-left: 60px; margin-top: 10px; font-family: 'Dot Matrix Normal', Arial, Helvetica, sans-serif; font-style: normal;">
+<tr>
+	<td>Account: </td>
+	<td>${payment.account.name}</td>
+</tr>
+<tr>
+	<td>Payment Date: </td>
+	<td>${payment.paymentDate}</td>
+</tr>
+<tr>
+	<td>AIE amount: </td>
+	<td>${payment.totalAIE}</td>
+</tr>
+<tr>
+	<td>Payee: </td>
+	<td>${payment.payee.name}</td>
+</tr>
+<tr>
+	<td>Reference Order Number	: </td>
+	<td>${payment.referenceOrderNo}</td>
+</tr>
+<tr>
+	<td>Commitment Number: </td>
+	<td>${payment.commitmentNo}</td>
+</tr>
+<tr>
+	<td>Cheque Number: </td>
+	<td>${payment.checkNumber}</td>
+</tr>
+<tr>
+	<td>Voucher Number: </td>
+	<td>${payment.voucherNo}</td>
+</tr>
+<tr>
+	<td>Payable Amount: </td>
+	<td>${payment.payableAmount}</td>
+</tr>
+<tr>
+	<td>Commitment Amount: </td>
+	<td>${payment.commitmentAmount}</td>
+</tr>
+<tr>
+	<td>Actual Payment: </td>
+	<td>${payment.actualPayment}</td>
+</tr>
+<tr>
+	<td>Status: </td>
+	<td>${payment.status}</td>
+</tr>
+<tr>
+	<td>Note: </td>
+	<td>${payment.note}</td>
+</tr>
+</table>
+</div>
 <%@ include file="/WEB-INF/template/footer.jsp"%>

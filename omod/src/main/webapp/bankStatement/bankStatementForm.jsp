@@ -91,13 +91,23 @@
 			</td>
 			<td>
 				<form:select path="bankAccount">
-							<form:option value="" label="--Please Select--" />
+							<form:option value="0" label="--Please Select--" />
 							<form:options items="${bankAccounts}" itemLabel="accountName" itemValue="id"/>
 						</form:select>
 						<form:errors path="bankAccount" cssClass="error" />
 				</td>
 		</tr>
-		
+			<tr>
+			<td valign="top"><spring:message code="accounting.checkNumber" />
+			</td>
+			<td><spring:bind path="checkNumber">
+					<input type="text" name="${status.expression}"
+						value="${status.value}" size="35" />
+					<c:if test="${status.errorMessage != ''}">
+						<span class="error">${status.errorMessage}</span>
+					</c:if>
+				</spring:bind></td>
+		</tr>
 		<tr>
 			<td valign="top"><spring:message code="accounting.amount" />
 			</td>
@@ -109,7 +119,13 @@
 					</c:if>
 				</spring:bind></td>
 		</tr>
-
+		<tr>
+			<td><spring:message code="acounting.bankstatement.type" /></td>
+			<td><form:radiobutton path="type" value="CASH" />CASH
+				<form:radiobutton path="type" value="EFT" />EFT</td>
+			<form:errors path="type" cssClass="error" />
+			</td>
+		</tr>
 	</table>
 	<br />
 	<input type="submit" value="<spring:message code="general.save"/>">

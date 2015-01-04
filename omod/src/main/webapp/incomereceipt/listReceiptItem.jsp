@@ -59,12 +59,15 @@ Filter by Account: <select onchange="selectAccount(this)">
 	</span>
 </c:forEach>
 <br />
+<input type="button"
+	value="<spring:message code='accounting.incomereceipt.add'/>"
+	onclick="javascript:window.location.href='incomereceipt.form'" />
+	<br />
+	<br />
 <c:choose>
 	<c:when test="${not empty incomeReceipts}">
 		<form method="post" onsubmit="return false" id="form">
-					<input type="button"
-	value="<spring:message code='accounting.incomereceipt.add'/>"
-	onclick="javascript:window.location.href='incomereceipt.form'" />
+					
 			<span class="boxHeader"><spring:message
 					code="accounting.incomeReceipt.list" />
 			</span>

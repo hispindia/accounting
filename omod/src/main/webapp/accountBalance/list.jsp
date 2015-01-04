@@ -189,7 +189,7 @@ Fiscal Period:</td><td><select id="comboPeriod">
 </script>
 </c:when>
 <c:otherwise>
-No Account  found.
+No Account Balance found.
 </c:otherwise>
 </c:choose>
 

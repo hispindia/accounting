@@ -43,19 +43,22 @@ public class Payment {
 	@Column(name = "voucher_no")
 	private String voucherNo;
 	
-	@Column(name = "cost", precision = 9, scale = 2)
+	@Column(name = "cost", precision = 19, scale = 2)
 	private BigDecimal cost;
 	
-	@Column(name = "commitment_amount", precision = 9, scale = 2)
+	@Column(name="check_number", length=100)
+	private String checkNumber;
+	
+	@Column(name = "commitment_amount", precision = 19, scale = 2)
 	private BigDecimal commitmentAmount;
 	
-	@Column(name = "payable_amount", precision = 9, scale = 2)
+	@Column(name = "payable_amount", precision = 19, scale = 2)
 	private BigDecimal payableAmount;
 	
-	@Column(name = "actual_payment", precision = 9, scale = 2)
+	@Column(name = "actual_payment", precision = 19, scale = 2)
 	private BigDecimal actualPayment;
 	
-	@Column(name="total_aie", precision = 9, scale = 2)
+	@Column(name="total_aie", precision = 19, scale = 2)
 	private BigDecimal totalAIE;
 	
 	@Temporal(TemporalType.DATE)
@@ -368,6 +371,18 @@ public class Payment {
     public void setTxnNumber(String txnNumber) {
     	this.txnNumber = txnNumber;
     }
+
+	
+    public String getCheckNumber() {
+    	return checkNumber;
+    }
+
+	
+    public void setCheckNumber(String checkNumber) {
+    	this.checkNumber = checkNumber;
+    }
+
+	
 
 	
 

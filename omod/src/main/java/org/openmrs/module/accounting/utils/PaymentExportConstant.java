@@ -1,8 +1,8 @@
 package org.openmrs.module.accounting.utils;
 
 
-public class ExportConstant {
-	public static final String ITEM_CODE = "Item Code";
+public class PaymentExportConstant {
+	public static final String ITEMCODE = "Item Code";
 	public static final Integer ITEM_CODE_INDEX = 0;
 	public static final String DESCRIPTION = "Description";
 	public static final Integer DESCRIPTION_INDEX = 1;
@@ -16,11 +16,12 @@ public class ExportConstant {
 	public static final Integer CCUMMULATIVE_PAYMENT_INDEX = 5;
 	public static final String AVAILABLE_BALANCE = "Available Balance";
 	public static final Integer AVAILABLE_BALANCE_INDEX = 6;
-	public static final  String[] headers = {ExportConstant.ITEM_CODE, 
-		ExportConstant.DESCRIPTION, 
-		ExportConstant.NEW_AIE, 
-		ExportConstant.CUMMULATIVE_AIE, 
-		ExportConstant.CURRENT_PAYMENT, 
-		ExportConstant.CUMMULATIVE_PAYMENT,
-		ExportConstant.AVAILABLE_BALANCE} ;
+	public static final  String[] headers = {
+		PaymentExportConstant.ITEMCODE, 
+		PaymentExportConstant.DESCRIPTION, 
+		PaymentExportConstant.NEW_AIE, 
+		PaymentExportConstant.CUMMULATIVE_AIE,
+		PaymentExportConstant.CURRENT_PAYMENT, 
+		PaymentExportConstant.CUMMULATIVE_PAYMENT,
+		PaymentExportConstant.AVAILABLE_BALANCE} ;
 }

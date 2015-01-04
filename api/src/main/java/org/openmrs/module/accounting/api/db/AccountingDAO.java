@@ -73,6 +73,7 @@ public class AccountingDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Account.class);
 		if (!includeRetired)
 			criteria.add(Restrictions.eq("retired", false));
+		criteria.addOrder(Order.desc("createdDate"));
 		return criteria.list();
 		
 	}
