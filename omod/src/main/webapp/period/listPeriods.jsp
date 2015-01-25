@@ -97,7 +97,7 @@
 							<td>${period.status }</td>
 							
 							<td>
-								<c:if test="${period.open }">
+								<c:if test="${period.open  && period.closable}">
 								<input type="button" value="Close" onclick="closePeriod(${period.id})">
 								<!--<input type="checkbox" name="ids"
 								value="${period.id}" />

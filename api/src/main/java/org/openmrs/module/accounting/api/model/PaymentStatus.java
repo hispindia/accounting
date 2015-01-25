@@ -2,7 +2,6 @@ package org.openmrs.module.accounting.api.model;
 
 
 public enum PaymentStatus {
-	NEW("NEW"),
 	COMMITTED("COMMITTED"),
 	PAID("PAID"),
 	DELETED("DELETED");

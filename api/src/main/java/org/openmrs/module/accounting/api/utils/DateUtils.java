@@ -64,5 +64,14 @@ public class DateUtils {
 		}
 				
 	}
-	
+	public static boolean isCurrentPeriod(Date startDate, Date endDate) {
+		Date cur = Calendar.getInstance().getTime();
+		// start <= cur  <= end 
+		// start > cur || end < cur
+		
+		if (startDate.compareTo(cur) > 0 || endDate.compareTo(cur) < 0 ) 
+			return false;
+		else 
+			return true;
+	}
 }

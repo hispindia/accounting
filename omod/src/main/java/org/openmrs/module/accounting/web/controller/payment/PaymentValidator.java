@@ -1,7 +1,11 @@
 package org.openmrs.module.accounting.web.controller.payment;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
+import org.openmrs.api.context.Context;
+import org.openmrs.module.accounting.api.AccountingService;
+import org.openmrs.module.accounting.api.model.ExpenseBalance;
 import org.openmrs.module.accounting.api.model.Payment;
 import org.openmrs.module.accounting.api.model.PaymentStatus;
 import org.openmrs.module.accounting.api.utils.DateUtils;
@@ -38,9 +42,23 @@ public class PaymentValidator implements Validator {
 	    if (payment.getPayee() == null) {
 	    	error.reject("accounting.payee.required");
 	    }
+	    Date date = payment.getPaymentDate();
+	  	ExpenseBalance balance = Context.getService(AccountingService.class).findExpenseBalance(payment.getAccount().getId(), date);
+	  	if ( balance == null || balance.getAvailableBalance().compareTo(new BigDecimal("0")) == 0) {
+	  		error.reject("accounting.payment.budget.required");
+	  	}
+	  	if (payment.getStatus().equals(PaymentStatus.COMMITTED)) {
+	  		if (payment.getCommitmentAmount() == null || payment.getCommitmentAmount().compareTo(new BigDecimal("0")) == 0) {
+	  			error.reject("accounting.payment.commitmentAmount.required");
+	  		} else if (payment.getCommitmentAmount().compareTo(balance.getLedgerBalance()) > 0) {
+	  			error.reject("accounting.payment.budget.notEnough");
+	  		}
+	  	}
 	    if (payment.getStatus().equals(PaymentStatus.PAID)) {
-	    	if( payment.getActualPayment() == null || payment.getActualPayment().compareTo(new BigDecimal("0") ) == 0  ) {
+	    	if(  payment.getActualPayment() == null || payment.getActualPayment().compareTo(new BigDecimal("0") ) == 0  ) {
 	    		error.reject("accounting.payment.actualPayment.required");
+	    	}else if (payment.getCommitmentAmount().compareTo(balance.getAvailableBalance()) > 0) {
+	    		error.reject("accounting.payment.budget.notEnough");
 	    	}
 	    }
     }

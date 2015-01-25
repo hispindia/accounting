@@ -424,15 +424,14 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		FiscalPeriod period = getFiscalPeriodByDate(receiptDate);
 		IncomeBalance balance = dao.getAccountBalance(account, period);
 		if (balance == null) {
-			
-			balance = new IncomeBalance();
-			balance.setAccount(account);
-			balance.setCreatedBy(account.getCreatedBy());
-			balance.setCreatedDate(account.getCreatedDate());
-			balance.setStatus(BalanceStatus.ACTIVE);
-			balance.setStartDate(period.getStartDate());
-			balance.setEndDate(period.getEndDate());
-			balance.setPeriod(period);
+				balance = new IncomeBalance();
+				balance.setAccount(account);
+				balance.setCreatedBy(account.getCreatedBy());
+				balance.setCreatedDate(account.getCreatedDate());
+				balance.setStatus(BalanceStatus.ACTIVE);
+				balance.setStartDate(period.getStartDate());
+				balance.setEndDate(period.getEndDate());
+				balance.setPeriod(period);
 			//			dao.saveAccountBalance(balance);
 		}
 		
@@ -449,24 +448,27 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		updateAccountAvailableBalance(receipt.getAccount(), receipt.getReceipt().getReceiptDate(), receipt.getAmount());
 	}
 	
+	/*
 	private void increaseBalance(BudgetItem budget) throws Exception {
 		updateAccountAvailableBalance(budget.getAccount(), budget.getCreatedDate(), budget.getAmount());
 	}
+	
 	
 	private void decreaseBalance(BudgetItem budget) throws Exception {
 		BigDecimal amount = budget.getAmount().negate();
 		updateAccountAvailableBalance(budget.getAccount(), budget.getCreatedDate(), amount);
 	}
+	*/
 	
 	private void decreaseBalance(IncomeReceiptItem receipt) throws Exception {
 		BigDecimal amount = receipt.getAmount().negate();
 		updateAccountAvailableBalance(receipt.getAccount(), receipt.getReceipt().getReceiptDate(), amount);
 	}
-	
+	/*
 	private void updateAccountBalance(BudgetItem budget) throws Exception {
 		updateAccountAvailableBalance(budget.getAccount(), budget.getCreatedDate(), budget.getAmount());
 		addAccountTransaction(budget);
-	}
+	}*/
 	
 	public void updateAccountBalance(Account account, Date receiptDate, BigDecimal amount, TransactionType type)
 	    throws Exception {
@@ -696,6 +698,11 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			return;
 		}
 		
+		if (!Context.getService(AccountingService.class).isEditableBudget(item) ) {
+    		throw new Exception(" Can not edit this Budget because there are Payments linked");
+    	} 
+		
+		
 		Date curDate = Calendar.getInstance().getTime();
 		item.setRetired(true);
 		item.setRetiredBy(Context.getAuthenticatedUser().getId());
@@ -798,12 +805,8 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			balance.setNewAIE(item.getAmount());
 			balance.setCummulativeAIE(balance.getCummulativeAIE().add(item.getAmount()));
 			balance.setAvailableBalance(item.getAmount());
+			balance.setLedgerBalance(item.getAmount());
 			
-			
-			/** add account_txn and update balance **/
-			AccountTransaction acctxn = addAccountTransaction(item);
-			item.setTxnNumber(acctxn.getTxnNumber());;
-			increaseBalance(item);
 			
 			dao.saveExpenseBalance(balance);
 			
@@ -910,11 +913,8 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 		
 		Payment persitedPayment = dao.getPayment(payment.getId());
 		
-		// update amount
-		if (payment.getStatus().equals(PaymentStatus.NEW)) {
-			// no thing to do here because status = new / pending 
-		}
-		else if (payment.getStatus().equals(PaymentStatus.COMMITTED)) {
+		
+		if (payment.getStatus().equals(PaymentStatus.COMMITTED)) {
 			// add to total committted, then subtract the ledger balance 
 			if (persitedPayment != null && persitedPayment.getStatus().equals(payment.getStatus()) 
 					&& persitedPayment.getCommitmentAmount().compareTo(payment.getCommitmentAmount()) != 0) {
@@ -940,6 +940,7 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			
 			if (persitedPayment != null && persitedPayment.getStatus().equals(payment.getStatus()) 
 					&& persitedPayment.getActualPayment().compareTo(payment.getActualPayment()) != 0) {
+				// Here user change the actual payment amount, we need to cancel the old amount first. then add the new amount
 				// revert change
 				balance.setCurrentPayment(balance.getCurrentPayment().subtract(persitedPayment.getActualPayment()));
 				balance.setCummulativePayment(balance.getCummulativePayment().subtract(persitedPayment.getActualPayment()));
@@ -951,14 +952,14 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 				if ( atxn != null) {
 					cancelAccountTransaction(atxn.getTxnNumber(), payment.getCreatedDate());
 				}
-			}
+			} 
 			
 			
-			if ( persitedPayment == null || persitedPayment.getStatus().equals(payment.getStatus()) 
-					&& persitedPayment.getActualPayment().compareTo(payment.getActualPayment()) != 0 
+			if ( persitedPayment == null 
+					|| (persitedPayment.getStatus().equals(payment.getStatus()) && persitedPayment.getActualPayment().compareTo(payment.getActualPayment()) != 0 ) 
 					|| !persitedPayment.getStatus().equals(payment.getStatus())) {
-			
-				// add to payment made , then subtract available balance 
+				// payment is made
+				// add  payment amount  , then subtract available balance 
 				balance.setCurrentPayment(balance.getCurrentPayment().add(payment.getActualPayment()));
 				balance.setCummulativePayment(balance.getCummulativePayment().add(payment.getActualPayment()));
 				BigDecimal availableBalance = balance.getCummulativeAIE().subtract(balance.getCummulativePayment());
@@ -970,6 +971,12 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 					payment.setTxnNumber(atxn.getTxnNumber());
 					dao.savePayment(payment);
 				}
+				
+				// reset commitment amount
+				if ( persitedPayment != null  && payment.getCommitmentAmount() != null && payment.getCommitmentAmount().compareTo(new BigDecimal("0")) != 0) {
+					balance.setTotalCommitted(balance.getTotalCommitted().subtract(persitedPayment.getCommitmentAmount()));
+				}
+				
 			}
 			
 		}
@@ -1454,6 +1461,24 @@ public class AccountingServiceImpl extends BaseOpenmrsService implements Account
 			return dao.findExpenseBalance(acc, date);
 		}
 	    return null;
+    }
+	
+	/**
+	 * 
+	 * @param budgetItem
+	 * @return true if there is no payment made in the same period of this budget item
+	 */
+	public boolean isEditableBudget(BudgetItem budgetItem) {
+		List<Payment> payments = dao.listPaymentsByAccountPeriod(budgetItem.getAccount(), budgetItem.getStartDate(), budgetItem.getEndDate());
+		if (payments != null && !payments.isEmpty()) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+    public BudgetItem getBudgetItem(Integer id) {
+	    return dao.getBudgetItem(id);
     }
 
 }

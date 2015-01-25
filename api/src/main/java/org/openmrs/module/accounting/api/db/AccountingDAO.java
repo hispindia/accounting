@@ -718,6 +718,14 @@ public class AccountingDAO {
 		return criteria.list();
 	}
 	
+	@SuppressWarnings("unchecked")
+    public List<Payment> listPaymentsByAccountPeriod(Account account,Date startDate, Date endDate){
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Payment.class);
+		criteria.add(Restrictions.eq("account", account));
+		criteria.add(Restrictions.and(Restrictions.ge("paymentDate", startDate), Restrictions.le("paymentDate",endDate)));
+		return criteria.list();
+	}
+	
 	/**
 	 * Aggregate all income receipt for given period
 	 * The result format is: Map<accountId,'accountName|amount'>
@@ -800,5 +808,6 @@ public class AccountingDAO {
 		.addOrder(Order.asc("bankName"));
 		return criteria.list();
 	}
+    
 }
 

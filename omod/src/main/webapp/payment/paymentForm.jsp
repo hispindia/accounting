@@ -109,14 +109,11 @@
 			<td><form:input path="commitmentAmount"/></td>
 			<td><form:errors path="commitmentAmount"  cssClass="error" /></td>
 		</tr>
-		<c:if test="${payment.status == 'COMMITTED' || payment.status == 'PAID'  }">
 		<tr>
 			<td><spring:message code="accounting.actualPayment"/></td>
 			<td><form:input path="actualPayment"  /></td>
 			<td><form:errors path="actualPayment"  cssClass="error" /></td>
 		</tr>
-		</c:if>
-		
 		<tr>
 			<td><spring:message code="accounting.status"/></td>
 			<td><form:select path="status">

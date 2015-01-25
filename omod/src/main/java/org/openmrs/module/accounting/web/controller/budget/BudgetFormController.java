@@ -109,7 +109,6 @@ public class BudgetFormController {
 	public String postDeleteItem(@RequestParam(value="budgetItemId",required=true) Integer budgetItemId,
 	                   @RequestParam("action") String action,
 	                   HttpServletRequest request, SessionStatus status) {
-		
 		try {
 			Context.getService(AccountingService.class).retireBudgetItem(budgetItemId);
             return "success";

@@ -251,7 +251,18 @@ function editItem(id) {
 			jQuery("#item_"+id+"_endDate").html(),
 			jQuery("#item_"+id+"_amount").html()
 	);
-	
+	var keyEvent = jQuery.Event("keydown");          
+	//$("#itemAccountName").val("Item");        // Enters the value "Item" in text field
+
+	setTimeout(function () { 
+	    keyEvent.keyCode = jQuery.ui.keyCode.DOWN;  // event for pressing "down" key
+	    jQuery("#itemAccountName").trigger(keyEvent);  // Press "down" key to select first item after 50 milliseconds
+	    jQuery("#itemAccountName").trigger(keyEvent);
+	     setTimeout(function () {
+	          keyEvent.keyCode = jQuery.ui.keyCode.ENTER; // event for pressing the "enter" key
+	          jQuery("#itemAccountName").trigger(keyEvent);  // Press "Enter" to select marked item after another 50 milliseconds
+	     }, 50);
+	}, 50);  
 	
 	tb_show("Edit Budget Item","#TB_inline?height=150&width=300&inlineId=itemDiv&modal=true",null);
 	
@@ -280,7 +291,7 @@ function setItemFormValues(id, account, desc, startDate, endDate, amount) {
 function updateItemRowValues(id, accountId, accountName, desc, startDate, endDate, amount) {
 	jQuery("#item_"+id+"_accountId").val(accountId);
 	
-	jQuery("#item_"+id+"_accountName").html(account);
+	jQuery("#item_"+id+"_accountName").html(accountName);
 	jQuery("#item_"+id+"_description").html(desc); 
 	jQuery("#item_"+id+"_startDate").html(startDate); 
 	jQuery("#item_"+id+"_endDate").html(endDate);
@@ -345,6 +356,7 @@ function saveItem() {
 								item.endDate,
 								item.amount
 						);
+					tb_remove();
 					} else {
 					addItemRow(data, item.accountName, item.accountId, item.description, 
 															item.startDate, 
@@ -406,8 +418,8 @@ function addItemRow(id, accountName, accountId, description, startDate, endDate,
 					+"<td><input type='hidden' name='budgetItems["+rowCount+"].description' value='"+description+"'/>"+description+"</td>"
 					+"<td><input type='hidden' name='budgetItems["+rowCount+"].startDate' value='"+startDate+"' />"+startDate+"</td>"
 					+"<td><input type='hidden' name='budgetItems["+rowCount+"].endDate' value='"+endDate+" '/>"+endDate+"</td>"
-					+"<td><input type='hidden' name='budgetItems["+rowCount+"].amount' value='"+amount+"'/>"+amount+"</td>"
-					+"<td><input type='button' value='Delete' onclick='deleteItem(this,"+id+")'/></td>"
+					+"<td align='right'><input type='hidden' name='budgetItems["+rowCount+"].amount' value='"+amount+"'/>"+amount+"</td>"
+					+"<td align='center'><input type='button' value='Delete' onclick='deleteItem(this,"+id+")'/></td>"
 					+"</tr>";
 				jQuery("#itemTable tbody").append(row);
 		}

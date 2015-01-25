@@ -238,7 +238,11 @@ public interface AccountingService extends OpenmrsService {
 	
 	public BudgetItem getBudgetItem(Integer accountId, Date date);
 	
+	public BudgetItem getBudgetItem(Integer id);
+	
 	public boolean isBudgetItemOverlap(Integer accountId, Date startDate, Date endDate) ;
+	
+	public boolean isEditableBudget(BudgetItem budgetItem) ;
 	/**
 	 * PAYEE
 	 */

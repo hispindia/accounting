@@ -101,7 +101,7 @@ public class Payment {
 	
 	public Payment(){
 		this.retired = false;
-		this.status = PaymentStatus.NEW;
+		this.status = PaymentStatus.COMMITTED;
 	}
 	
     public Integer getId() {

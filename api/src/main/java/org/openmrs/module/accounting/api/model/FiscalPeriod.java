@@ -1,5 +1,6 @@
 package org.openmrs.module.accounting.api.model;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -16,6 +17,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
+import org.openmrs.module.accounting.api.utils.DateUtils;
 
 @Entity
 @Table(name = "accounting_fiscal_period")
@@ -224,5 +226,11 @@ public class FiscalPeriod {
 		    return false;
 	    return true;
     }
+	
+	public boolean isClosable() {
+		Date cur = Calendar.getInstance().getTime();
+		
+		return !DateUtils.isCurrentPeriod(getStartDate(), getEndDate()) && cur.compareTo(getEndDate()) > 0 ;
+	}
 	
 }

@@ -110,7 +110,7 @@ public class PaymentController {
 		Payment payment = null;
 		if (id == null) {
 			payment = new Payment();
-			PaymentStatus[] statues = {PaymentStatus.NEW, PaymentStatus.COMMITTED};
+			PaymentStatus[] statues = { PaymentStatus.COMMITTED,PaymentStatus.PAID};
 			model.addAttribute("paymentStatuses",statues);
 		} else {
 			payment = Context.getService(AccountingService.class).getPayment(id);
