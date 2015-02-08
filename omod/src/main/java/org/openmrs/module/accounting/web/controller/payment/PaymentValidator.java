@@ -3,6 +3,7 @@ package org.openmrs.module.accounting.web.controller.payment;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.accounting.api.AccountingService;
 import org.openmrs.module.accounting.api.model.ExpenseBalance;
@@ -24,6 +25,7 @@ public class PaymentValidator implements Validator {
     public void validate(Object arg0, Errors error) {
 	    // TODO Auto-generated method stub
 	    Payment payment = (Payment) arg0;
+	    
 
 	    if (payment.getAccount() == null) {
 	    	error.reject("accounting.account.required");
@@ -37,6 +39,8 @@ public class PaymentValidator implements Validator {
 	    
 	    if (payment.getPayableAmount() == null) {
 	    	error.reject("accounting.payable.required");
+	    } else if (payment.getPayableAmount().compareTo(new BigDecimal("0")) < 0 ){
+	    	error.reject("accounting.payable.invalid");
 	    }
 	    
 	    if (payment.getPayee() == null) {
@@ -44,23 +48,24 @@ public class PaymentValidator implements Validator {
 	    }
 	    Date date = payment.getPaymentDate();
 	  	ExpenseBalance balance = Context.getService(AccountingService.class).findExpenseBalance(payment.getAccount().getId(), date);
-	  	if ( balance == null || balance.getAvailableBalance().compareTo(new BigDecimal("0")) == 0) {
+	  	if ( balance == null || balance.getAvailableBalance() == null || balance.getAvailableBalance().compareTo(new BigDecimal("0")) < 0) {
 	  		error.reject("accounting.payment.budget.required");
+	  	} else {
+		  	if (payment.getStatus().equals(PaymentStatus.COMMITTED)) {
+		  		if (payment.getCommitmentAmount() == null || payment.getCommitmentAmount().compareTo(new BigDecimal("0")) <= 0) {
+		  			error.reject("accounting.payment.commitmentAmount.invalid");
+		  		} else if (payment.getCommitmentAmount().compareTo(balance.getAvailableBalance()) > 0) {
+		  			error.reject("accounting.payment.budget.notEnough");
+		  		}
+		  	}
+		    if (payment.getStatus().equals(PaymentStatus.PAID)) {
+		    	if(  payment.getActualPayment() == null || payment.getActualPayment().compareTo(new BigDecimal("0") ) <= 0  ) {
+		    		error.reject("accounting.payment.actualPayment.invalid");
+		    	}else if (payment.getActualPayment().compareTo(balance.getLedgerBalance()) > 0) {
+		    		error.reject("accounting.payment.budget.notEnough");
+		    	}
+		    }
 	  	}
-	  	if (payment.getStatus().equals(PaymentStatus.COMMITTED)) {
-	  		if (payment.getCommitmentAmount() == null || payment.getCommitmentAmount().compareTo(new BigDecimal("0")) == 0) {
-	  			error.reject("accounting.payment.commitmentAmount.required");
-	  		} else if (payment.getCommitmentAmount().compareTo(balance.getLedgerBalance()) > 0) {
-	  			error.reject("accounting.payment.budget.notEnough");
-	  		}
-	  	}
-	    if (payment.getStatus().equals(PaymentStatus.PAID)) {
-	    	if(  payment.getActualPayment() == null || payment.getActualPayment().compareTo(new BigDecimal("0") ) == 0  ) {
-	    		error.reject("accounting.payment.actualPayment.required");
-	    	}else if (payment.getCommitmentAmount().compareTo(balance.getAvailableBalance()) > 0) {
-	    		error.reject("accounting.payment.budget.notEnough");
-	    	}
-	    }
     }
 	
 	

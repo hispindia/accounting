@@ -123,7 +123,13 @@ public class PaymentController {
 				PaymentStatus[] statues = {PaymentStatus.PAID,PaymentStatus.DELETED};
 				model.addAttribute("paymentStatuses",statues);
 			} 
+			
+			ExpenseBalance balance = Context.getService(AccountingService.class).findExpenseBalance(payment.getAccount().getId(), payment.getPaymentDate());
+			if (balance != null) {
+				model.addAttribute("accountBudget",balance.getAvailableBalance().toString());
+			} 
 		}
+		
 		model.addAttribute("payment",payment);
 		
 		
@@ -133,7 +139,7 @@ public class PaymentController {
 	
 	
 	@RequestMapping(value="/module/accounting/payment.form", method=RequestMethod.POST)
-	public String postPaymentForm(@ModelAttribute("payment") Payment payment, BindingResult bindingResult, Model model) {
+	public String postPaymentForm(@ModelAttribute("payment") Payment payment, BindingResult bindingResult, Model model) throws Exception {
 		
 		new PaymentValidator().validate(payment, bindingResult);
 		if (bindingResult.hasErrors()) {

@@ -67,7 +67,7 @@
 		</tr>
 		<tr>
 			<td><spring:message code="accounting.payment.aie"/></td>
-			<td><input type="button" value="Get AIE" onclick="getAIE()"/> <span  id="paymentAIE" ></span>
+			<td><input type="button" value="Get AIE" onclick="getAIE()"/> <span  id="paymentAIE" >${accountBudget}</span>
 			<form:hidden path="totalAIE" id="totalAIE"/></td>
 			<input type="hidden" id="hPayeeName" value="${payment.payee.name }"/>
 		</tr>

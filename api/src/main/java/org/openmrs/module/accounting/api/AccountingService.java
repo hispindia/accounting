@@ -259,10 +259,11 @@ public interface AccountingService extends OpenmrsService {
 	
 	/**
 	 * PAYMENT 
+	 * @throws Exception 
 	 */
 	
 	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
-	public Payment savePayment(Payment payment);
+	public Payment savePayment(Payment payment) throws Exception;
 	
 	public void deletePayment(Payment payment);
 	

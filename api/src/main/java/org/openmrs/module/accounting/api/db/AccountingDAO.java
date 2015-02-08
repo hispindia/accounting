@@ -611,7 +611,7 @@ public class AccountingDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Payment.class);
 		
 		criteria.setFirstResult(min).setMaxResults(max);
-		criteria.addOrder(Order.desc("paymentDate"));
+		criteria.addOrder(Order.desc("createdDate"));
 		return criteria.list();
 	}
 	
