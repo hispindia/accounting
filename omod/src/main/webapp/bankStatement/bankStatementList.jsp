@@ -66,12 +66,16 @@
 			<div class="box">
 				<table cellpadding="5" cellspacing="0">
 					<tr>
-						<th>#</th>
+						<th>S.No</th>
 						<th><spring:message code="accounting.dateFrom" />
 						</th>
 							<th><spring:message code="accounting.dateTo" />
 						</th>
 						<th><spring:message code="accounting.amount" />
+						</th>
+						<th><spring:message code="accounting.bankstatement.type" />
+						</th>
+						<th><spring:message code="accounting.receiptType" />
 						</th>
 						<th><spring:message code="accounting.description" />
 						</th>
@@ -91,6 +95,8 @@
 									type="textbox" /></a>
 							</td>
 							<td align="right">${statement.amount}</td>
+							<td align="left">${statement.type}</td>
+							<td align="left">${statement.receiptType}</td>
 							<td>${statement.description}</td>
 							<td></td>
 						</tr>

@@ -24,7 +24,6 @@
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="../includes/nav.jsp"%>
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
-
 <p>
 <b><a href="bankStatement.list">List Bank Statement</a></b>&nbsp; | &nbsp;
 <b><a href="bankStatement.form">Add Bank Statement</a></b>&nbsp; | &nbsp;
@@ -48,8 +47,22 @@
 		</div>
 	</c:if>
 </spring:bind>
+
+
+
 <form:form commandName="command" method="post" cssClass="box">
 	<table>
+		<tr>
+			<td><spring:message code="accounting.receiptType" /><em>*</em></td>
+			<td><form:radiobutton path="receiptType" value="Banking" />Banking &nbsp;&nbsp;&nbsp;
+				<form:radiobutton path="receiptType" value="NHIF Receipts" />NHIF Receipts &nbsp;&nbsp;&nbsp;
+				<form:radiobutton path="receiptType" value="Other Debtor Receipts" />Other Debtor Receipts	</td>
+				<form:errors path="receiptType" cssClass="error" />
+			</td>
+		</tr>
+
+		
+		
 		<tr>
 			<td valign="top"><spring:message code="general.description" />
 			</td>
@@ -63,7 +76,7 @@
 		</tr>
 
 		<tr>
-			<td valign="top"><spring:message code="accounting.dateFrom" />
+			<td valign="top"><spring:message code="accounting.dateFrom" /><em>*</em>
 			</td>
 			<td><spring:bind path="dateFrom">
 				<input type="text" name="${status.expression}"
@@ -75,7 +88,7 @@
 		</tr>
 		
 		<tr>
-			<td valign="top"><spring:message code="accounting.dateTo" />
+			<td valign="top"><spring:message code="accounting.dateTo" /><em>*</em>
 			</td>
 			<td><spring:bind path="dateTo">
 				<input type="text" name="${status.expression}"
@@ -87,7 +100,7 @@
 		</tr>
 		
 		<tr>
-			<td valign="top"><spring:message code="accounting.bankAccount" />
+			<td valign="top"><spring:message code="accounting.bankAccount" /><em>*</em>
 			</td>
 			<td>
 				<form:select path="bankAccount">
@@ -109,7 +122,7 @@
 				</spring:bind></td>
 		</tr>
 		<tr>
-			<td valign="top"><spring:message code="accounting.amount" />
+			<td valign="top"><spring:message code="accounting.amount" /><em>*</em>
 			</td>
 			<td><spring:bind path="amount">
 					<input type="text" name="${status.expression}"
@@ -120,7 +133,7 @@
 				</spring:bind></td>
 		</tr>
 		<tr>
-			<td><spring:message code="acounting.bankstatement.type" /></td>
+			<td><spring:message code="accounting.bankstatement.type" /><em>*</em></td>
 			<td><form:radiobutton path="type" value="CASH" />CASH
 				<form:radiobutton path="type" value="EFT" />EFT</td>
 			<form:errors path="type" cssClass="error" />
