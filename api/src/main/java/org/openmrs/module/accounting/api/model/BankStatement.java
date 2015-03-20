@@ -77,12 +77,22 @@ public class BankStatement {
 	@Column(name = "type")
 	private BankStatementType type;
 	
+	@Column(name="receipt_type", length=50)
+	private String receiptType;
 	
 	public BankStatement(){
 		this.voided = false;
 	}
 	
-    public Integer getId() {
+    public String getReceiptType() {
+		return receiptType;
+	}
+
+	public void setReceiptType(String receiptType) {
+		this.receiptType = receiptType;
+	}
+
+	public Integer getId() {
     	return id;
     }
 

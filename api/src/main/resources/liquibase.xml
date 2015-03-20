@@ -387,6 +387,10 @@
     </addColumn>
 </changeSet>
 
-	
+<changeSet author="sagar" id="201503161251">
+    <addColumn tableName="accounting_bank_statement"> 
+        <column name="receipt_type" type="VARCHAR(50)"/>
+    </addColumn>
+</changeSet>
 	
 </databaseChangeLog>
